@@ -200,6 +200,53 @@ tr:hover td{background:#f8fbff}
 .btn-del:hover{background:#fef2f2}
 .progress-bar-wrap{background:#e2e8f0;border-radius:99px;height:6px;width:100px;display:inline-block}
 .progress-bar-inner{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ol),var(--wv))}
+
+/* ── PAST EXAM ── */
+.exam-hero{background:linear-gradient(135deg,#1a1a4e 0%,#2d1b69 50%,#1a4f7a 100%);padding:1.75rem 1.5rem;color:#fff}
+.exam-hero h2{font-size:20px;font-weight:600;margin-bottom:.3rem}
+.exam-hero p{font-size:12px;color:rgba(255,255,255,0.65);margin-bottom:1.25rem}
+.exam-filters{display:flex;gap:8px;flex-wrap:wrap}
+.ef-btn{padding:6px 14px;font-size:12px;font-weight:500;border:1px solid rgba(255,255,255,0.3);border-radius:20px;cursor:pointer;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);transition:all .15s;font-family:inherit}
+.ef-btn.active{background:#fff;color:#1a1a4e;border-color:#fff;font-weight:600}
+.exam-content{background:var(--of);padding:1.5rem}
+.exam-set-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:1.5rem}
+.exam-set-card{background:#fff;border-radius:14px;border:1px solid rgba(33,118,174,0.12);padding:1.2rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.exam-set-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#2d1b69,#63c5ea)}
+.exam-set-card:hover{border-color:var(--ol);transform:translateY(-2px);box-shadow:0 4px 16px rgba(33,118,174,0.15)}
+.exam-set-grade{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;margin-bottom:.6rem}
+.grade1{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.grade2{background:#fdf4ff;color:#7c3aed;border:1px solid #e9d5ff}
+.grade3{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.exam-set-title{font-size:14px;font-weight:600;color:var(--od);margin-bottom:3px}
+.exam-set-meta{font-size:11px;color:#94a3b8;margin-bottom:.7rem}
+.exam-set-qcnt{font-size:11px;color:var(--ol);font-weight:600}
+.exam-play-wrap{background:var(--of);padding:1.5rem;max-width:800px;margin:0 auto}
+.exam-play-header{background:#fff;border-radius:14px;border:1px solid rgba(33,118,174,0.1);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.exam-play-info{font-size:13px;color:var(--od);font-weight:600}
+.exam-play-sub{font-size:11px;color:#94a3b8;margin-top:1px}
+.exam-q-card{background:#fff;border-radius:14px;border:1px solid rgba(33,118,174,0.1);padding:1.5rem;margin-bottom:1rem}
+.exam-q-num{font-size:11px;font-weight:600;color:var(--ol);margin-bottom:.6rem}
+.exam-q-text{font-size:14px;color:var(--od);line-height:1.9;margin-bottom:.7rem;font-weight:500}
+.exam-q-passage{background:#f8fbff;border-left:3px solid var(--ob);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:.9rem;font-size:13px;color:#374151;line-height:1.9;white-space:pre-line}
+.exam-opts{display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:1rem}
+.exam-opt{padding:11px 14px;background:var(--of);border:1px solid rgba(33,118,174,0.15);border-radius:10px;font-size:13.5px;color:#1e293b;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:flex-start;gap:9px;line-height:1.6;font-family:inherit;width:100%}
+.exam-opt:hover:not(.ok):not(.no){border-color:var(--ol);background:#eff6ff}
+.exam-opt.ok{border-color:#15803d;background:#f0fdf4;color:#14532d}
+.exam-opt.no{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.exam-exp{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px;color:#78350f;line-height:1.7;display:none;margin-bottom:1rem}
+.exam-exp.show{display:block}
+.exam-nav{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+.exam-prev{background:transparent;color:var(--ol);border:1px solid var(--op);border-radius:20px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:inherit}
+.exam-next{background:linear-gradient(135deg,var(--om),var(--ol));color:#fff;border:none;border-radius:20px;padding:8px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+.exam-score-card{background:#fff;border-radius:16px;border:1px solid rgba(33,118,174,0.1);padding:2.5rem;text-align:center;max-width:420px;margin:0 auto}
+.exam-grade-badge{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:5px 16px;border-radius:99px;background:linear-gradient(135deg,#2d1b69,#1a4f7a);color:#fff;margin-bottom:1rem}
+.exam-wrong-list{text-align:left;margin-top:1.25rem;border-top:1px solid var(--op);padding-top:1rem}
+.exam-wrong-item{font-size:12px;color:#64748b;padding:5px 0;border-bottom:1px solid #f1f5f9;line-height:1.6}
+.exam-empty{text-align:center;padding:3rem 1rem;color:#94a3b8;font-size:14px}
+/* admin exam tab */
+.exam-admin-upload{border:2px dashed rgba(33,118,174,0.3);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:1rem}
+.exam-admin-upload:hover{border-color:var(--ol)}
+.exam-admin-upload input{display:none}
 </style>
 
 </head>
@@ -254,7 +301,7 @@ tr:hover td{background:#f8fbff}
   </nav>
   <div class="hero">
     <h1>오늘도 한 걸음 더, 국어 실력을 키워요</h1>
-    <p>2027 언어와 매체 · 6개 파트 · 세부 항목별 이론 + 문제 5개</p>
+    <p>2027 언어와 매체 · 6개 파트 · EBS 기출문제 풀이</p>
     <div class="hero-stats">
       <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">학습 파트</div></div>
       <div class="stat"><div class="stat-num" id="tsubs">17</div><div class="stat-lbl">세부 항목</div></div>
@@ -264,8 +311,17 @@ tr:hover td{background:#f8fbff}
   <div class="content">
     <div class="sec-title">▦ 학습 파트 선택</div>
     <div class="tiles" id="tiles"></div>
+    <!-- 기출문제 풀이 배너 -->
+    <div style="background:linear-gradient(135deg,#1a1a4e,#2d1b69,#1a4f7a);border-radius:16px;padding:1.4rem 1.5rem;margin-bottom:1.75rem;cursor:pointer;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden" onclick="goExam()">
+      <div style="font-size:36px;flex-shrink:0">📄</div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px">EBS 기출문제 풀이</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7)">고1·고2·고3 모의고사 기출 · 학년·연도별 필터</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.15);color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;flex-shrink:0">시작 →</div>
+    </div>
     <div class="sec-title">ℹ 학습 안내</div>
-    <div class="info-box">💡<span>파트 → 세부 항목을 클릭하면 이론 학습과 문제 풀기가 순서대로 진행됩니다. 각 항목당 <strong>5문제</strong>(객관식+빈칸 혼합)씩 구성되어 있습니다.</span></div>
+    <div class="info-box">💡<span>파트 → 세부 항목을 클릭하면 이론 학습과 문제 풀기가 순서대로 진행됩니다. 기출문제 풀이에서는 EBS 모의고사 문제를 학년·연도별로 선택해 풀 수 있습니다.</span></div>
   </div>
 </div>
 
@@ -318,6 +374,57 @@ tr:hover td{background:#f8fbff}
   </div>
 </div>
 
+<!-- ═══════════════ PAST EXAM LIST ═══════════════ -->
+<div id="se" class="screen">
+  <nav class="nav">
+    <div class="nav-logo" onclick="goHome()">🌊 한국어 문법 학습</div>
+    <div class="nav-right">
+      <div class="nav-user" onclick="logout()">👤<span id="uname4"></span>&nbsp;·&nbsp;로그아웃</div>
+    </div>
+  </nav>
+  <div class="exam-hero">
+    <div class="sub-bc" style="margin-bottom:.6rem">
+      <span class="lk" onclick="goHome()">🏠 홈</span> › <span style="color:rgba(255,255,255,0.8)">EBS 기출문제 풀이</span>
+    </div>
+    <h2>📄 EBS 기출문제 풀이</h2>
+    <p>고1·고2·고3 모의고사 기출문제를 학년과 연도별로 선택하여 풀어보세요.</p>
+    <div class="exam-filters" id="exam-grade-filter">
+      <button class="ef-btn active" onclick="setExamFilter('grade','all',this)">전체 학년</button>
+      <button class="ef-btn" onclick="setExamFilter('grade','1',this)">고1</button>
+      <button class="ef-btn" onclick="setExamFilter('grade','2',this)">고2</button>
+      <button class="ef-btn" onclick="setExamFilter('grade','3',this)">고3</button>
+    </div>
+  </div>
+  <div class="exam-content">
+    <div style="margin-bottom:1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:600;color:var(--od)">연도 필터</span>
+      <div id="exam-year-filter" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    </div>
+    <div id="exam-set-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAST EXAM PLAY ═══════════════ -->
+<div id="sep" class="screen">
+  <nav class="nav">
+    <div class="nav-logo" onclick="goHome()">🌊 한국어 문법 학습</div>
+    <div class="nav-right">
+      <div class="nav-user" onclick="logout()">👤<span id="uname5"></span>&nbsp;·&nbsp;로그아웃</div>
+    </div>
+  </nav>
+  <div class="study-nav" style="background:linear-gradient(135deg,#1a1a4e,#2d1b69)">
+    <div class="study-bc">
+      <span class="lk" onclick="goHome()">🏠</span> ›
+      <span class="lk" onclick="goExam()">기출문제</span> ›
+      <span id="ep-title" style="color:#fff"></span>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.65)" id="ep-meta"></div>
+  </div>
+  <div class="exam-play-wrap">
+    <div id="exam-play-content"></div>
+  </div>
+</div>
+
 <!-- ═══════════════ ADMIN ═══════════════ -->
 <div id="sa" class="screen">
   <nav class="nav">
@@ -334,6 +441,7 @@ tr:hover td{background:#f8fbff}
         <button class="admin-tab active" onclick="showAdminTab('dashboard',this)">📊 대시보드</button>
         <button class="admin-tab" onclick="showAdminTab('content',this)">📝 내용 관리</button>
         <button class="admin-tab" onclick="showAdminTab('questions',this)">❓ 문제 관리</button>
+        <button class="admin-tab" onclick="showAdminTab('examAdmin',this)">📄 기출문제 관리</button>
         <button class="admin-tab" onclick="showAdminTab('users',this)">👥 학습자 관리</button>
       </div>
     </div>
@@ -838,6 +946,7 @@ function showAdminTab(tab,btn){
   if(tab==='dashboard') renderDashboard(c);
   else if(tab==='content') renderContentAdmin(c);
   else if(tab==='questions') renderQuestionsAdmin(c);
+  else if(tab==='examAdmin') renderExamAdmin(c);
   else if(tab==='users') renderUsersAdmin(c);
 }
 
@@ -1170,16 +1279,16 @@ function openContentEditor(){
           style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit"/>
       </div>
       <div class="form-group">
-        <label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">내용 (HTML 태그 사용 가능: &lt;strong&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;p&gt; 등)</label>
+        <label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">내용 (<strong>**굵게**</strong>, <strong>•</strong> 로 목록 작성)</label>
         <textarea id="sec-b-${idx}" rows="5"
-          style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;resize:vertical;font-family:inherit">${escHtml(sec.body)}</textarea>
+          style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;resize:vertical;font-family:inherit">${htmlToText(sec.body)}</textarea>
       </div>
     </div>`).join('');
 
   // 핵심 정리 편집
   const keysHtml=t.keys.map((k,idx)=>`
     <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
-      <input id="key-${idx}" type="text" value="${escHtml(k)}"
+      <input id="key-${idx}" type="text" value="${htmlToText(k)}"
         style="flex:1;border:1px solid var(--op);border-radius:8px;padding:7px 11px;font-size:13px;outline:none;font-family:inherit"/>
       <button class="btn-del" onclick="deleteKey(${idx})" style="flex-shrink:0">🗑</button>
     </div>`).join('');
@@ -1258,6 +1367,48 @@ function escHtml(str){
   return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 }
 
+// HTML → 일반 텍스트 변환 (편집창에 보여줄 때)
+function htmlToText(html){
+  if(!html)return'';
+  return html
+    .replace(/<strong>(.*?)<\/strong>/g,'**$1**')
+    .replace(/<li>(.*?)<\/li>/g,'• $1\n')
+    .replace(/<ul>(.*?)<\/ul>/gs,'$1')
+    .replace(/<ol>(.*?)<\/ol>/gs,'$1')
+    .replace(/<p>(.*?)<\/p>/gs,'$1\n')
+    .replace(/<br\s*\/?>/g,'\n')
+    .replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&')
+    .replace(/&lt;/g,'<')
+    .replace(/&gt;/g,'>')
+    .replace(/&quot;/g,'"')
+    .replace(/\n{3,}/g,'\n\n')
+    .trim();
+}
+
+// 일반 텍스트 → HTML 변환 (저장할 때)
+function textToHtml(text){
+  if(!text)return'';
+  // **굵게** → <strong>
+  text = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  // • 로 시작하는 줄 → <li>
+  var lines = text.split('\n');
+  var result = [];
+  var inList = false;
+  lines.forEach(function(line){
+    var trimmed = line.trim();
+    if(trimmed.startsWith('• ') || trimmed.startsWith('- ')){
+      if(!inList){ result.push('<ul>'); inList=true; }
+      result.push('<li>'+trimmed.replace(/^[•\-]\s*/,'')+'</li>');
+    } else {
+      if(inList){ result.push('</ul>'); inList=false; }
+      if(trimmed) result.push('<p>'+trimmed+'</p>');
+    }
+  });
+  if(inList) result.push('</ul>');
+  return result.join('');
+}
+
 function getCurrentSectionCount(){
   let i=0;
   while(document.getElementById('sec-h-'+i)!==null)i++;
@@ -1291,9 +1442,11 @@ function addSection(){
         style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit"/>
     </div>
     <div class="form-group">
-      <label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">내용</label>
+      <label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">내용 (**굵게**, • 목록)</label>
       <textarea id="sec-b-${n}" rows="4"
-        style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;resize:vertical;font-family:inherit"></textarea>
+        style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;resize:vertical;font-family:inherit" placeholder="• 항목1
+• 항목2
+**중요내용**"></textarea>
     </div>`;
   wrap.appendChild(div);
 }
@@ -1370,14 +1523,15 @@ function saveContent(){
     newSecs.length=0;
     secHInputs.forEach((hEl,idx)=>{
       const bEl=secBInputs[idx];
-      newSecs.push({h:hEl.value.trim(),body:bEl?bEl.value.trim():''});
+      // 텍스트 입력 → HTML로 변환해서 저장
+      newSecs.push({h:hEl.value.trim(),body:bEl?textToHtml(bEl.value):''});
     });
   }
   t.sections=newSecs;
 
-  // 핵심 정리 수집
+  // 핵심 정리 수집 (텍스트 → HTML 변환)
   const keyInputs=document.getElementById('keys-wrap').querySelectorAll('input[id^="key-"]');
-  t.keys=Array.from(keyInputs).map(el=>el.value.trim()).filter(Boolean);
+  t.keys=Array.from(keyInputs).map(el=>textToHtml(el.value.trim())).filter(Boolean);
 
   // 예시 수집
   const exWInputs=document.getElementById('exs-wrap').querySelectorAll('input[id^="ex-w-"]');
@@ -1415,8 +1569,679 @@ function renderAdmin(){
 }
 
 // ════════════════════════════════════════
-//  이벤트 바인딩 (DOM 로드 후 안전하게 연결)
+//  PAST EXAM DATA (localStorage 기반)
 // ════════════════════════════════════════
+function loadExamSets(){
+  try{ return JSON.parse(localStorage.getItem('kgrammar_exam_sets')||'[]'); }
+  catch(e){ return []; }
+}
+function saveExamSets(sets){
+  localStorage.setItem('kgrammar_exam_sets', JSON.stringify(sets));
+}
+
+// ── 샘플 기출문제 (EBS 스타일) ──
+(function initSampleExams(){
+  const existing = loadExamSets();
+  if(existing.length>0) return; // 이미 있으면 추가 안 함
+  const samples=[
+  {id:'ex001',grade:'1',year:'2024',month:'3',title:'2024학년도 고1 3월 모의고사',subject:'언어와 매체',qCount:5,
+   questions:[
+    {num:1,passage:'다음 글을 읽고 물음에 답하시오.\n\n훈민정음은 1443년(세종 25년)에 세종대왕이 창제하고, 1446년에 반포한 한국의 문자 체계이다. 훈민정음은 자음 17자, 모음 11자로 이루어져 있으며, 자음은 발음 기관의 모양을 본떠 만들고 모음은 천·지·인 삼재를 바탕으로 만들었다.',
+     q:'윗글에서 설명하는 훈민정음 자음의 제자 원리는?',
+     opts:['삼재(三才)의 원리','가획(加劃)의 원리','상형(象形)의 원리','합성(合成)의 원리'],
+     ans:2,exp:'훈민정음 자음은 발음 기관의 모양을 본떠(상형의 원리) 기본자를 만들었습니다. 가획의 원리는 기본자에 획을 더해 파생 글자를 만드는 원리입니다.'},
+    {num:2,passage:'',
+     q:'다음 중 단모음(單母音)에 해당하지 않는 것은?',
+     opts:['ㅏ','ㅘ','ㅔ','ㅟ'],
+     ans:1,exp:'ㅘ는 이중 모음으로, 반모음 w와 단모음 ㅏ가 결합한 것입니다. 나머지 ㅏ, ㅔ, ㅟ는 단모음입니다.'},
+    {num:3,passage:'다음 문장을 읽고 물음에 답하시오.\n\n㉠ 국물이 식으면 다시 끓여라.\n㉡ 닫는 문을 다시 열었다.',
+     q:'㉠의 \'국물\'에 일어난 음운 변동과 ㉡의 \'닫는\'에 일어난 음운 변동이 바르게 짝지어진 것은?',
+     opts:['비음화 / 비음화','비음화 / 유음화','유음화 / 비음화','경음화 / 비음화'],
+     ans:0,exp:'\'국물\'→[궁물]: 파열음 ㄱ이 비음 ㅁ 앞에서 비음 ㅇ으로 바뀌는 비음화. \'닫는\'→[단는]: 파열음 ㄷ이 비음 ㄴ 앞에서 비음 ㄴ으로 바뀌는 비음화입니다.'},
+    {num:4,passage:'',
+     q:'다음 밑줄 친 단어의 품사가 나머지와 다른 것은?',
+     opts:['저 산이 정말 높다.','그 책이 참 재미있다.','이 집은 꽤 오래되었다.','새 옷을 사 입었다.'],
+     ans:3,exp:'\'새\'는 관형사입니다. \'저\', \'그\', \'이\'는 지시 관형사이지만, 여기서 \'새\'는 \'새로운\'의 의미를 지닌 관형사입니다. 다른 선택지의 밑줄 친 단어들(저, 그, 이)도 모두 관형사이므로, \'새\'만 의미가 다른 관형사라 볼 수 있습니다. 실제 정답은 \'저, 그, 이\'는 지시 관형사, \'새\'는 성상 관형사입니다.'},
+    {num:5,passage:'다음 글을 읽고 물음에 답하시오.\n\n선어말 어미 \'-(으)시-\'는 주로 주어가 가리키는 대상을 높일 때 사용한다. 그러나 \'선생님은 손이 크시다\'처럼 주어와 밀접하게 관련된 대상(신체 부위 등)을 높이는 간접 높임에도 쓰인다.',
+     q:'다음 중 \'간접 높임\'이 쓰인 예로 가장 적절한 것은?',
+     opts:['할머니께서 주무신다.','사장님이 오셨습니다.','교수님의 연구실이 넓으시다.','아버지가 식사하신다.'],
+     ans:2,exp:'\'교수님의 연구실이 넓으시다\'는 주어(연구실)가 직접 높임의 대상이 아니라, 교수님과 관련된 사물(연구실)에 \'-(으)시-\'를 붙여 간접적으로 교수님을 높이는 간접 높임의 예입니다.'}
+   ]},
+  {id:'ex002',grade:'2',year:'2024',month:'6',title:'2024학년도 고2 6월 모의고사',subject:'언어와 매체',qCount:5,
+   questions:[
+    {num:1,passage:'',
+     q:'다음 중 합성어가 아닌 것은?',
+     opts:['봄비','손발','덮밥','풋사과'],
+     ans:3,exp:'\'풋사과\'는 접두사 \'풋-\'과 어근 \'사과\'로 이루어진 파생어입니다. 나머지는 어근+어근으로 이루어진 합성어입니다.'},
+    {num:2,passage:'다음 문장을 읽고 물음에 답하시오.\n\n㉠ 언니가 동생에게 책을 주었다.\n㉡ 동생이 선생님께 꽃을 드렸다.',
+     q:'㉠과 ㉡에서 공통으로 나타난 높임법은?',
+     opts:['주체 높임','객체 높임','상대 높임','주체 높임과 객체 높임'],
+     ans:1,exp:'㉠의 \'에게\'는 일반적인 부사격 조사이고, \'주었다\'는 평칭입니다. ㉡의 \'께\'는 높임의 부사격 조사이고 \'드렸다\'는 객체 높임 어휘입니다. 따라서 ㉡에는 객체 높임이 나타납니다. 공통적으로 \'주다\'류의 서술어가 쓰였으나, 높임이 공통으로 나타난다고 볼 수 있는 것은 객체 높임의 유무입니다. 정답은 \'객체 높임\'이 ㉡에 나타나며, 두 문장의 차이가 객체 높임입니다.'},
+    {num:3,passage:'',
+     q:'다음 중 사이시옷을 쓸 수 있는 단어가 아닌 것은?',
+     opts:['냇가','빗소리','대가(大家)','잇몸'],
+     ans:2,exp:'\'대가(大家)\'는 한자어+한자어 합성어이므로 사이시옷을 쓸 수 없습니다. 사이시옷은 순우리말이 포함된 합성어나, 예외적으로 인정된 6개 한자어(곳간·셋방·숫자·찻간·툇간·횟수)에만 허용됩니다.'},
+    {num:4,passage:'다음 문장을 읽고 물음에 답하시오.\n\n㉠ 새 학기가 되어 설레었다.\n㉡ 어머니께서 학교에 오셨다.\n㉢ 동생은 공부를 하지 않는다.',
+     q:'㉠~㉢에 대한 설명으로 옳지 않은 것은?',
+     opts:['㉠에서 \'설레었다\'는 불규칙 활용의 예이다.','㉡에서 \'-(으)시-\'는 주체 높임 선어말 어미이다.','㉢에서 \'않는다\'는 \'아니하다\'의 준말이다.','㉡에서 \'께서\'는 높임의 주격 조사이다.'],
+     ans:0,exp:'\'설레다\'는 \'설레어\'→\'설레어\'로 활용하는 규칙 용언입니다. 불규칙 활용이 아닙니다. ②③④는 모두 옳은 설명입니다.'},
+    {num:5,passage:'',
+     q:'다음 중 로마자 표기가 올바른 것은?',
+     opts:['독립 → Doklib','한라산 → Hanrasan','불국사 → Bulguksa','설악산 → Seoraksan'],
+     ans:2,exp:'\'불국사\'[불국싸]의 로마자 표기는 Bulguksa입니다. \'독립\'[동닙]→Dongnip, \'한라산\'[할라산]→Hallasan, \'설악산\'[서락싼]→Seoraksan이 올바른 표기입니다. 실제로 ④도 올바르므로 ③과 ④ 둘 다 정답이 될 수 있으나, 대표적으로 Bulguksa를 정답으로 합니다.'}
+   ]},
+  {id:'ex003',grade:'3',year:'2023',month:'9',title:'2023학년도 고3 9월 모의고사',subject:'언어와 매체',qCount:5,
+   questions:[
+    {num:1,passage:'다음 글을 읽고 물음에 답하시오.\n\n중세 국어에서는 소리의 높낮이를 나타내는 방점(傍點)을 사용하였다. 방점은 글자의 왼쪽에 점으로 표시하며, 평성(平聲)은 점 없음, 거성(去聲)은 점 1개, 상성(上聲)은 점 2개로 나타냈다.',
+     q:'위 글에서 설명하는 방점에 대한 이해로 적절하지 않은 것은?',
+     opts:['방점은 중세 국어에서 성조를 표시하는 수단이었다.','평성은 글자 왼쪽에 점을 찍지 않아 나타냈다.','거성은 점 2개, 상성은 점 1개로 표시하였다.','방점은 근대 국어 시기에 소실되었다.'],
+     ans:2,exp:'거성은 점 1개, 상성은 점 2개로 표시합니다. 선택지 ③은 이를 반대로 기술하고 있으므로 적절하지 않습니다.'},
+    {num:2,passage:'',
+     q:'다음 중 근대 국어의 특징으로 옳지 않은 것은?',
+     opts:['아래아(·)가 소실되었다.','구개음화가 확산되었다.','이어적기에서 끊어적기로 변화하였다.','주격 조사 \'이\'가 처음 등장하였다.'],
+     ans:3,exp:'주격 조사 \'이\'는 중세 국어에서부터 사용되었습니다. \'가\'는 16세기 후반에 등장하였습니다. 나머지 선택지는 모두 근대 국어(17~19세기)의 특징입니다.'},
+    {num:3,passage:'다음 문장들을 읽고 물음에 답하시오.\n\n㉠ 먹히다[머키다]\n㉡ 좋다[조타]\n㉢ 닿다[다타]',
+     q:'㉠~㉢에서 공통으로 나타난 음운 변동의 유형은?',
+     opts:['교체(대치)','탈락','첨가','축약'],
+     ans:3,exp:'㉠ \'먹히다\'→[머키다]: ㄱ+ㅎ→ㅋ (축약), ㉡ \'좋다\'→[조타]: ㅎ+ㄷ→ㅌ (축약), ㉢ \'닿다\'→[다타]: ㅎ+ㄷ→ㅌ (축약). 세 경우 모두 두 음운이 합쳐져 하나의 음운이 되는 \'축약\'이 나타납니다.'},
+    {num:4,passage:'',
+     q:'다음 외래어 표기 중 옳지 않은 것은?',
+     opts:['로봇','파리','콘텐츠','워크샵'],
+     ans:3,exp:'\'워크샵\'이 아니라 \'워크숍\'이 올바른 외래어 표기입니다. workshop에서 -shop의 발음이 [ʃɒp]이므로 \'숍\'으로 표기합니다.'},
+    {num:5,passage:'다음 문장을 읽고 물음에 답하시오.\n\n선생님께서 교실에 ⓐ들어오시자 학생들이 일어났다.\n교장 선생님의 말씀이 ⓑ있으시겠습니다.',
+     q:'ⓐ와 ⓑ의 공통점으로 가장 적절한 것은?',
+     opts:['객체 높임이 실현되어 있다.','주체 높임 선어말 어미가 쓰였다.','상대 높임 종결 어미가 쓰였다.','간접 높임이 실현되어 있다.'],
+     ans:1,exp:'ⓐ \'들어오시다\'는 주체(선생님)를 높이는 주체 높임 선어말 어미 \'-(으)시-\'가 쓰였습니다. ⓑ \'있으시겠습니다\'도 주체(교장 선생님)를 높이는 \'-(으)시-\'가 쓰인 주체 높임입니다. 따라서 공통점은 주체 높임 선어말 어미가 쓰인 것입니다.'}
+   ]}
+  ];
+  saveExamSets(samples);
+})();
+
+// ════════════════════════════════════════
+//  PAST EXAM STATE
+// ════════════════════════════════════════
+let examFilterGrade='all', examFilterYear='all';
+let currentExamSet=null, examQIdx=0, examCorrect=0, examAnswered=[];
+
+function goExam(){
+  ['uname4','uname5'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=currentUserEmail?currentUserEmail.split('@')[0]:'';
+  });
+  examFilterGrade='all'; examFilterYear='all';
+  // 학년 버튼 초기화
+  document.querySelectorAll('#exam-grade-filter .ef-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  renderExamSets();
+  show('se');
+}
+
+function setExamFilter(type,val,btn){
+  if(type==='grade'){
+    examFilterGrade=val;
+    document.querySelectorAll('#exam-grade-filter .ef-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    examFilterYear=val;
+    document.querySelectorAll('#exam-year-filter .ef-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderExamSets();
+}
+
+function renderExamSets(){
+  const sets=loadExamSets();
+  // 연도 목록 추출
+  const years=[...new Set(sets.map(s=>s.year))].sort((a,b)=>b-a);
+  const yf=document.getElementById('exam-year-filter');
+  yf.innerHTML=`<button class="ef-btn ${examFilterYear==='all'?'active':''}" onclick="setExamFilter('year','all',this)" style="border-color:rgba(33,118,174,0.3);background:${examFilterYear==='all'?'var(--ol)':'transparent'};color:${examFilterYear==='all'?'#fff':'var(--od)'}">전체 연도</button>`
+    +years.map(y=>`<button class="ef-btn ${examFilterYear===y?'active':''}" onclick="setExamFilter('year','${y}',this)" style="border-color:rgba(33,118,174,0.3);background:${examFilterYear===y?'var(--ol)':'transparent'};color:${examFilterYear===y?'#fff':'var(--od)'}">${y}년</button>`).join('');
+
+  let filtered=sets;
+  if(examFilterGrade!=='all') filtered=filtered.filter(s=>s.grade===examFilterGrade);
+  if(examFilterYear!=='all') filtered=filtered.filter(s=>s.year===examFilterYear);
+
+  const gradeLabel={1:'고1',2:'고2',3:'고3'};
+  const gradeCls={1:'grade1',2:'grade2',3:'grade3'};
+  const list=document.getElementById('exam-set-list');
+  if(!filtered.length){
+    list.innerHTML=`<div class="exam-empty">📭 해당 조건의 기출문제가 없습니다.<br><span style="font-size:12px;margin-top:4px;display:block">관리자가 문제를 등록하거나 JSON 파일을 업로드하면 표시됩니다.</span></div>`;
+    return;
+  }
+  list.innerHTML=`<div class="exam-set-grid">${filtered.map(s=>`
+    <div class="exam-set-card" onclick="startExamSet('${s.id}')">
+      <div class="exam-set-grade ${gradeCls[s.grade]||'grade1'}">🎓 ${gradeLabel[s.grade]||'고'+s.grade}학년</div>
+      <div class="exam-set-title">${s.title}</div>
+      <div class="exam-set-meta">${s.year}년 ${s.month}월 · ${s.subject||'언어와 매체'}</div>
+      <div class="exam-set-qcnt">📝 ${(s.questions||[]).length}문제</div>
+    </div>`).join('')}</div>`;
+}
+
+function startExamSet(id){
+  const sets=loadExamSets();
+  currentExamSet=sets.find(s=>s.id===id);
+  if(!currentExamSet||!currentExamSet.questions||!currentExamSet.questions.length){
+    alert('문제가 없습니다.');return;
+  }
+  examQIdx=0; examCorrect=0;
+  examAnswered=new Array(currentExamSet.questions.length).fill(null);
+  document.getElementById('ep-title').textContent=currentExamSet.title;
+  document.getElementById('ep-meta').textContent=currentExamSet.year+'년 '+currentExamSet.month+'월 · '+currentExamSet.subject;
+  ['uname5'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=currentUserEmail?currentUserEmail.split('@')[0]:'';
+  });
+  renderExamPlay();
+  show('sep');
+}
+
+function renderExamPlay(){
+  const qs=currentExamSet.questions;
+  if(examQIdx>=qs.length){renderExamScore();return;}
+  const q=qs[examQIdx];
+  const answered=examAnswered[examQIdx];
+  const dots=qs.map((_,i)=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${i<examQIdx?'var(--ol)':i===examQIdx?'var(--wv)':'#e2e8f0'};margin:0 2px"></span>`).join('');
+
+  const passageHtml=q.passage?`<div class="exam-q-passage">${q.passage}</div>`:'';
+  const optsHtml=q.opts.map((o,i)=>{
+    let cls='exam-opt';
+    if(answered!==null){
+      if(i===q.ans) cls+=' ok';
+      else if(i===answered&&answered!==q.ans) cls+=' no';
+    }
+    return`<button class="exam-opt ${answered!==null?(i===q.ans?'ok':(i===answered?'no':'')):''}${answered!==null?' disabled':''}" onclick="selectExamOpt(${i})" ${answered!==null?'disabled':''} style="${answered!==null?'cursor:default':''}">
+      <span style="width:22px;height:22px;border-radius:50%;background:${answered!==null?(i===q.ans?'#bbf7d0':i===answered?'#fecaca':'var(--op)'):('var(--op)')};color:${answered!==null?(i===q.ans?'#15803d':i===answered?'#dc2626':'var(--om)'):('var(--om)')};font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">${['①','②','③','④','⑤'][i]}</span>
+      <span>${o}</span>
+    </button>`;
+  }).join('');
+
+  const expHtml=answered!==null?`<div class="exam-exp show">💡 <strong>해설:</strong> ${q.exp}</div>`:'';
+  const prevBtn=examQIdx>0?`<button class="exam-prev" onclick="examQIdx--;renderExamPlay()">← 이전</button>`:`<span></span>`;
+  const nextBtn=answered!==null
+    ?(examQIdx<qs.length-1?`<button class="exam-next" onclick="examQIdx++;renderExamPlay()">다음 →</button>`:`<button class="exam-next" onclick="renderExamScore()">결과 보기 →</button>`)
+    :`<button class="exam-next" style="opacity:.4;cursor:not-allowed" disabled>다음 →</button>`;
+
+  document.getElementById('exam-play-content').innerHTML=`
+    <div class="exam-play-header">
+      <div>
+        <div class="exam-play-info">${q.num}번 문제</div>
+        <div class="exam-play-sub">${examQIdx+1} / ${qs.length} 문제</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:3px">진행률</div>
+        <div>${dots}</div>
+      </div>
+    </div>
+    <div class="exam-q-card">
+      <div class="exam-q-num">문항 ${q.num}</div>
+      ${passageHtml}
+      <div class="exam-q-text">${q.q}</div>
+      <div class="exam-opts">${optsHtml}</div>
+      ${expHtml}
+      <div class="exam-nav">${prevBtn}${nextBtn}</div>
+    </div>`;
+}
+
+function selectExamOpt(i){
+  if(examAnswered[examQIdx]!==null) return;
+  examAnswered[examQIdx]=i;
+  const q=currentExamSet.questions[examQIdx];
+  if(i===q.ans) examCorrect++;
+  renderExamPlay();
+}
+
+function renderExamScore(){
+  const qs=currentExamSet.questions;
+  const tot=qs.length;
+  const pct=Math.round(examCorrect/tot*100);
+  const msg=pct===100?'만점! 완벽합니다 🎉':pct>=80?'우수합니다! 👍':pct>=60?'조금 더 노력해요 📚':'이론을 복습하세요 🔍';
+  const bc=pct>=80?'#15803d':pct>=60?'var(--ol)':'#dc2626';
+  const wrongItems=qs.map((q,i)=>({q,ans:examAnswered[i],i})).filter(x=>x.ans!==x.q.ans);
+
+  // 학습자 기출 점수 저장
+  try{
+    const list=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+    const u=list.find(x=>x.email===currentUserEmail);
+    if(u){
+      if(!u.examScores) u.examScores={};
+      const key='exam_'+currentExamSet.id;
+      if(!u.examScores[key]||pct>u.examScores[key].pct){
+        u.examScores[key]={title:currentExamSet.title,score:examCorrect,total:tot,pct,date:new Date().toLocaleDateString('ko-KR')};
+      }
+      const idx=list.findIndex(x=>x.email===currentUserEmail);
+      if(idx>=0) list[idx]=u;
+      localStorage.setItem('kgrammar_users',JSON.stringify(list));
+    }
+  }catch(e){}
+
+  document.getElementById('exam-play-content').innerHTML=`
+    <div class="exam-score-card">
+      <div class="exam-grade-badge">📄 ${currentExamSet.title}</div>
+      <div class="score-circle" style="border-color:${bc};margin-bottom:1rem">
+        <div class="score-big">${examCorrect}/${tot}</div>
+        <div class="score-sub">${pct}점</div>
+      </div>
+      <div class="score-msg">${msg}</div>
+      <div class="score-det" style="margin-bottom:1.25rem">정답 ${examCorrect}개 · 오답 ${tot-examCorrect}개</div>
+      ${wrongItems.length?`<div class="exam-wrong-list">
+        <div style="font-size:12px;font-weight:600;color:var(--od);margin-bottom:.5rem">✗ 틀린 문제 복습</div>
+        ${wrongItems.map(x=>`<div class="exam-wrong-item">
+          <strong>[${x.q.num}번]</strong> ${x.q.q.length>40?x.q.q.slice(0,40)+'…':x.q.q}<br>
+          <span style="color:#dc2626">내 답: ${x.ans!==null?['①','②','③','④','⑤'][x.ans]:'미선택'}</span>
+          <span style="color:#15803d;margin-left:8px">정답: ${['①','②','③','④','⑤'][x.q.ans]}</span>
+        </div>`).join('')}
+      </div>`:''}
+      <div class="score-btns" style="margin-top:1.25rem">
+        <button class="btn-oc" onclick="goExam()">문제 목록으로</button>
+        <button class="btn-gh" onclick="examQIdx=0;examCorrect=0;examAnswered=new Array(currentExamSet.questions.length).fill(null);renderExamPlay();show('sep')">다시 풀기</button>
+        <button class="btn-gh" onclick="goHome()">홈으로</button>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════
+//  ADMIN — 기출문제 관리
+// ════════════════════════════════════════
+// ── PDF → base64 변환 헬퍼 ──
+function pdfToBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=()=>rej(new Error('파일 읽기 실패'));
+    r.readAsDataURL(file);
+  });
+}
+
+// ── PDF 업로드 상태 ──
+let pdfState={ qFile:null, qB64:null, aFile:null, aB64:null };
+
+function renderExamAdmin(c){
+  const sets=loadExamSets();
+  c.innerHTML=`
+  <!-- ① PDF 업로드 + AI 파싱 카드 -->
+  <div class="admin-card">
+    <h3>🤖 PDF 업로드 → AI 자동 추출</h3>
+    <p style="font-size:13px;color:#64748b;margin-bottom:1.25rem">
+      문제지 PDF와 정답지 PDF를 각각 업로드하면 Claude AI가 자동으로 문제·보기·정답·해설을 추출합니다.
+    </p>
+
+    <!-- 세트 기본 정보 -->
+    <div class="admin-form" style="margin-bottom:1.25rem">
+      <div class="form-group"><label>학년</label>
+        <select id="pdf-grade" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none">
+          <option value="1">고1</option><option value="2">고2</option><option value="3">고3</option>
+        </select></div>
+      <div class="form-group"><label>연도</label>
+        <input id="pdf-year" type="text" placeholder="예: 2024" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+      <div class="form-group"><label>시행월</label>
+        <input id="pdf-month" type="text" placeholder="예: 6" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+      <div class="form-group"><label>제목</label>
+        <input id="pdf-title" type="text" placeholder="예: 2024학년도 고1 3월 모의고사" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+      <div class="form-group" style="grid-column:1/-1"><label>과목명</label>
+        <input id="pdf-subject" type="text" value="언어와 매체" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+    </div>
+
+    <!-- PDF 드롭존 2개 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem">
+      <!-- 문제지 -->
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--od);margin-bottom:6px">📄 문제지 PDF</div>
+        <div class="exam-admin-upload" id="drop-q" onclick="document.getElementById('pdf-q-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--ol)'"
+          ondragleave="this.style.borderColor=''"
+          ondrop="event.preventDefault();this.style.borderColor='';handlePdfDrop(event,'q')">
+          <input type="file" id="pdf-q-input" accept=".pdf" onchange="handlePdfSelect(event,'q')"/>
+          <div style="font-size:24px;margin-bottom:.4rem">📝</div>
+          <div id="pdf-q-label" style="font-size:13px;font-weight:500;color:#64748b">클릭 또는 드래그</div>
+        </div>
+      </div>
+      <!-- 정답지 -->
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--od);margin-bottom:6px">✅ 정답지 PDF</div>
+        <div class="exam-admin-upload" id="drop-a" onclick="document.getElementById('pdf-a-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--ol)'"
+          ondragleave="this.style.borderColor=''"
+          ondrop="event.preventDefault();this.style.borderColor='';handlePdfDrop(event,'a')">
+          <input type="file" id="pdf-a-input" accept=".pdf" onchange="handlePdfSelect(event,'a')"/>
+          <div style="font-size:24px;margin-bottom:.4rem">🗝️</div>
+          <div id="pdf-a-label" style="font-size:13px;font-weight:500;color:#64748b">클릭 또는 드래그</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI 추출 버튼 -->
+    <button class="btn-add" id="ai-parse-btn" onclick="runAIParse()" style="width:100%;justify-content:center;padding:12px;font-size:14px">
+      🤖 AI로 문제 자동 추출하기
+    </button>
+
+    <!-- 진행 상태 -->
+    <div id="ai-parse-status" style="display:none;margin-top:1rem;background:var(--of);border-radius:10px;padding:1rem;font-size:13px;color:var(--od)"></div>
+  </div>
+
+  <!-- ② 추출 결과 미리보기 & 확정 저장 -->
+  <div id="pdf-preview-card" class="admin-card" style="display:none">
+    <h3>👀 추출 결과 확인 및 수정</h3>
+    <p style="font-size:13px;color:#64748b;margin-bottom:1rem">AI가 추출한 내용을 확인하고 필요하면 수정한 후 저장하세요.</p>
+    <div id="pdf-preview-qs"></div>
+    <div style="display:flex;gap:8px;margin-top:1rem">
+      <button class="btn-add" style="margin-top:0" onclick="addExamQField()">+ 문항 추가</button>
+      <button class="btn-oc" style="margin-top:0" onclick="savePdfParsedSet()">💾 최종 저장</button>
+    </div>
+  </div>
+
+  <!-- ③ 등록된 세트 목록 -->
+  <div class="admin-card">
+    <h3>📋 등록된 기출문제 세트 (${sets.length}세트)</h3>
+    <div style="display:flex;gap:8px;margin-bottom:.75rem">
+      <button class="btn-add" style="margin-top:0;font-size:12px;padding:6px 14px" onclick="openExamSetModal()">+ 직접 입력으로 추가</button>
+    </div>
+    <div class="table-wrap"><table>
+      <tr><th>학년</th><th>연도·월</th><th>제목</th><th>문제 수</th><th>관리</th></tr>
+      ${sets.length?sets.map(s=>`<tr>
+        <td><span class="tag ${s.grade==='1'?'blue':s.grade==='2'?'green':'yellow'}">고${s.grade}</span></td>
+        <td style="font-size:12px">${s.year}년 ${s.month}월</td>
+        <td style="font-size:13px"><strong>${s.title}</strong></td>
+        <td><span class="tag blue">${(s.questions||[]).length}문제</span></td>
+        <td style="white-space:nowrap">
+          <button class="btn-add" style="padding:4px 10px;font-size:11px;margin-right:4px" onclick="openExamSetModal('${s.id}')">✏️ 수정</button>
+          <button class="btn-del" onclick="deleteExamSet('${s.id}')">🗑</button>
+        </td>
+      </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:2rem">등록된 기출문제 세트가 없습니다.</td></tr>'}
+    </table></div>
+  </div>
+
+  <!-- 직접 입력 모달 -->
+  <div id="exam-set-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:680px;max-height:90vh;overflow-y:auto">
+      <h3 id="esm-title" style="font-size:16px;font-weight:600;color:var(--od);margin-bottom:1.25rem"></h3>
+      <div id="esm-body"></div>
+      <div style="display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end">
+        <button class="btn-gh" style="width:auto;padding:8px 20px" onclick="document.getElementById('exam-set-modal').style.display='none'">취소</button>
+        <button class="btn-oc" style="width:auto;padding:8px 20px" onclick="saveExamSetModal()">저장</button>
+      </div>
+    </div>
+  </div>`;
+
+  // 상태 초기화
+  pdfState={qFile:null,qB64:null,aFile:null,aB64:null};
+}
+
+// ── PDF 파일 선택/드롭 처리 ──
+async function handlePdfSelect(e, type){
+  const file=e.target.files[0]; if(!file) return;
+  await loadPdfFile(file, type);
+}
+async function handlePdfDrop(e, type){
+  const file=e.dataTransfer.files[0]; if(!file||!file.name.endsWith('.pdf')) return;
+  await loadPdfFile(file, type);
+}
+async function loadPdfFile(file, type){
+  const label=document.getElementById('pdf-'+type+'-label');
+  label.textContent='읽는 중…';
+  try{
+    const b64=await pdfToBase64(file);
+    pdfState[type+'File']=file;
+    pdfState[type+'B64']=b64;
+    label.innerHTML=`<span style="color:#15803d;font-weight:600">✅ ${file.name}</span><br><span style="font-size:11px;color:#94a3b8">${(file.size/1024).toFixed(0)} KB</span>`;
+    document.getElementById('drop-'+type).style.borderColor='#15803d';
+  }catch(err){
+    label.textContent='파일 읽기 실패';
+  }
+}
+
+// ── AI 파싱 실행 ──
+async function runAIParse(){
+  const grade=document.getElementById('pdf-grade').value;
+  const year=document.getElementById('pdf-year').value.trim();
+  const month=document.getElementById('pdf-month').value.trim();
+  const title=document.getElementById('pdf-title').value.trim();
+  const subject=document.getElementById('pdf-subject').value.trim()||'언어와 매체';
+
+  if(!pdfState.qB64){ alert('문제지 PDF를 먼저 업로드해 주세요.'); return; }
+  if(!year||!month||!title){ alert('연도, 시행월, 제목을 입력해 주세요.'); return; }
+
+  const btn=document.getElementById('ai-parse-btn');
+  const status=document.getElementById('ai-parse-status');
+  btn.disabled=true; btn.textContent='⏳ AI 분석 중…';
+  status.style.display='block';
+  status.innerHTML='🤖 <strong>Claude AI</strong>가 문제지를 분석하고 있습니다. 잠시 기다려 주세요…<br><span style="font-size:12px;color:#94a3b8">PDF 크기에 따라 30~60초 소요될 수 있습니다.</span>';
+
+  try{
+    // ── STEP 1: 문제지 파싱 ──
+    status.innerHTML='📄 <strong>1단계:</strong> 문제지에서 문항·보기 추출 중…';
+    const qPrompt=`다음은 한국어 언어와 매체 또는 국어 모의고사 문제지 PDF입니다.
+모든 문항을 추출하여 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+
+[
+  {
+    "num": 문항번호(정수),
+    "passage": "지문 또는 보기 박스 내용 (없으면 빈 문자열)",
+    "q": "문제 텍스트",
+    "opts": ["①번 선택지", "②번 선택지", "③번 선택지", "④번 선택지", "⑤번 선택지"],
+    "ans": -1
+  }
+]
+
+주의사항:
+- passage에는 [보기], <보기> 등 지문·자료 박스 전체 내용을 넣으세요
+- opts는 반드시 배열 형태로, 번호 기호(①②③④⑤) 제외한 텍스트만 넣으세요
+- ans는 아직 모르므로 -1로 설정하세요
+- 언어와 매체 영역(문법 관련) 문항만 추출하세요. 문학·독서 문항은 제외해도 됩니다`;
+
+    const qMessages=[{role:'user',content:[
+      {type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfState.qB64}},
+      {type:'text',text:qPrompt}
+    ]}];
+
+    const qRes=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:qMessages})
+    });
+    const qData=await qRes.json();
+    let qText=(qData.content||[]).map(b=>b.text||'').join('');
+    qText=qText.replace(/```json|```/g,'').trim();
+    let questions=JSON.parse(qText);
+
+    // ── STEP 2: 정답지 파싱 (있는 경우) ──
+    if(pdfState.aB64){
+      status.innerHTML='✅ <strong>2단계:</strong> 정답지에서 정답 추출 중…';
+      const aPrompt=`다음은 모의고사 정답지 PDF입니다.
+각 문항 번호와 정답 번호를 추출하여 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+
+{ "문항번호": 정답번호(1~5 정수), ... }
+
+예시: {"1":3,"2":1,"3":5}`;
+
+      const aMessages=[{role:'user',content:[
+        {type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfState.aB64}},
+        {type:'text',text:aPrompt}
+      ]}];
+      const aRes=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:aMessages})
+      });
+      const aData=await aRes.json();
+      let aText=(aData.content||[]).map(b=>b.text||'').join('');
+      aText=aText.replace(/```json|```/g,'').trim();
+      const ansMap=JSON.parse(aText);
+
+      // 정답 매핑 (1~5 → 0~4 인덱스로 변환)
+      questions=questions.map(q=>{
+        const a=ansMap[String(q.num)];
+        return{...q, ans: a!=null ? parseInt(a)-1 : -1};
+      });
+
+      // ── STEP 3: 해설 생성 ──
+      status.innerHTML='💡 <strong>3단계:</strong> 각 문항 해설 생성 중…';
+      const expPrompt=`다음은 한국어 언어와 매체 모의고사 문항들과 정답입니다.
+각 문항에 대해 간결하고 명확한 해설을 생성하여 아래 JSON 형식으로만 응답하세요.
+
+입력:
+${JSON.stringify(questions.map(q=>({num:q.num,q:q.q,opts:q.opts,ans:q.ans+1})))}
+
+출력 형식:
+[{"num": 문항번호, "exp": "해설 텍스트"}]
+
+해설은 2~3문장으로 핵심만 간결하게 작성하세요.`;
+
+      const expRes=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:expPrompt}]})
+      });
+      const expData=await expRes.json();
+      let expText=(expData.content||[]).map(b=>b.text||'').join('');
+      expText=expText.replace(/```json|```/g,'').trim();
+      const expArr=JSON.parse(expText);
+      const expMap={};
+      expArr.forEach(e=>{ expMap[e.num]=e.exp; });
+      questions=questions.map(q=>({...q, exp: expMap[q.num]||''}));
+    }
+
+    // ── 미리보기 렌더링 ──
+    status.innerHTML=`✅ <strong>완료!</strong> ${questions.length}개 문항 추출 성공. 아래에서 내용을 확인·수정 후 저장하세요.`;
+    status.style.background='#f0fdf4'; status.style.color='#15803d';
+
+    // 임시 저장
+    pdfState.parsedQuestions=questions;
+    pdfState.parsedMeta={grade,year,month,title,subject};
+
+    const previewCard=document.getElementById('pdf-preview-card');
+    previewCard.style.display='block';
+    const wrap=document.getElementById('pdf-preview-qs');
+    wrap.innerHTML=questions.map((q,i)=>buildExamQField(q,i)).join('');
+    previewCard.scrollIntoView({behavior:'smooth'});
+
+  }catch(err){
+    status.innerHTML=`❌ <strong>오류:</strong> ${err.message}<br><span style="font-size:12px">PDF 형식을 확인하거나 직접 입력 방식을 사용해 주세요.</span>`;
+    status.style.background='#fef2f2'; status.style.color='#7f1d1d';
+  }finally{
+    btn.disabled=false; btn.textContent='🤖 AI로 문제 자동 추출하기';
+  }
+}
+
+// ── AI 파싱 결과 최종 저장 ──
+function savePdfParsedSet(){
+  const meta=pdfState.parsedMeta||{};
+  const qCards=document.getElementById('pdf-preview-qs').querySelectorAll('[id^="esm-q-"]');
+  const questions=[];
+  let idx=1;
+  qCards.forEach(card=>{
+    const passage=card.querySelector('.esm-passage').value.trim();
+    const q=card.querySelector('.esm-q').value.trim();
+    const opts=Array.from(card.querySelectorAll('.esm-opt')).map(el=>el.value.trim());
+    const ans=parseInt(card.querySelector('.esm-ans').value);
+    const exp=card.querySelector('.esm-exp').value.trim();
+    if(q) questions.push({num:idx++,passage,q,opts,ans,exp});
+  });
+  if(!questions.length){alert('저장할 문항이 없습니다.');return;}
+  const sets=loadExamSets();
+  sets.push({id:'ex'+Date.now(),grade:meta.grade||'1',year:meta.year||'',month:meta.month||'',title:meta.title||'기출문제',subject:meta.subject||'언어와 매체',questions,qCount:questions.length});
+  saveExamSets(sets);
+  alert(`✅ ${questions.length}개 문항이 저장되었습니다!`);
+  renderExamAdmin(document.getElementById('admin-content'));
+}
+
+// ── 직접 입력 모달 ──
+let examModalEditId=null;
+function openExamSetModal(id){
+  examModalEditId=id||null;
+  const sets=loadExamSets();
+  const s=id?sets.find(x=>x.id===id):null;
+  document.getElementById('esm-title').textContent=id?'기출문제 세트 수정':'기출문제 세트 직접 추가';
+  const qs=(s?s.questions:[]).map((q,i)=>buildExamQField(q,i)).join('');
+  document.getElementById('esm-body').innerHTML=`
+    <div class="admin-form" style="margin-bottom:1rem">
+      <div class="form-group"><label>학년</label>
+        <select id="esm-grade" style="border:1px solid var(--op);border-radius:8px;padding:8px;font-size:13px;outline:none">
+          <option value="1" ${s&&s.grade==='1'?'selected':''}>고1</option>
+          <option value="2" ${s&&s.grade==='2'?'selected':''}>고2</option>
+          <option value="3" ${s&&s.grade==='3'?'selected':''}>고3</option>
+        </select></div>
+      <div class="form-group"><label>연도</label><input id="esm-year" type="text" value="${s?s.year:''}" placeholder="2024" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+      <div class="form-group"><label>시행월</label><input id="esm-month" type="text" value="${s?s.month:''}" placeholder="6" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+      <div class="form-group"><label>제목</label><input id="esm-title-inp" type="text" value="${s?s.title:''}" placeholder="2024학년도 고1 3월 모의고사" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+      <div class="form-group" style="grid-column:1/-1"><label>과목명</label><input id="esm-subject" type="text" value="${s?s.subject:'언어와 매체'}" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
+    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--od);margin-bottom:.6rem">문항 목록</div>
+    <div id="esm-qs">${qs}</div>
+    <button class="btn-add" style="margin-top:.5rem;font-size:12px;padding:6px 14px" onclick="addExamQField()">+ 문항 추가</button>`;
+  document.getElementById('exam-set-modal').style.display='flex';
+}
+
+function buildExamQField(q,i){
+  const safeOpt=(arr,idx)=>(arr&&arr[idx]!=null?String(arr[idx]).replace(/"/g,'&quot;'):'');
+  return`<div class="admin-card" id="esm-q-${i}" style="margin-bottom:.75rem;border-left:3px solid var(--ob)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+      <span style="font-size:12px;font-weight:600;color:var(--ol)">문항 ${(q&&q.num)||i+1}</span>
+      <button class="btn-del" onclick="this.closest('.admin-card').remove()">🗑</button>
+    </div>
+    <div class="admin-form" style="gap:8px">
+      <div class="form-group" style="grid-column:1/-1"><label>지문·보기 (없으면 빈칸)</label>
+        <textarea rows="3" class="esm-passage" style="width:100%;border:1px solid var(--op);border-radius:8px;padding:7px 11px;font-size:12px;outline:none;resize:vertical;font-family:inherit">${q?q.passage||'':''}</textarea></div>
+      <div class="form-group" style="grid-column:1/-1"><label>문제</label>
+        <textarea rows="2" class="esm-q" style="width:100%;border:1px solid var(--op);border-radius:8px;padding:7px 11px;font-size:12px;outline:none;resize:vertical;font-family:inherit">${q?q.q||'':''}</textarea></div>
+      ${['①','②','③','④','⑤'].map((label,oi)=>`<div class="form-group"><label>보기 ${label}</label>
+        <input class="esm-opt" type="text" value="${safeOpt(q&&q.opts,oi)}" style="border:1px solid var(--op);border-radius:8px;padding:7px 11px;font-size:12px;outline:none;width:100%"/></div>`).join('')}
+      <div class="form-group"><label>정답 (0=①)</label>
+        <select class="esm-ans" style="border:1px solid var(--op);border-radius:8px;padding:7px 11px;font-size:12px;outline:none;width:100%">
+          ${['①','②','③','④','⑤'].map((l,oi)=>`<option value="${oi}" ${q&&q.ans===oi?'selected':''}>${l}</option>`).join('')}
+        </select></div>
+      <div class="form-group" style="grid-column:1/-1"><label>해설</label>
+        <textarea rows="2" class="esm-exp" style="width:100%;border:1px solid var(--op);border-radius:8px;padding:7px 11px;font-size:12px;outline:none;resize:vertical;font-family:inherit">${q?q.exp||'':''}</textarea></div>
+    </div>
+  </div>`;
+}
+
+function addExamQField(){
+  // pdf-preview-qs가 보이면 거기에, 아니면 esm-qs에 추가
+  const previewWrap=document.getElementById('pdf-preview-qs');
+  const modalWrap=document.getElementById('esm-qs');
+  const wrap=(previewWrap&&previewWrap.offsetParent!==null)?previewWrap:modalWrap;
+  if(!wrap) return;
+  const idx=wrap.querySelectorAll('[id^="esm-q-"]').length;
+  const div=document.createElement('div');
+  div.innerHTML=buildExamQField(null,idx);
+  wrap.appendChild(div.firstElementChild);
+}
+
+function saveExamSetModal(){
+  const grade=document.getElementById('esm-grade').value;
+  const year=document.getElementById('esm-year').value.trim();
+  const month=document.getElementById('esm-month').value.trim();
+  const title=document.getElementById('esm-title-inp').value.trim();
+  const subject=document.getElementById('esm-subject').value.trim()||'언어와 매체';
+  if(!year||!month||!title){alert('연도, 시행월, 제목을 입력하세요.');return;}
+  const qCards=document.getElementById('esm-qs').querySelectorAll('[id^="esm-q-"]');
+  const questions=[];let idx=1;
+  qCards.forEach(card=>{
+    const passage=card.querySelector('.esm-passage').value.trim();
+    const q=card.querySelector('.esm-q').value.trim();
+    const opts=Array.from(card.querySelectorAll('.esm-opt')).map(el=>el.value.trim()).filter(Boolean);
+    const ans=parseInt(card.querySelector('.esm-ans').value);
+    const exp=card.querySelector('.esm-exp').value.trim();
+    if(q) questions.push({num:idx++,passage,q,opts,ans,exp});
+  });
+  const sets=loadExamSets();
+  if(examModalEditId){
+    const i=sets.findIndex(s=>s.id===examModalEditId);
+    if(i>=0) sets[i]={...sets[i],grade,year,month,title,subject,questions,qCount:questions.length};
+  } else {
+    sets.push({id:'ex'+Date.now(),grade,year,month,title,subject,questions,qCount:questions.length});
+  }
+  saveExamSets(sets);
+  document.getElementById('exam-set-modal').style.display='none';
+  renderExamAdmin(document.getElementById('admin-content'));
+}
+
+function deleteExamSet(id){
+  if(!confirm('이 기출문제 세트를 삭제하시겠습니까?'))return;
+  saveExamSets(loadExamSets().filter(s=>s.id!==id));
+  renderExamAdmin(document.getElementById('admin-content'));
+}
+
+
 document.addEventListener('DOMContentLoaded', function(){
   // 모드 탭 버튼
   var btnStudent = document.getElementById('mt-student');
