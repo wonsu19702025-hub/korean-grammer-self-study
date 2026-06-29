@@ -602,7 +602,7 @@ function doLogin(){
   if(currentMode==='admin'){
     const aid=document.getElementById('admin-id').value.trim();
     const apw=document.getElementById('pw').value.trim();
-    if(aid==='admin'&&apw==='1234'){
+    if(aid==='wonsu19702025@gmail.com'&&apw==='123456789!'){
       document.getElementById('admin-nav-badge').style.display='block';
       renderAdmin();show('sa');
     } else {
@@ -655,7 +655,7 @@ function renderHome(){
   document.getElementById('tsubs').textContent=total;
   document.getElementById('dcnt').textContent=done;
   document.getElementById('tiles').innerHTML=PARTS.map((p,i)=>{
-    const d=PROG[p.id]||0,tot=p.subs.length,pct=Math.round(d/tot*100);
+    var d=PROG[p.id]||0,tot=p.subs.length,pct=Math.round(d/tot*100);
     return`<div class="tile c${i}" onclick="openPart('${p.id}')">
       <div class="tile-icon">${IC[i]}</div>
       <div class="tile-name">${p.title}</div>
@@ -798,18 +798,18 @@ function renderScore(){
   if(!u){u={email:currentUserEmail,name:currentUserEmail.split('@')[0],progress:{},scores:{},totalDone:0};localList.push(u);}
   if(!u.progress)u.progress={};
   if(!u.scores)u.scores={};
-  var pct=Math.round(CC_CNT/CS.quizzes.length*100);
+  var scorePct=Math.round(CC_CNT/CS.quizzes.length*100);
   u.progress[CS.id]={partTitle:CP.title,subTitle:CS.title,done:true,date:new Date().toLocaleDateString('ko-KR')};
-  if(!u.scores[CS.id]||pct>u.scores[CS.id].pct){
-    u.scores[CS.id]={score:CC_CNT,total:CS.quizzes.length,pct:pct,partTitle:CP.title,subTitle:CS.title,date:new Date().toLocaleDateString('ko-KR')};
+  if(!u.scores[CS.id]||scorePct>u.scores[CS.id].pct){
+    u.scores[CS.id]={score:CC_CNT,total:CS.quizzes.length,pct:scorePct,partTitle:CP.title,subTitle:CS.title,date:new Date().toLocaleDateString('ko-KR')};
   }
   u.totalDone=Object.keys(u.progress).length;
   var idx=localList.findIndex(function(x){return x.email===currentUserEmail;});
   if(idx>=0)localList[idx]=u; else localList.push(u);
   localStorage.setItem('kgrammar_users',JSON.stringify(localList));
-  const tot=CS.quizzes.length,pct=Math.round(CC_CNT/tot*100);
-  const msg=pct===100?'완벽해요! 🎉':pct>=80?'잘했어요! 👍':pct>=60?'조금 더 연습해요 📚':'이론을 복습해 보세요 🔍';
-  const bc=pct===100?'#15803d':pct>=60?'var(--ol)':'#dc2626';
+  var tot=CS.quizzes.length,pct=Math.round(CC_CNT/tot*100);
+  var msg=pct===100?'완벽해요! 🎉':pct>=80?'잘했어요! 👍':pct>=60?'조금 더 연습해요 📚':'이론을 복습해 보세요 🔍';
+  var bc=pct===100?'#15803d':pct>=60?'var(--ol)':'#dc2626';
   document.getElementById('qzc').innerHTML=
     `<div class="score-card">
       <div class="score-circle" style="border-color:${bc}">
