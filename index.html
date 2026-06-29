@@ -202,30 +202,11 @@ tr:hover td{background:#f8fbff}
 .progress-bar-inner{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ol),var(--wv))}
 </style>
 
-<!-- Firebase는 나중에 연동 예정 -->
-<script>
-window.DB = null; // Firebase 미연결 상태 — localStorage 사용
-window.addEventListener('DOMContentLoaded', function(){
-  var sp = document.getElementById('fb-loading');
-  if(sp) sp.style.display = 'none';
-  var sl = document.getElementById('sl');
-  if(sl) sl.classList.add('active');
-});
-</script>
 </head>
 <body>
 
-<!-- Firebase 로딩 스피너 (Firebase 연결 전 화면 가림) -->
-<div id="fb-loading" style="position:fixed;inset:0;background:linear-gradient(160deg,#0a2a4a,#1a4f7a);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999">
-  <div style="font-size:40px;margin-bottom:1rem">🌊</div>
-  <div style="color:#e8f4fd;font-size:16px;font-weight:500;margin-bottom:.5rem">한국어 문법 학습</div>
-  <div style="color:#a8d4ef;font-size:13px;margin-bottom:1.5rem">데이터를 불러오는 중...</div>
-  <div style="width:40px;height:40px;border:3px solid rgba(255,255,255,0.2);border-top-color:#63c5ea;border-radius:50%;animation:spin .8s linear infinite"></div>
-  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-</div>
-
 <!-- ═══════════════ LOGIN ═══════════════ -->
-<div id="sl" class="screen">
+<div id="sl" class="screen active">
   <div class="login-bg">
     <div class="login-card">
       <div class="login-logo">
@@ -585,20 +566,13 @@ const PARTS=[
 // ════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════
-window._PARTS = PARTS; // Firebase 모듈에서 참조하기 위해 전역 노출
 let CP=null,CS=null,CQ=0,ANS=false,CC_CNT=0;
 let currentMode='student';
 let currentUserEmail='';
 const PROG={};
 let users = [];
 
-// Firebase 미연결 시 localStorage 폴백
-function localUsers(){
-  return JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
-}
-function saveLocalUsers(){
-  localStorage.setItem('kgrammar_users', JSON.stringify(users));
-}
+
 
 // ════════════════════════════════════════
 //  HELPERS
@@ -914,13 +888,13 @@ function renderUsersAdmin(c){
     <div class="table-wrap"><table>
       <tr><th>이름</th><th>이메일</th><th>가입일</th><th>완료 항목</th><th>진도</th><th>관리</th></tr>
       ${users.length?users.map((u,i)=>{
-        const pct=Math.round((u.totalDone||0)/totalSubs*100);
+        var upct=Math.round((u.totalDone||0)/totalSubs*100);
         return`<tr>
           <td><strong style="cursor:pointer;color:var(--ol)" onclick="showUserDetail(${i})">${u.name} ▸</strong></td>
           <td style="font-size:12px">${u.email}</td>
           <td style="font-size:12px">${u.joinDate||'-'}</td>
           <td><span class="tag green">${u.totalDone||0} / ${totalSubs}</span></td>
-          <td><div class="progress-bar-wrap"><div class="progress-bar-inner" style="width:${pct}%"></div></div> <span style="font-size:11px;color:#64748b">${pct}%</span></td>
+          <td><div class="progress-bar-wrap"><div class="progress-bar-inner" style="width:${upct}%"></div></div> <span style="font-size:11px;color:#64748b">${upct}%</span></td>
           <td><button class="btn-del" onclick="deleteUser(${i})">🗑 삭제</button></td>
         </tr>`;
       }).join(''):'<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:2rem">등록된 학습자가 없습니다.</td></tr>'}
