@@ -72,13 +72,13 @@ body{background:var(--od);min-height:100vh}
 .c3::before{background:linear-gradient(90deg,#b45309,#fbbf24)}
 .c4::before{background:linear-gradient(90deg,#be185d,#f472b6)}
 .c5::before{background:linear-gradient(90deg,#065f46,#34d399)}
-.tile-icon{font-size:24px;color:var(--ol);margin-bottom:.55rem}
-.tile-name{font-size:14px;font-weight:600;color:var(--od);margin-bottom:3px}
-.tile-desc{font-size:11px;color:#64748b;margin-bottom:.4rem;line-height:1.5}
-.tile-sess{font-size:10px;color:var(--ol);font-weight:600;margin-bottom:.7rem}
+.tile-icon{font-size:20px;color:var(--ol);margin-bottom:.55rem}
+.tile-name{font-size:16px;font-weight:700;color:var(--od);margin-bottom:4px}
+.tile-desc{font-size:13px;color:#64748b;margin-bottom:.4rem;line-height:1.5}
+.tile-sess{font-size:11px;color:var(--ol);font-weight:600;margin-bottom:.7rem}
 .tile-bar{height:3px;background:#e2e8f0;border-radius:99px}
 .tile-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ol),var(--wv));transition:width .4s}
-.tile-cnt{font-size:10px;color:#94a3b8;margin-top:4px}
+.tile-cnt{font-size:11px;color:#94a3b8;margin-top:4px}
 
 .info-box{background:#fff;border-radius:12px;border:1px solid rgba(33,118,174,0.1);padding:1rem 1.2rem;font-size:13px;color:#475569;line-height:1.8;display:flex;gap:10px}
 .info-box i{color:var(--ol);font-size:18px;flex-shrink:0;margin-top:1px}
@@ -301,7 +301,7 @@ tr:hover td{background:#f8fbff}
   </nav>
   <div class="hero">
     <h1>별처럼 문법들이 쏟아져</h1>
-    <p>2027 언어와 매체 · 6개 파트 · EBS 기출문제 풀이</p>
+
     <div class="hero-stats">
       <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">학습 파트</div></div>
       <div class="stat"><div class="stat-num" id="tsubs">17</div><div class="stat-lbl">세부 항목</div></div>
@@ -472,12 +472,14 @@ const PARTS=[
     {type:'fill',q:'하나의 음운 차이로 뜻이 구별되는 단어 쌍을 최소 ___쌍이라 한다.',blank:'대립',exp:'최소 대립쌍 예: 불/뿔(ㅂ:ㅃ)'},
     {type:'fill',q:'현대 국어 표준어에서 인정하는 비분절 음운은 소리의 ___이다.',blank:'길이',exp:'눈(目)[눈:]과 눈(雪)[눈]이 장단으로 구별됩니다.'}
    ]},
-  {id:'ph2',title:'자음 체계',desc:'조음 위치·조음 방법·삼지적 상관속',badge:'new',
-   theory:{title:'국어의 자음 체계',sections:[
-    {h:'① 조음 위치',body:'<ul><li><strong>양순음</strong>: ㅂ,ㅃ,ㅍ,ㅁ (두 입술)</li><li><strong>치조음</strong>: ㄷ,ㄸ,ㅌ,ㄴ,ㄹ,ㅅ,ㅆ (혀끝+윗잇몸)</li><li><strong>경구개음</strong>: ㅈ,ㅉ,ㅊ (혀 앞+센입천장)</li><li><strong>연구개음</strong>: ㄱ,ㄲ,ㅋ,ㅇ (혀 뒤+연구개)</li><li><strong>후음</strong>: ㅎ (목청)</li></ul>'},
-    {h:'② 조음 방법',body:'<ul><li><strong>파열음</strong>: ㅂ,ㅃ,ㅍ / ㄷ,ㄸ,ㅌ / ㄱ,ㄲ,ㅋ</li><li><strong>파찰음</strong>: ㅈ,ㅉ,ㅊ</li><li><strong>마찰음</strong>: ㅅ,ㅆ,ㅎ</li><li><strong>비음</strong>: ㅁ,ㄴ,ㅇ</li><li><strong>유음</strong>: ㄹ</li></ul>'},
-    {h:'③ 삼지적 상관속',body:'<p>파열음·파찰음 일부가 <strong>예사소리/된소리/거센소리</strong> 3계열을 이룹니다.</p><p>예사소리: ㄱ,ㄷ,ㅂ,ㅅ,ㅈ / 된소리: ㄲ,ㄸ,ㅃ,ㅆ,ㅉ / 거센소리: ㅋ,ㅌ,ㅍ,ㅊ</p>'}
-   ],keys:['<strong>양순음</strong>: ㅂ,ㅃ,ㅍ,ㅁ','<strong>치조음</strong>: ㄷ,ㄸ,ㅌ,ㄴ,ㄹ,ㅅ,ㅆ','<strong>경구개음</strong>: ㅈ,ㅉ,ㅊ','<strong>연구개음</strong>: ㄱ,ㄲ,ㅋ,ㅇ','<strong>국어 자음 총 19개</strong>'],
+  {id:'ph2',title:'음운 체계',desc:'자음·모음 체계와 삼지적 상관속',badge:'new',
+   theory:{title:'국어의 음운 체계',sections:[
+    {h:'① 자음 — 조음 위치',body:'<ul><li><strong>양순음</strong>: ㅂ,ㅃ,ㅍ,ㅁ (두 입술)</li><li><strong>치조음</strong>: ㄷ,ㄸ,ㅌ,ㄴ,ㄹ,ㅅ,ㅆ (혀끝+윗잇몸)</li><li><strong>경구개음</strong>: ㅈ,ㅉ,ㅊ (혀 앞+센입천장)</li><li><strong>연구개음</strong>: ㄱ,ㄲ,ㅋ,ㅇ (혀 뒤+연구개)</li><li><strong>후음</strong>: ㅎ (목청)</li></ul>'},
+    {h:'② 자음 — 조음 방법',body:'<ul><li><strong>파열음</strong>: ㅂ,ㅃ,ㅍ / ㄷ,ㄸ,ㅌ / ㄱ,ㄲ,ㅋ</li><li><strong>파찰음</strong>: ㅈ,ㅉ,ㅊ</li><li><strong>마찰음</strong>: ㅅ,ㅆ,ㅎ</li><li><strong>비음</strong>: ㅁ,ㄴ,ㅇ</li><li><strong>유음</strong>: ㄹ</li></ul>'},
+    {h:'③ 삼지적 상관속',body:'<p>파열음·파찰음 일부가 <strong>예사소리/된소리/거센소리</strong> 3계열을 이룹니다.</p><p>예사소리: ㄱ,ㄷ,ㅂ,ㅅ,ㅈ / 된소리: ㄲ,ㄸ,ㅃ,ㅆ,ㅉ / 거센소리: ㅋ,ㅌ,ㅍ,ㅊ</p>'},
+    {h:'④ 단모음 체계 (10개)',body:'<ul><li><strong>전설 평순</strong>: ㅣ,ㅔ,ㅐ</li><li><strong>전설 원순</strong>: ㅟ,ㅚ</li><li><strong>후설 평순</strong>: ㅡ,ㅓ,ㅏ</li><li><strong>후설 원순</strong>: ㅜ,ㅗ</li></ul>'},
+    {h:'⑤ 이중 모음 (11개)',body:'<ul><li><strong>ㅣ계(j+)</strong>: ㅑ,ㅕ,ㅛ,ㅠ,ㅒ,ㅖ</li><li><strong>ㅜ계(w+)</strong>: ㅘ,ㅝ,ㅙ,ㅞ,ㅚ→ㅞ</li><li><strong>ㅡ계</strong>: ㅢ</li></ul>'}
+   ],keys:['<strong>양순음</strong>: ㅂ,ㅃ,ㅍ,ㅁ','<strong>치조음</strong>: ㄷ,ㄸ,ㅌ,ㄴ,ㄹ,ㅅ,ㅆ','<strong>경구개음</strong>: ㅈ,ㅉ,ㅊ','<strong>연구개음</strong>: ㄱ,ㄲ,ㅋ,ㅇ','<strong>단모음 10개</strong>: 혀의 위치·높이·입술 모양으로 분류','<strong>이중 모음 11개</strong>: 반모음(j/w)+단모음'],
    examples:[{w:'',r:'ㅂ(양순·파열·평음) / ㅃ(양순·파열·경음) / ㅍ(양순·파열·격음)'},{w:'',r:'ㄴ(치조·비음) / ㄹ(치조·유음)'}],tip:'ㅇ은 초성에서 소리 없음, 종성에서만 연구개 비음[ŋ]으로 발음됩니다.'},
    quizzes:[
     {type:'mc',q:'조음 위치가 같은 자음끼리 묶인 것은?',opts:['ㅂ,ㄷ,ㄱ','ㅁ,ㅂ,ㅍ','ㄴ,ㄹ,ㅈ','ㅎ,ㅇ,ㅁ'],ans:1,exp:'ㅁ,ㅂ,ㅍ는 모두 양순음입니다.'},
@@ -834,11 +836,142 @@ function renderTheory(){
         :`<div class="ex-item"><span style="color:#475569">${e.w}</span><span style="color:#94a3b8;flex-shrink:0;margin:0 4px">→</span><span class="ex-r">${e.r}</span></div>`;
     }).join('')}</div>`:''
   const tip=t.tip?`<div class="tip-card">💡<span>${t.tip}</span></div>`:''
+
+  // 자음·모음 체계도 삽입
+  let chartHtml='';
+  if(CS.id==='ph2') chartHtml=renderConsonantChart()+renderVowelChart();
+
   document.getElementById('thc').innerHTML=
     `<div class="theory-card"><h3>${t.title}</h3>${secs}<div style="margin-top:.75rem">${keys}</div>${exs}${tip}</div>
+    ${chartHtml}
     <button class="go-quiz" onclick="goToQuiz()">✏️ 문제 풀러 가기</button>`;
 }
 
+// ── 자음 체계도 ──
+function renderConsonantChart(){
+  var rows=[
+    {method:'파열음',colors:['#eff6ff','#1d4ed8'],cells:['ㅂ ㅃ ㅍ','ㄷ ㄸ ㅌ','','ㄱ ㄲ ㅋ','']},
+    {method:'파찰음',colors:['#fdf4ff','#7c3aed'],cells:['','','ㅈ ㅉ ㅊ','','']},
+    {method:'마찰음',colors:['#fff7ed','#c2410c'],cells:['','ㅅ ㅆ','','','ㅎ']},
+    {method:'비음',  colors:['#f0fdf4','#15803d'],cells:['ㅁ','ㄴ','','ㅇ','']},
+    {method:'유음',  colors:['#fefce8','#a16207'],cells:['','ㄹ','','','']},
+  ];
+  var cols=['양순음','치조음','경구개음','연구개음','후음'];
+
+  var thead='<tr>'
+    +'<th style="background:var(--om);color:#fff;font-size:13px;padding:10px 12px;text-align:center;font-weight:700;border-right:3px solid rgba(255,255,255,0.4);border-bottom:2px solid rgba(255,255,255,0.3)">조음방법＼위치</th>';
+  cols.forEach(function(c){
+    thead+='<th style="background:var(--od);color:#fff;font-size:13px;padding:10px 8px;text-align:center;font-weight:700;border-right:2px solid rgba(255,255,255,0.25);border-bottom:2px solid rgba(255,255,255,0.3)">'+c+'</th>';
+  });
+  thead+='</tr>';
+
+  var tbody='';
+  rows.forEach(function(r){
+    tbody+='<tr>'
+      +'<td style="background:'+r.colors[0]+';color:'+r.colors[1]+';font-size:13px;font-weight:700;padding:10px 12px;text-align:center;white-space:nowrap;border-right:3px solid #cbd5e1;border-bottom:1px solid #e2e8f0">'+r.method+'</td>';
+    r.cells.forEach(function(c){
+      tbody+='<td style="text-align:center;padding:12px 8px;font-size:16px;font-weight:600;color:'+(c?'var(--od)':'#e2e8f0')+';border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0">'+(c||'—')+'</td>';
+    });
+    tbody+='</tr>';
+  });
+
+  var legend='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:.6rem;font-size:12px">'
+    +'<span><span style="background:#dbeafe;border-radius:4px;padding:2px 8px;color:#1d4ed8;font-weight:700">예사소리</span> ㄱ ㄷ ㅂ ㅅ ㅈ</span>'
+    +'<span><span style="background:#fce7f3;border-radius:4px;padding:2px 8px;color:#be185d;font-weight:700">된소리</span> ㄲ ㄸ ㅃ ㅆ ㅉ</span>'
+    +'<span><span style="background:#fef9c3;border-radius:4px;padding:2px 8px;color:#92400e;font-weight:700">거센소리</span> ㅋ ㅌ ㅍ ㅊ</span>'
+    +'</div>';
+
+  return '<div class="theory-card" style="padding:1.25rem">'
+    +'<h3 style="font-size:15px;font-weight:700;color:var(--od);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--op)">📊 자음 체계도</h3>'
+    +'<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">'
+    +'<table style="width:100%;border-collapse:collapse;min-width:340px;border:2px solid #cbd5e1"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>'
+    +'</div>'
+    +'<div style="margin-top:.5rem;font-size:12px;color:#94a3b8">※ 국어 자음 총 19개</div>'
+    +'<div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--op)">'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin-bottom:.4rem">삼지적 상관속 (파열음·파찰음)</div>'
+    +legend+'</div></div>';
+}
+
+// ── 모음 체계도 ──
+function renderVowelChart(){
+  var vowelData=[
+    {row:'고모음',front:['ㅣ','ㅟ'],back:['ㅡ','ㅜ']},
+    {row:'중모음',front:['ㅔ','ㅚ'],back:['ㅓ','ㅗ']},
+    {row:'저모음',front:['ㅐ',''],  back:['ㅏ','']},
+  ];
+
+  var thead2='<tr>'
+    +'<th style="background:var(--od);color:#fff;font-size:13px;padding:10px 12px;text-align:center;font-weight:700;border-right:3px solid rgba(255,255,255,0.4);border-bottom:2px solid rgba(255,255,255,0.3)">혀높이＼위치</th>'
+    +'<th style="background:#1e3a8a;color:#fff;font-size:13px;padding:10px;text-align:center;font-weight:700;border-right:2px solid rgba(255,255,255,0.25);border-bottom:2px solid rgba(255,255,255,0.3)">전설 모음<br><span style="font-weight:400;font-size:11px">(혀 앞)</span></th>'
+    +'<th style="background:#14532d;color:#fff;font-size:13px;padding:10px;text-align:center;font-weight:700;border-bottom:2px solid rgba(255,255,255,0.3)">후설 모음<br><span style="font-weight:400;font-size:11px">(혀 뒤)</span></th>'
+    +'</tr>'
+    +'<tr>'
+    +'<th style="background:var(--om);color:#fff;font-size:12px;padding:6px 12px;border-right:3px solid rgba(255,255,255,0.4);border-bottom:2px solid rgba(255,255,255,0.3)"></th>'
+    +'<th style="background:#1e40af;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px;border-right:2px solid rgba(255,255,255,0.25);border-bottom:2px solid rgba(255,255,255,0.3)">평순 / 원순</th>'
+    +'<th style="background:#166534;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px;border-bottom:2px solid rgba(255,255,255,0.3)">평순 / 원순</th>'
+    +'</tr>';
+
+  var tbody2='';
+  vowelData.forEach(function(r){
+    tbody2+='<tr>'
+      +'<td style="background:var(--of);font-size:13px;font-weight:700;color:var(--od);padding:10px 12px;text-align:center;border-right:3px solid #cbd5e1;border-bottom:1px solid #e2e8f0;white-space:nowrap">'+r.row+'</td>'
+      +'<td style="padding:0;border-right:2px solid #e2e8f0;border-bottom:1px solid #e2e8f0">'
+        +'<div style="display:flex;height:100%">'
+          +'<div style="flex:1;text-align:center;padding:12px 6px;border-right:1px dashed #cbd5e1">'
+            +'<div style="font-size:16px;font-weight:700;color:#1d4ed8">'+(r.front[0]||'&nbsp;')+'</div>'
+            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">평순</div>'
+          +'</div>'
+          +'<div style="flex:1;text-align:center;padding:12px 6px">'
+            +'<div style="font-size:16px;font-weight:700;color:#7c3aed">'+(r.front[1]||'&nbsp;')+'</div>'
+            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">'+(r.front[1]?'원순':'')+'</div>'
+          +'</div>'
+        +'</div>'
+      +'</td>'
+      +'<td style="padding:0;border-bottom:1px solid #e2e8f0">'
+        +'<div style="display:flex;height:100%">'
+          +'<div style="flex:1;text-align:center;padding:12px 6px;border-right:1px dashed #cbd5e1">'
+            +'<div style="font-size:16px;font-weight:700;color:#15803d">'+(r.back[0]||'&nbsp;')+'</div>'
+            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">평순</div>'
+          +'</div>'
+          +'<div style="flex:1;text-align:center;padding:12px 6px">'
+            +'<div style="font-size:16px;font-weight:700;color:#c2410c">'+(r.back[1]||'&nbsp;')+'</div>'
+            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">'+(r.back[1]?'원순':'')+'</div>'
+          +'</div>'
+        +'</div>'
+      +'</td>'
+      +'</tr>';
+  });
+
+  var diphthongs=[
+    {label:'ㅣ계(j+)',items:['ㅑ(j+ㅏ)','ㅕ(j+ㅓ)','ㅛ(j+ㅗ)','ㅠ(j+ㅜ)','ㅒ(j+ㅐ)','ㅖ(j+ㅔ)']},
+    {label:'ㅜ계(w+)',items:['ㅘ(w+ㅏ)','ㅝ(w+ㅓ)','ㅙ(w+ㅐ)','ㅞ(w+ㅔ)','ㅚ→ㅞ']},
+    {label:'ㅡ계',   items:['ㅢ(ㅡ+ㅣ)']},
+  ];
+  var diphthongHtml='';
+  diphthongs.forEach(function(d){
+    var spans='';
+    d.items.forEach(function(it){ spans+='<span style="background:#f8fbff;border:1px solid var(--op);border-radius:6px;padding:3px 9px;font-size:12px;color:var(--od)">'+it+'</span>'; });
+    diphthongHtml+='<div style="margin-bottom:.5rem">'
+      +'<span style="display:inline-block;background:var(--op);color:var(--ol);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-bottom:4px">'+d.label+'</span>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px">'+spans+'</div></div>';
+  });
+
+  var legend2='<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:.75rem;font-size:12px;color:#64748b">'
+    +'<span><span style="color:#1d4ed8;font-weight:700">■</span> 전설 평순</span>'
+    +'<span><span style="color:#7c3aed;font-weight:700">■</span> 전설 원순</span>'
+    +'<span><span style="color:#15803d;font-weight:700">■</span> 후설 평순</span>'
+    +'<span><span style="color:#c2410c;font-weight:700">■</span> 후설 원순</span>'
+    +'</div>';
+
+  return '<div class="theory-card" style="padding:1.25rem">'
+    +'<h3 style="font-size:15px;font-weight:700;color:var(--od);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--op)">📊 단모음 체계도 (10개)</h3>'
+    +'<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">'
+    +'<table style="width:100%;border-collapse:collapse;min-width:280px;border:2px solid #cbd5e1"><thead>'+thead2+'</thead><tbody>'+tbody2+'</tbody></table>'
+    +'</div>'+legend2
+    +'<div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--op)">'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin-bottom:.6rem">이중 모음 (11개) — 반모음 + 단모음</div>'
+    +diphthongHtml+'</div></div>';
+}
 function goToQuiz(){
   document.getElementById('tth').classList.remove('active');
   document.getElementById('tqz').classList.add('active');
@@ -1171,7 +1304,7 @@ function qFormFields(q=null){
       <div class="form-group" style="grid-column:1/-1">
         <label>정답 번호</label>
         <select id="mf-ans" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%">
-          ${['①','②','③','④'].map((label,i)=>`<option value="${i}" ${q&&q.ans===i?'selected':''}>${label} (${i+1}번)</option>`).join('')}
+          ${['①','②','③','④'].map(function(label,i){return '<option value="'+i+'" '+(q&&q.ans===i?'selected':'')+'>'+label+' ('+(i+1)+'번)</option>';}).join('')}
         </select>
       </div>
     </div>
