@@ -215,10 +215,10 @@ tr:hover td{background:#f8fbff}
         <p>2027 언어와 매체 교과서 기반<br>체계적인 문법 학습 프로그램</p>
       </div>
       <div class="mode-tabs">
-        <button class="mode-tab active" id="mt-student" onclick="setMode('student')">
+        <button class="mode-tab active" id="mt-student">
           🎓 학습자 모드
         </button>
-        <button class="mode-tab" id="mt-admin" onclick="setMode('admin')">
+        <button class="mode-tab" id="mt-admin">
           🔒 관리자 모드
         </button>
       </div>
@@ -233,7 +233,7 @@ tr:hover td{background:#f8fbff}
         <div class="login-field"><label>비밀번호</label><input type="password" id="pw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
       </div>
       <div class="login-err" id="err">아이디 또는 비밀번호가 올바르지 않습니다.</div>
-      <button class="login-btn" onclick="doLogin()">로그인</button>
+      <button class="login-btn" id="login-btn">로그인</button>
     </div>
   </div>
 </div>
@@ -1413,6 +1413,26 @@ function renderAdmin(){
   showAdminTab('dashboard',null);
   document.querySelector('.admin-tab').classList.add('active');
 }
+
+// ════════════════════════════════════════
+//  이벤트 바인딩 (DOM 로드 후 안전하게 연결)
+// ════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
+  // 모드 탭 버튼
+  var btnStudent = document.getElementById('mt-student');
+  var btnAdmin   = document.getElementById('mt-admin');
+  var btnLogin   = document.getElementById('login-btn');
+  if(btnStudent) btnStudent.addEventListener('click', function(){ setMode('student'); });
+  if(btnAdmin)   btnAdmin.addEventListener('click',   function(){ setMode('admin'); });
+  if(btnLogin)   btnLogin.addEventListener('click',   function(){ doLogin(); });
+  // Enter 키로 로그인
+  var emInput = document.getElementById('em');
+  var pwInput = document.getElementById('pw');
+  var aidInput = document.getElementById('admin-id');
+  if(emInput)  emInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
+  if(pwInput)  pwInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
+  if(aidInput) aidInput.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+});
 </script>
 </body>
 </html>
