@@ -202,79 +202,15 @@ tr:hover td{background:#f8fbff}
 .progress-bar-inner{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ol),var(--wv))}
 </style>
 
-<!-- ★ Firebase SDK (compat 방식) ★ -->
-<script src="config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Firebase는 나중에 연동 예정 -->
 <script>
-(function(){
-  var cfg = window.__firebaseConfig || {
-    apiKey:            "AIzaSyDORsytgNeJguwLDQA3pGx9OSKDkm5bjFQ",
-    authDomain:        "korean-grammer-self-study.firebaseapp.com",
-    projectId:         "korean-grammer-self-study",
-    storageBucket:     "korean-grammer-self-study.firebasestorage.app",
-    messagingSenderId: "648789667517",
-    appId:             "1:648789667517:web:46815011ea7c01abbf11d4",
-    measurementId:     "G-QQHL11SN6P"
-  };
-  try{
-    firebase.initializeApp(cfg);
-    var db = firebase.firestore();
-    window.DB = {
-      saveUser: function(email,data){ var k=email.replace(/\./g,'_'); return db.collection('users').doc(k).set(data,{merge:true}); },
-      loadUser: function(email){ var k=email.replace(/\./g,'_'); return db.collection('users').doc(k).get().then(function(s){ return s.exists?s.data():null; }); },
-      loadAllUsers: function(){ return db.collection('users').get().then(function(s){ return s.docs.map(function(d){return d.data();}); }); },
-      deleteUser: function(email){ var k=email.replace(/\./g,'_'); return db.collection('users').doc(k).delete(); },
-      saveContent: function(pid,sid,data){ return db.collection('content').doc(pid+'__'+sid).set({theory:JSON.stringify(data)}); },
-      loadAllContent: function(){ return db.collection('content').get().then(function(s){ var r={}; s.docs.forEach(function(d){r[d.id]=JSON.parse(d.data().theory||'null');}); return r; }); },
-      saveQuizzes: function(pid,sid,data){ return db.collection('quizzes').doc(pid+'__'+sid).set({data:JSON.stringify(data)}); },
-      loadAllQuizzes: function(){ return db.collection('quizzes').get().then(function(s){ var r={}; s.docs.forEach(function(d){r[d.id]=JSON.parse(d.data().data||'[]');}); return r; }); }
-    };
-    console.log('Firebase 초기화 완료');
-  }catch(e){
-    console.warn('Firebase 초기화 실패:', e.message);
-    window.DB = null;
-  }
-})();
-
-// 앱 시작: Firebase에서 저장 데이터 복원 후 로그인 화면 표시
-function initApp(){
+window.DB = null; // Firebase 미연결 상태 — localStorage 사용
+window.addEventListener('DOMContentLoaded', function(){
   var sp = document.getElementById('fb-loading');
-  var loginScreen = document.getElementById('sl');
-
-  function showLogin(){
-    if(sp) sp.style.display='none';
-    loginScreen.classList.add('active');
-  }
-
-  if(!window.DB){ showLogin(); return; }
-
-  Promise.all([window.DB.loadAllContent(), window.DB.loadAllQuizzes()])
-  .then(function(results){
-    var allContent = results[0];
-    var allQuizzes = results[1];
-    // 이론 내용 복원
-    Object.keys(allContent).forEach(function(key){
-      var parts2 = key.split('__');
-      var part = window._PARTS.find(function(p){return p.id===parts2[0];});
-      if(!part) return;
-      var sub = part.subs.find(function(s){return s.id===parts2[1];});
-      if(sub && allContent[key]) sub.theory = allContent[key];
-    });
-    // 문제 복원
-    Object.keys(allQuizzes).forEach(function(key){
-      var parts2 = key.split('__');
-      var part = window._PARTS.find(function(p){return p.id===parts2[0];});
-      if(!part) return;
-      var sub = part.subs.find(function(s){return s.id===parts2[1];});
-      if(sub && allQuizzes[key] && allQuizzes[key].length>0) sub.quizzes = allQuizzes[key];
-    });
-    console.log('콘텐츠 복원 완료');
-  })
-  .catch(function(e){ console.warn('복원 실패:', e.message); })
-  .finally(function(){ showLogin(); });
-}
-window.addEventListener('DOMContentLoaded', initApp);
+  if(sp) sp.style.display = 'none';
+  var sl = document.getElementById('sl');
+  if(sl) sl.classList.add('active');
+});
 </script>
 </head>
 <body>
@@ -685,9 +621,10 @@ function setMode(m){
   document.getElementById('pw').value='';
 }
 
-async function doLogin(){
+function doLogin(){
   document.getElementById('err').style.display='none';
 
+  // ── 관리자 모드 ──
   if(currentMode==='admin'){
     const aid=document.getElementById('admin-id').value.trim();
     const apw=document.getElementById('pw').value.trim();
@@ -700,7 +637,7 @@ async function doLogin(){
     return;
   }
 
-  // 학습자 모드 — 이메일만
+  // ── 학습자 모드 — 이메일만 입력 ──
   const e=document.getElementById('em').value.trim();
   if(!e||!e.includes('@')){
     document.getElementById('err').textContent='올바른 이메일 주소를 입력해 주세요.';
@@ -708,39 +645,24 @@ async function doLogin(){
     return;
   }
 
-  // 로그인 버튼 로딩 표시
-  const btn=document.querySelector('.login-btn');
-  btn.textContent='로그인 중...';btn.disabled=true;
-
-  try {
-    // Firebase에서 사용자 불러오기
-    let u = window.DB ? await window.DB.loadUser(e) : null;
-    if(!u){
-      // 신규 학습자 생성
-      u={email:e,name:e.split('@')[0],joinDate:new Date().toLocaleDateString('ko-KR'),
-         progress:{},scores:{},totalDone:0};
-      if(window.DB) await window.DB.saveUser(e, u);
-      // localStorage 폴백에도 저장
-      const localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
-      if(!localList.find(x=>x.email===e)){ localList.push(u); localStorage.setItem('kgrammar_users',JSON.stringify(localList)); }
-    }
-    users=[u]; // 현재 사용자
-    currentUserEmail=e;
-    ['uname','uname2','uname3'].forEach(id=>document.getElementById(id).textContent=u.name);
-    document.getElementById('admin-nav-badge').style.display='none';
-    renderHome();show('sh');
-  } catch(err){
-    console.error(err);
-    // Firebase 실패 시 localStorage 폴백
-    const localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
-    let u=localList.find(x=>x.email===e);
-    if(!u){u={email:e,name:e.split('@')[0],joinDate:new Date().toLocaleDateString('ko-KR'),progress:{},scores:{},totalDone:0};localList.push(u);localStorage.setItem('kgrammar_users',JSON.stringify(localList));}
-    currentUserEmail=e;
-    ['uname','uname2','uname3'].forEach(id=>document.getElementById(id).textContent=u.name);
-    renderHome();show('sh');
-  } finally {
-    btn.textContent='로그인';btn.disabled=false;
+  // localStorage에서 사용자 찾기 또는 신규 생성
+  let list=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  let u=list.find(function(x){return x.email===e;});
+  if(!u){
+    u={email:e,name:e.split('@')[0],
+       joinDate:new Date().toLocaleDateString('ko-KR'),
+       progress:{},scores:{},totalDone:0};
+    list.push(u);
+    localStorage.setItem('kgrammar_users',JSON.stringify(list));
   }
+  currentUserEmail=e;
+  ['uname','uname2','uname3'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.textContent=u.name;
+  });
+  document.getElementById('admin-nav-badge').style.display='none';
+  renderHome();
+  show('sh');
 }
 
 function logout(){
@@ -896,31 +818,21 @@ function renderScore(){
   if(!PROG[CP.id])PROG[CP.id]=0;
   PROG[CP.id]=Math.min(CP.subs.length,(PROG[CP.id]||0)+1);
   // 학습자 점수/진도 저장
-  // Firebase + localStorage 동시 저장
-  (async()=>{
-    try{
-      let u = window.DB ? await window.DB.loadUser(currentUserEmail) : null;
-      if(!u){
-        const localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
-        u=localList.find(x=>x.email===currentUserEmail)||{email:currentUserEmail,name:currentUserEmail.split('@')[0],progress:{},scores:{},totalDone:0};
-      }
-      if(!u.progress)u.progress={};
-      if(!u.scores)u.scores={};
-      const pct=Math.round(CC_CNT/CS.quizzes.length*100);
-      u.progress[CS.id]={partTitle:CP.title,subTitle:CS.title,done:true,date:new Date().toLocaleDateString('ko-KR')};
-      if(!u.scores[CS.id]||pct>u.scores[CS.id].pct){
-        u.scores[CS.id]={score:CC_CNT,total:CS.quizzes.length,pct:pct,partTitle:CP.title,subTitle:CS.title,date:new Date().toLocaleDateString('ko-KR')};
-      }
-      u.totalDone=Object.keys(u.progress).length;
-      // Firebase 저장
-      if(window.DB) await window.DB.saveUser(currentUserEmail, u);
-      // localStorage 폴백 저장
-      const localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
-      const idx=localList.findIndex(x=>x.email===currentUserEmail);
-      if(idx>=0)localList[idx]=u; else localList.push(u);
-      localStorage.setItem('kgrammar_users',JSON.stringify(localList));
-    }catch(err){console.error('점수 저장 실패',err);}
-  })();
+  // localStorage에 점수 저장
+  var localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var u=localList.find(function(x){return x.email===currentUserEmail;});
+  if(!u){u={email:currentUserEmail,name:currentUserEmail.split('@')[0],progress:{},scores:{},totalDone:0};localList.push(u);}
+  if(!u.progress)u.progress={};
+  if(!u.scores)u.scores={};
+  var pct=Math.round(CC_CNT/CS.quizzes.length*100);
+  u.progress[CS.id]={partTitle:CP.title,subTitle:CS.title,done:true,date:new Date().toLocaleDateString('ko-KR')};
+  if(!u.scores[CS.id]||pct>u.scores[CS.id].pct){
+    u.scores[CS.id]={score:CC_CNT,total:CS.quizzes.length,pct:pct,partTitle:CP.title,subTitle:CS.title,date:new Date().toLocaleDateString('ko-KR')};
+  }
+  u.totalDone=Object.keys(u.progress).length;
+  var idx=localList.findIndex(function(x){return x.email===currentUserEmail;});
+  if(idx>=0)localList[idx]=u; else localList.push(u);
+  localStorage.setItem('kgrammar_users',JSON.stringify(localList));
   const tot=CS.quizzes.length,pct=Math.round(CC_CNT/tot*100);
   const msg=pct===100?'완벽해요! 🎉':pct>=80?'잘했어요! 👍':pct>=60?'조금 더 연습해요 📚':'이론을 복습해 보세요 🔍';
   const bc=pct===100?'#15803d':pct>=60?'var(--ol)':'#dc2626';
@@ -993,19 +905,8 @@ function renderDashboard(c){
 }
 
 // ─── 학습자 관리: 진도 + 점수 상세 ───
-async function renderUsersAdmin(c){
-  c.innerHTML='<div style="text-align:center;padding:3rem;color:#64748b">👥 학습자 데이터 불러오는 중...</div>';
-  try{
-    if(window.DB){
-      users = await window.DB.loadAllUsers();
-      // localStorage에도 동기화
-      localStorage.setItem('kgrammar_users', JSON.stringify(users));
-    } else {
-      users = JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
-    }
-  }catch(e){
-    users = JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
-  }
+function renderUsersAdmin(c){
+  users = JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
   const totalSubs=PARTS.reduce((a,p)=>a+p.subs.length,0);
   c.innerHTML=`
   <div class="admin-card">
@@ -1234,13 +1135,7 @@ function saveQ(){
     savePi=pi; saveSi=si;
     PARTS[pi].subs[si].quizzes[qi]=newQ;
   }
-  // Firebase 저장
-  if(window.DB){
-    window.DB.saveQuizzes(PARTS[savePi].id, PARTS[savePi].subs[saveSi].id,
-      PARTS[savePi].subs[saveSi].quizzes)
-    .then(()=>console.log('문제 Firebase 저장 완료'))
-    .catch(e=>console.error('문제 저장 실패',e));
-  }
+  // 문제 저장 완료
   closeQModal();
   renderQuestionsAdmin(document.getElementById('admin-content'));
 }
@@ -1248,10 +1143,7 @@ function saveQ(){
 function deleteQ(pi,si,qi){
   if(!confirm('이 문제를 삭제하시겠습니까?'))return;
   PARTS[pi].subs[si].quizzes.splice(qi,1);
-  if(window.DB){
-    window.DB.saveQuizzes(PARTS[pi].id, PARTS[pi].subs[si].id, PARTS[pi].subs[si].quizzes)
-    .catch(e=>console.error('삭제 동기화 실패',e));
-  }
+
   renderQuestionsAdmin(document.getElementById('admin-content'));
 }
 
@@ -1524,40 +1416,22 @@ function saveContent(){
   // 팁
   t.tip=document.getElementById('tip-inp').value.trim()||null;
 
-  // Firebase + localStorage 동시 저장
-  const btn=document.querySelector('[onclick="saveContent()"]');
-  btn.textContent='저장 중...';btn.disabled=true;
-  try{
-    if(window.DB){
-      await window.DB.saveContent(PARTS[pi].id, PARTS[pi].subs[si].id, t);
-    }
-    btn.textContent='✅ 저장됨!';btn.style.background='#15803d';
-  }catch(err){
-    console.error(err);
-    btn.textContent='⚠️ 오프라인 저장';btn.style.background='#b45309';
-  }finally{
-    btn.disabled=false;
-    setTimeout(()=>{btn.textContent='💾 저장';btn.style.background='';},2000);
-  }
+  // 저장 완료 피드백
+  var btn=document.querySelector('[onclick="saveContent()"]');
+  btn.textContent='✅ 저장됨!';btn.style.background='#15803d';
+  setTimeout(function(){btn.textContent='💾 저장';btn.style.background='';},2000);
 }
 
 function renderPartsAdmin(c){ renderContentAdmin(c); }
 
-async function deleteUser(i){
+function deleteUser(i){
   if(!confirm('이 학습자를 삭제하시겠습니까?'))return;
-  const email = users[i].email;
   users.splice(i,1);
   localStorage.setItem('kgrammar_users',JSON.stringify(users));
-  if(window.DB) await window.DB.deleteUser(email).catch(e=>console.error(e));
   renderUsersAdmin(document.getElementById('admin-content'));
 }
-async function clearAllUsers(){
+function clearAllUsers(){
   if(!confirm('모든 학습자 데이터를 초기화하시겠습니까?'))return;
-  if(window.DB){
-    for(const u of users){
-      await window.DB.deleteUser(u.email).catch(e=>console.error(e));
-    }
-  }
   users=[];localStorage.setItem('kgrammar_users','[]');
   renderUsersAdmin(document.getElementById('admin-content'));
 }
