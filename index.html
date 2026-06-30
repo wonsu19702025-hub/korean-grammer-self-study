@@ -1984,306 +1984,51 @@ function renderExamScore(){
 // ════════════════════════════════════════
 //  ADMIN — 기출문제 관리
 // ════════════════════════════════════════
-// ── PDF → base64 변환 헬퍼 ──
-function pdfToBase64(file){
-  return new Promise((res,rej)=>{
-    const r=new FileReader();
-    r.onload=()=>res(r.result.split(',')[1]);
-    r.onerror=()=>rej(new Error('파일 읽기 실패'));
-    r.readAsDataURL(file);
-  });
+// ── JSON 업로드 처리 ──
+function handleJsonDrop(e){
+  e.preventDefault();
+  const file=e.dataTransfer.files[0];
+  if(!file||!file.name.endsWith('.json')){return;}
+  processExamJsonFile(file);
 }
 
-// ── PDF 업로드 상태 ──
-let pdfState={ qFile:null, qB64:null, aFile:null, aB64:null };
-
-function renderExamAdmin(c){
-  const sets=loadExamSets();
-  c.innerHTML=`
-  <!-- ① PDF 업로드 + AI 파싱 카드 -->
-  <div class="admin-card">
-    <h3>🤖 PDF 업로드 → AI 자동 추출</h3>
-    <p style="font-size:13px;color:#64748b;margin-bottom:1.25rem">
-      문제지 PDF와 정답지 PDF를 각각 업로드하면 Claude AI가 자동으로 문제·보기·정답·해설을 추출합니다.
-    </p>
-
-    <!-- 세트 기본 정보 -->
-    <div class="admin-form" style="margin-bottom:1.25rem">
-      <div class="form-group"><label>학년</label>
-        <select id="pdf-grade" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none">
-          <option value="1">고1</option><option value="2">고2</option><option value="3">고3</option>
-        </select></div>
-      <div class="form-group"><label>연도</label>
-        <input id="pdf-year" type="text" placeholder="예: 2024" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
-      <div class="form-group"><label>시행월</label>
-        <input id="pdf-month" type="text" placeholder="예: 6" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
-      <div class="form-group"><label>제목</label>
-        <input id="pdf-title" type="text" placeholder="예: 2024학년도 고1 3월 모의고사" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
-      <div class="form-group" style="grid-column:1/-1"><label>과목명</label>
-        <input id="pdf-subject" type="text" value="언어와 매체" style="border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:100%"/></div>
-    </div>
-
-    <!-- PDF 드롭존 2개 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem">
-      <!-- 문제지 -->
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--od);margin-bottom:6px">📄 문제지 PDF</div>
-        <div class="exam-admin-upload" id="drop-q" onclick="document.getElementById('pdf-q-input').click()"
-          ondragover="event.preventDefault();this.style.borderColor='var(--ol)'"
-          ondragleave="this.style.borderColor=''"
-          ondrop="event.preventDefault();this.style.borderColor='';handlePdfDrop(event,'q')">
-          <input type="file" id="pdf-q-input" accept=".pdf" onchange="handlePdfSelect(event,'q')"/>
-          <div style="font-size:24px;margin-bottom:.4rem">📝</div>
-          <div id="pdf-q-label" style="font-size:13px;font-weight:500;color:#64748b">클릭 또는 드래그</div>
-        </div>
-      </div>
-      <!-- 정답지 -->
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--od);margin-bottom:6px">✅ 정답지 PDF</div>
-        <div class="exam-admin-upload" id="drop-a" onclick="document.getElementById('pdf-a-input').click()"
-          ondragover="event.preventDefault();this.style.borderColor='var(--ol)'"
-          ondragleave="this.style.borderColor=''"
-          ondrop="event.preventDefault();this.style.borderColor='';handlePdfDrop(event,'a')">
-          <input type="file" id="pdf-a-input" accept=".pdf" onchange="handlePdfSelect(event,'a')"/>
-          <div style="font-size:24px;margin-bottom:.4rem">🗝️</div>
-          <div id="pdf-a-label" style="font-size:13px;font-weight:500;color:#64748b">클릭 또는 드래그</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AI 추출 버튼 -->
-    <button class="btn-add" id="ai-parse-btn" onclick="runAIParse()" style="width:100%;justify-content:center;padding:12px;font-size:14px">
-      🤖 AI로 문제 자동 추출하기
-    </button>
-
-    <!-- 진행 상태 -->
-    <div id="ai-parse-status" style="display:none;margin-top:1rem;background:var(--of);border-radius:10px;padding:1rem;font-size:13px;color:var(--od)"></div>
-  </div>
-
-  <!-- ② 추출 결과 미리보기 & 확정 저장 -->
-  <div id="pdf-preview-card" class="admin-card" style="display:none">
-    <h3>👀 추출 결과 확인 및 수정</h3>
-    <p style="font-size:13px;color:#64748b;margin-bottom:1rem">AI가 추출한 내용을 확인하고 필요하면 수정한 후 저장하세요.</p>
-    <div id="pdf-preview-qs"></div>
-    <div style="display:flex;gap:8px;margin-top:1rem">
-      <button class="btn-add" style="margin-top:0" onclick="addExamQField()">+ 문항 추가</button>
-      <button class="btn-oc" style="margin-top:0" onclick="savePdfParsedSet()">💾 최종 저장</button>
-    </div>
-  </div>
-
-  <!-- ③ 등록된 세트 목록 -->
-  <div class="admin-card">
-    <h3>📋 등록된 기출문제 세트 (${sets.length}세트)</h3>
-    <div style="display:flex;gap:8px;margin-bottom:.75rem">
-      <button class="btn-add" style="margin-top:0;font-size:12px;padding:6px 14px" onclick="openExamSetModal()">+ 직접 입력으로 추가</button>
-    </div>
-    <div class="table-wrap"><table>
-      <tr><th>학년</th><th>연도·월</th><th>제목</th><th>문제 수</th><th>관리</th></tr>
-      ${sets.length?sets.map(s=>`<tr>
-        <td><span class="tag ${s.grade==='1'?'blue':s.grade==='2'?'green':'yellow'}">고${s.grade}</span></td>
-        <td style="font-size:12px">${s.year}년 ${s.month}월</td>
-        <td style="font-size:13px"><strong>${s.title}</strong></td>
-        <td><span class="tag blue">${(s.questions||[]).length}문제</span></td>
-        <td style="white-space:nowrap">
-          <button class="btn-add" style="padding:4px 10px;font-size:11px;margin-right:4px" onclick="openExamSetModal('${s.id}')">✏️ 수정</button>
-          <button class="btn-del" onclick="deleteExamSet('${s.id}')">🗑</button>
-        </td>
-      </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:2rem">등록된 기출문제 세트가 없습니다.</td></tr>'}
-    </table></div>
-  </div>
-
-  <!-- 직접 입력 모달 -->
-  <div id="exam-set-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center;padding:1rem">
-    <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:680px;max-height:90vh;overflow-y:auto">
-      <h3 id="esm-title" style="font-size:16px;font-weight:600;color:var(--od);margin-bottom:1.25rem"></h3>
-      <div id="esm-body"></div>
-      <div style="display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end">
-        <button class="btn-gh" style="width:auto;padding:8px 20px" onclick="document.getElementById('exam-set-modal').style.display='none'">취소</button>
-        <button class="btn-oc" style="width:auto;padding:8px 20px" onclick="saveExamSetModal()">저장</button>
-      </div>
-    </div>
-  </div>`;
-
-  // 상태 초기화
-  pdfState={qFile:null,qB64:null,aFile:null,aB64:null};
+function uploadExamJson(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  processExamJsonFile(file);
+  e.target.value='';
 }
 
-// ── PDF 파일 선택/드롭 처리 ──
-async function handlePdfSelect(e, type){
-  const file=e.target.files[0]; if(!file) return;
-  await loadPdfFile(file, type);
-}
-async function handlePdfDrop(e, type){
-  const file=e.dataTransfer.files[0]; if(!file||!file.name.endsWith('.pdf')) return;
-  await loadPdfFile(file, type);
-}
-async function loadPdfFile(file, type){
-  const label=document.getElementById('pdf-'+type+'-label');
-  label.textContent='읽는 중…';
-  try{
-    const b64=await pdfToBase64(file);
-    pdfState[type+'File']=file;
-    pdfState[type+'B64']=b64;
-    label.innerHTML=`<span style="color:#15803d;font-weight:600">✅ ${file.name}</span><br><span style="font-size:11px;color:#94a3b8">${(file.size/1024).toFixed(0)} KB</span>`;
-    document.getElementById('drop-'+type).style.borderColor='#15803d';
-  }catch(err){
-    label.textContent='파일 읽기 실패';
-  }
-}
-
-// ── AI 파싱 실행 ──
-async function runAIParse(){
-  const grade=document.getElementById('pdf-grade').value;
-  const year=document.getElementById('pdf-year').value.trim();
-  const month=document.getElementById('pdf-month').value.trim();
-  const title=document.getElementById('pdf-title').value.trim();
-  const subject=document.getElementById('pdf-subject').value.trim()||'언어와 매체';
-
-  if(!pdfState.qB64){ alert('문제지 PDF를 먼저 업로드해 주세요.'); return; }
-  if(!year||!month||!title){ alert('연도, 시행월, 제목을 입력해 주세요.'); return; }
-
-  const btn=document.getElementById('ai-parse-btn');
-  const status=document.getElementById('ai-parse-status');
-  btn.disabled=true; btn.textContent='⏳ AI 분석 중…';
-  status.style.display='block';
-  status.innerHTML='🤖 <strong>Claude AI</strong>가 문제지를 분석하고 있습니다. 잠시 기다려 주세요…<br><span style="font-size:12px;color:#94a3b8">PDF 크기에 따라 30~60초 소요될 수 있습니다.</span>';
-
-  try{
-    // ── STEP 1: 문제지 파싱 ──
-    status.innerHTML='📄 <strong>1단계:</strong> 문제지에서 문항·보기 추출 중…';
-    const qPrompt=`다음은 한국어 언어와 매체 또는 국어 모의고사 문제지 PDF입니다.
-모든 문항을 추출하여 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
-
-[
-  {
-    "num": 문항번호(정수),
-    "passage": "지문 또는 보기 박스 내용 (없으면 빈 문자열)",
-    "q": "문제 텍스트",
-    "opts": ["①번 선택지", "②번 선택지", "③번 선택지", "④번 선택지", "⑤번 선택지"],
-    "ans": -1
-  }
-]
-
-주의사항:
-- passage에는 [보기], <보기> 등 지문·자료 박스 전체 내용을 넣으세요
-- opts는 반드시 배열 형태로, 번호 기호(①②③④⑤) 제외한 텍스트만 넣으세요
-- ans는 아직 모르므로 -1로 설정하세요
-- 언어와 매체 영역(문법 관련) 문항만 추출하세요. 문학·독서 문항은 제외해도 됩니다`;
-
-    const qMessages=[{role:'user',content:[
-      {type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfState.qB64}},
-      {type:'text',text:qPrompt}
-    ]}];
-
-    const qRes=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:qMessages})
-    });
-    const qData=await qRes.json();
-    let qText=(qData.content||[]).map(b=>b.text||'').join('');
-    qText=qText.replace(/```json|```/g,'').trim();
-    let questions=JSON.parse(qText);
-
-    // ── STEP 2: 정답지 파싱 (있는 경우) ──
-    if(pdfState.aB64){
-      status.innerHTML='✅ <strong>2단계:</strong> 정답지에서 정답 추출 중…';
-      const aPrompt=`다음은 모의고사 정답지 PDF입니다.
-각 문항 번호와 정답 번호를 추출하여 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
-
-{ "문항번호": 정답번호(1~5 정수), ... }
-
-예시: {"1":3,"2":1,"3":5}`;
-
-      const aMessages=[{role:'user',content:[
-        {type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfState.aB64}},
-        {type:'text',text:aPrompt}
-      ]}];
-      const aRes=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:aMessages})
+function processExamJsonFile(file){
+  const statusEl=document.getElementById('json-upload-status');
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=JSON.parse(ev.target.result);
+      const arr=Array.isArray(data)?data:[data];
+      const sets=loadExamSets();
+      let totalQ=0;
+      arr.forEach(function(s){
+        if(!s.id) s.id='ex'+Date.now()+Math.random().toString(36).slice(2,6);
+        s.qCount=(s.questions||[]).length;
+        totalQ+=s.qCount;
+        const idx=sets.findIndex(function(x){return x.id===s.id;});
+        if(idx>=0) sets[idx]=s; else sets.push(s);
       });
-      const aData=await aRes.json();
-      let aText=(aData.content||[]).map(b=>b.text||'').join('');
-      aText=aText.replace(/```json|```/g,'').trim();
-      const ansMap=JSON.parse(aText);
-
-      // 정답 매핑 (1~5 → 0~4 인덱스로 변환)
-      questions=questions.map(q=>{
-        const a=ansMap[String(q.num)];
-        return{...q, ans: a!=null ? parseInt(a)-1 : -1};
-      });
-
-      // ── STEP 3: 해설 생성 ──
-      status.innerHTML='💡 <strong>3단계:</strong> 각 문항 해설 생성 중…';
-      const expPrompt=`다음은 한국어 언어와 매체 모의고사 문항들과 정답입니다.
-각 문항에 대해 간결하고 명확한 해설을 생성하여 아래 JSON 형식으로만 응답하세요.
-
-입력:
-${JSON.stringify(questions.map(q=>({num:q.num,q:q.q,opts:q.opts,ans:q.ans+1})))}
-
-출력 형식:
-[{"num": 문항번호, "exp": "해설 텍스트"}]
-
-해설은 2~3문장으로 핵심만 간결하게 작성하세요.`;
-
-      const expRes=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:expPrompt}]})
-      });
-      const expData=await expRes.json();
-      let expText=(expData.content||[]).map(b=>b.text||'').join('');
-      expText=expText.replace(/```json|```/g,'').trim();
-      const expArr=JSON.parse(expText);
-      const expMap={};
-      expArr.forEach(e=>{ expMap[e.num]=e.exp; });
-      questions=questions.map(q=>({...q, exp: expMap[q.num]||''}));
+      saveExamSets(sets);
+      statusEl.style.display='block';
+      statusEl.style.background='#f0fdf4';
+      statusEl.style.color='#15803d';
+      statusEl.innerHTML='✅ <strong>업로드 완료!</strong> '+arr.length+'개 세트, 총 '+totalQ+'개 문항이 등록되었습니다.';
+      renderExamAdmin(document.getElementById('admin-content'));
+    }catch(err){
+      statusEl.style.display='block';
+      statusEl.style.background='#fef2f2';
+      statusEl.style.color='#7f1d1d';
+      statusEl.innerHTML='❌ <strong>오류:</strong> JSON 형식이 올바르지 않습니다. ('+err.message+')<br><span style="font-size:11px">claude.ai에서 받은 JSON을 그대로 업로드했는지 확인해 주세요.</span>';
     }
-
-    // ── 미리보기 렌더링 ──
-    status.innerHTML=`✅ <strong>완료!</strong> ${questions.length}개 문항 추출 성공. 아래에서 내용을 확인·수정 후 저장하세요.`;
-    status.style.background='#f0fdf4'; status.style.color='#15803d';
-
-    // 임시 저장
-    pdfState.parsedQuestions=questions;
-    pdfState.parsedMeta={grade,year,month,title,subject};
-
-    const previewCard=document.getElementById('pdf-preview-card');
-    previewCard.style.display='block';
-    const wrap=document.getElementById('pdf-preview-qs');
-    wrap.innerHTML=questions.map((q,i)=>buildExamQField(q,i)).join('');
-    previewCard.scrollIntoView({behavior:'smooth'});
-
-  }catch(err){
-    status.innerHTML=`❌ <strong>오류:</strong> ${err.message}<br><span style="font-size:12px">PDF 형식을 확인하거나 직접 입력 방식을 사용해 주세요.</span>`;
-    status.style.background='#fef2f2'; status.style.color='#7f1d1d';
-  }finally{
-    btn.disabled=false; btn.textContent='🤖 AI로 문제 자동 추출하기';
-  }
-}
-
-// ── AI 파싱 결과 최종 저장 ──
-function savePdfParsedSet(){
-  const meta=pdfState.parsedMeta||{};
-  const qCards=document.getElementById('pdf-preview-qs').querySelectorAll('[id^="esm-q-"]');
-  const questions=[];
-  let idx=1;
-  qCards.forEach(card=>{
-    const passage=card.querySelector('.esm-passage').value.trim();
-    const q=card.querySelector('.esm-q').value.trim();
-    const opts=Array.from(card.querySelectorAll('.esm-opt')).map(el=>el.value.trim());
-    const ans=parseInt(card.querySelector('.esm-ans').value);
-    const exp=card.querySelector('.esm-exp').value.trim();
-    if(q) questions.push({num:idx++,passage,q,opts,ans,exp});
-  });
-  if(!questions.length){alert('저장할 문항이 없습니다.');return;}
-  const sets=loadExamSets();
-  sets.push({id:'ex'+Date.now(),grade:meta.grade||'1',year:meta.year||'',month:meta.month||'',title:meta.title||'기출문제',subject:meta.subject||'언어와 매체',questions,qCount:questions.length});
-  saveExamSets(sets);
-  alert(`✅ ${questions.length}개 문항이 저장되었습니다!`);
-  renderExamAdmin(document.getElementById('admin-content'));
+  };
+  reader.readAsText(file);
 }
 
 // ── 직접 입력 모달 ──
