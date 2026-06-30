@@ -54,6 +54,18 @@ body{background:var(--od);min-height:100vh}
 .stat-num{font-size:24px;font-weight:600;color:var(--wv)}
 .stat-lbl{font-size:11px;color:var(--tom)}
 
+/* ── 쏟아지는 별 효과 ── */
+.hero-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.falling-star{position:absolute;top:-20px;opacity:0;animation:starFall linear infinite;color:var(--wv)}
+.falling-star svg{display:block;filter:drop-shadow(0 0 4px rgba(255,255,255,0.6))}
+@keyframes starFall{
+  0%{transform:translateY(-20px) translateX(0) rotate(0deg);opacity:0}
+  8%{opacity:1}
+  85%{opacity:1}
+  100%{transform:translateY(220px) translateX(var(--drift,20px)) rotate(220deg);opacity:0}
+}
+.hero h1,.hero-stats{position:relative;z-index:2}
+
 /* ── CONTENT ── */
 .content{background:var(--of);padding:1.5rem}
 .sec-title{font-size:14px;font-weight:600;color:var(--od);margin-bottom:1rem;display:flex;align-items:center;gap:7px}
@@ -301,6 +313,7 @@ tr:hover td{background:#f8fbff}
     </div>
   </nav>
   <div class="hero">
+    <div class="hero-stars" id="hero-stars"></div>
     <h1>별처럼 문법들이 쏟아져</h1>
 
     <div class="hero-stats">
@@ -772,7 +785,29 @@ function logout(){
 // ════════════════════════════════════════
 //  HOME
 // ════════════════════════════════════════
+// ── 쏟아지는 별 애니메이션 생성 ──
+function renderFallingStars(){
+  const wrap=document.getElementById('hero-stars');
+  if(!wrap) return;
+  const starSVG='<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.5l2.6 6.6 7 .5-5.3 4.6 1.7 6.9L12 16.3 6 19.1l1.7-6.9L2.4 7.6l7-.5z"/></svg>';
+  const count=18;
+  let html='';
+  for(let i=0;i<count;i++){
+    const left=Math.random()*100;
+    const delay=(Math.random()*6).toFixed(2);
+    const duration=(3+Math.random()*3).toFixed(2);
+    const size=8+Math.round(Math.random()*10);
+    const drift=(Math.random()*40-20).toFixed(0)+'px';
+    const opacity=(0.5+Math.random()*0.5).toFixed(2);
+    html+='<div class="falling-star" style="left:'+left+'%;animation-delay:'+delay+'s;animation-duration:'+duration+'s;--drift:'+drift+';opacity:0">'
+      +'<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="rgba(255,255,255,'+opacity+')"><path d="M12 1.5l2.6 6.6 7 .5-5.3 4.6 1.7 6.9L12 16.3 6 19.1l1.7-6.9L2.4 7.6l7-.5z"/></svg>'
+      +'</div>';
+  }
+  wrap.innerHTML=html;
+}
+
 function renderHome(){
+  renderFallingStars();
   const total=PARTS.reduce((a,p)=>a+p.subs.length,0);
   const done=Object.values(PROG).reduce((a,v)=>a+v,0);
   document.getElementById('tsubs').textContent=total;
