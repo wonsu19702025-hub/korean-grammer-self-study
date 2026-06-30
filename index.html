@@ -271,8 +271,9 @@ tr:hover td{background:#f8fbff}
       </div>
       <!-- 학습자 로그인 -->
       <div id="student-fields">
+        <div class="login-field"><label>이름 / 별명</label><input type="text" id="nickname" placeholder="이름 또는 별명 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
         <div class="login-field"><label>이메일 주소</label><input type="email" id="em" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-        <p class="login-hint">이메일을 입력하면 바로 학습을 시작할 수 있습니다.</p>
+        <p class="login-hint">이름과 이메일을 입력하면 바로 학습을 시작할 수 있습니다.</p>
       </div>
       <!-- 관리자 로그인 -->
       <div id="admin-fields" style="display:none">
@@ -721,8 +722,14 @@ function doLogin(){
     return;
   }
 
-  // ── 학습자 모드 — 이메일만 입력 ──
+  // ── 학습자 모드 — 이름 + 이메일 입력 ──
+  const nickname=document.getElementById('nickname').value.trim();
   const e=document.getElementById('em').value.trim();
+  if(!nickname){
+    document.getElementById('err').textContent='이름 또는 별명을 입력해 주세요.';
+    document.getElementById('err').style.display='block';
+    return;
+  }
   if(!e||!e.includes('@')){
     document.getElementById('err').textContent='올바른 이메일 주소를 입력해 주세요.';
     document.getElementById('err').style.display='block';
@@ -733,12 +740,17 @@ function doLogin(){
   let list=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
   let u=list.find(function(x){return x.email===e;});
   if(!u){
-    u={email:e,name:e.split('@')[0],
+    u={email:e,name:nickname,
        joinDate:new Date().toLocaleDateString('ko-KR'),
        progress:{},scores:{},totalDone:0};
     list.push(u);
-    localStorage.setItem('kgrammar_users',JSON.stringify(list));
+  } else {
+    // 기존 사용자도 이름 업데이트
+    u.name=nickname;
+    const idx=list.findIndex(function(x){return x.email===e;});
+    if(idx>=0) list[idx]=u;
   }
+  localStorage.setItem('kgrammar_users',JSON.stringify(list));
   currentUserEmail=e;
   ['uname','uname2','uname3'].forEach(function(id){
     var el=document.getElementById(id);
@@ -751,6 +763,7 @@ function doLogin(){
 
 function logout(){
   setMode('student');
+  document.getElementById('nickname').value='';
   document.getElementById('em').value='';
   document.getElementById('pw').value='';
   show('sl');
@@ -1788,7 +1801,11 @@ let currentExamSet=null, examQIdx=0, examCorrect=0, examAnswered=[];
 function goExam(){
   ['uname4','uname5'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el) el.textContent=currentUserEmail?currentUserEmail.split('@')[0]:'';
+    if(el){
+      const list=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+      const u=list.find(x=>x.email===currentUserEmail);
+      el.textContent=u?u.name:(currentUserEmail?currentUserEmail.split('@')[0]:'');
+    }
   });
   examFilterGrade='all'; examFilterYear='all';
   // 학년 버튼 초기화
@@ -1850,7 +1867,11 @@ function startExamSet(id){
   document.getElementById('ep-meta').textContent=currentExamSet.year+'년 '+currentExamSet.month+'월 · '+currentExamSet.subject;
   ['uname5'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el) el.textContent=currentUserEmail?currentUserEmail.split('@')[0]:'';
+    if(el){
+      const list=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+      const u=list.find(x=>x.email===currentUserEmail);
+      el.textContent=u?u.name:(currentUserEmail?currentUserEmail.split('@')[0]:'');
+    }
   });
   renderExamPlay();
   show('sep');
