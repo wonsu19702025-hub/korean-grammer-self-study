@@ -472,11 +472,11 @@ const PARTS=[
     {type:'fill',q:'하나의 음운 차이로 뜻이 구별되는 단어 쌍을 최소 ___쌍이라 한다.',blank:'대립',exp:'최소 대립쌍 예: 불/뿔(ㅂ:ㅃ)'},
     {type:'fill',q:'현대 국어 표준어에서 인정하는 비분절 음운은 소리의 ___이다.',blank:'길이',exp:'눈(目)[눈:]과 눈(雪)[눈]이 장단으로 구별됩니다.'}
    ]},
-  {id:'ph2',title:'음운 체계',desc:'자음·모음 체계와 삼지적 상관속',badge:'new',
+  {id:'ph2',title:'음운 체계',desc:'자음·모음 체계와 자음의 삼중체계',badge:'new',
    theory:{title:'국어의 음운 체계',sections:[
     {h:'① 자음 — 조음 위치',body:'<ul><li><strong>양순음</strong>: ㅂ,ㅃ,ㅍ,ㅁ (두 입술)</li><li><strong>치조음</strong>: ㄷ,ㄸ,ㅌ,ㄴ,ㄹ,ㅅ,ㅆ (혀끝+윗잇몸)</li><li><strong>경구개음</strong>: ㅈ,ㅉ,ㅊ (혀 앞+센입천장)</li><li><strong>연구개음</strong>: ㄱ,ㄲ,ㅋ,ㅇ (혀 뒤+연구개)</li><li><strong>후음</strong>: ㅎ (목청)</li></ul>'},
     {h:'② 자음 — 조음 방법',body:'<ul><li><strong>파열음</strong>: ㅂ,ㅃ,ㅍ / ㄷ,ㄸ,ㅌ / ㄱ,ㄲ,ㅋ</li><li><strong>파찰음</strong>: ㅈ,ㅉ,ㅊ</li><li><strong>마찰음</strong>: ㅅ,ㅆ,ㅎ</li><li><strong>비음</strong>: ㅁ,ㄴ,ㅇ</li><li><strong>유음</strong>: ㄹ</li></ul>'},
-    {h:'③ 삼지적 상관속',body:'<p>파열음·파찰음 일부가 <strong>예사소리/된소리/거센소리</strong> 3계열을 이룹니다.</p><p>예사소리: ㄱ,ㄷ,ㅂ,ㅅ,ㅈ / 된소리: ㄲ,ㄸ,ㅃ,ㅆ,ㅉ / 거센소리: ㅋ,ㅌ,ㅍ,ㅊ</p>'},
+    {h:'③ 자음의 삼중체계',body:'<p>파열음·파찰음 일부가 <strong>예사소리/된소리/거센소리</strong> 3계열을 이룹니다.</p><p>예사소리: ㄱ,ㄷ,ㅂ,ㅅ,ㅈ / 된소리: ㄲ,ㄸ,ㅃ,ㅆ,ㅉ / 거센소리: ㅋ,ㅌ,ㅍ,ㅊ</p>'},
     {h:'④ 단모음 체계 (10개)',body:'<ul><li><strong>전설 평순</strong>: ㅣ,ㅔ,ㅐ</li><li><strong>전설 원순</strong>: ㅟ,ㅚ</li><li><strong>후설 평순</strong>: ㅡ,ㅓ,ㅏ</li><li><strong>후설 원순</strong>: ㅜ,ㅗ</li></ul>'},
     {h:'⑤ 이중 모음 (11개)',body:'<ul><li><strong>ㅣ계(j+)</strong>: ㅑ,ㅕ,ㅛ,ㅠ,ㅒ,ㅖ</li><li><strong>ㅜ계(w+)</strong>: ㅘ,ㅝ,ㅙ,ㅞ,ㅚ→ㅞ</li><li><strong>ㅡ계</strong>: ㅢ</li></ul>'}
    ],keys:['<strong>양순음</strong>: ㅂ,ㅃ,ㅍ,ㅁ','<strong>치조음</strong>: ㄷ,ㄸ,ㅌ,ㄴ,ㄹ,ㅅ,ㅆ','<strong>경구개음</strong>: ㅈ,ㅉ,ㅊ','<strong>연구개음</strong>: ㄱ,ㄲ,ㅋ,ㅇ','<strong>단모음 10개</strong>: 혀의 위치·높이·입술 모양으로 분류','<strong>이중 모음 11개</strong>: 반모음(j/w)+단모음'],
@@ -888,7 +888,7 @@ function renderConsonantChart(){
     +'</div>'
     +'<div style="margin-top:.5rem;font-size:12px;color:#94a3b8">※ 국어 자음 총 19개</div>'
     +'<div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--op)">'
-    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin-bottom:.4rem">삼지적 상관속 (파열음·파찰음)</div>'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin-bottom:.4rem">자음의 삼중체계 (파열음·파찰음)</div>'
     +legend+'</div></div>';
 }
 
@@ -901,43 +901,32 @@ function renderVowelChart(){
   ];
 
   var thead2='<tr>'
-    +'<th style="background:var(--od);color:#fff;font-size:13px;padding:10px 12px;text-align:center;font-weight:700;border-right:3px solid rgba(255,255,255,0.4);border-bottom:2px solid rgba(255,255,255,0.3)">혀높이＼위치</th>'
-    +'<th style="background:#1e3a8a;color:#fff;font-size:13px;padding:10px;text-align:center;font-weight:700;border-right:2px solid rgba(255,255,255,0.25);border-bottom:2px solid rgba(255,255,255,0.3)">전설 모음<br><span style="font-weight:400;font-size:11px">(혀 앞)</span></th>'
-    +'<th style="background:#14532d;color:#fff;font-size:13px;padding:10px;text-align:center;font-weight:700;border-bottom:2px solid rgba(255,255,255,0.3)">후설 모음<br><span style="font-weight:400;font-size:11px">(혀 뒤)</span></th>'
+    +'<th rowspan="2" style="background:var(--od);color:#fff;font-size:13px;padding:10px 12px;text-align:center;font-weight:700;border-right:3px solid rgba(255,255,255,0.4)">혀높이＼위치</th>'
+    +'<th colspan="2" style="background:#1e3a8a;color:#fff;font-size:13px;padding:10px;text-align:center;font-weight:700;border-right:2px solid rgba(255,255,255,0.3)">전설 모음<br><span style="font-weight:400;font-size:11px">(혀 앞)</span></th>'
+    +'<th colspan="2" style="background:#14532d;color:#fff;font-size:13px;padding:10px;text-align:center;font-weight:700">후설 모음<br><span style="font-weight:400;font-size:11px">(혀 뒤)</span></th>'
     +'</tr>'
     +'<tr>'
-    +'<th style="background:var(--om);color:#fff;font-size:12px;padding:6px 12px;border-right:3px solid rgba(255,255,255,0.4);border-bottom:2px solid rgba(255,255,255,0.3)"></th>'
-    +'<th style="background:#1e40af;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px;border-right:2px solid rgba(255,255,255,0.25);border-bottom:2px solid rgba(255,255,255,0.3)">평순 / 원순</th>'
-    +'<th style="background:#166534;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px;border-bottom:2px solid rgba(255,255,255,0.3)">평순 / 원순</th>'
+    +'<th style="background:#1e40af;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px 10px;text-align:center;border-right:1px dashed rgba(255,255,255,0.5)">평순</th>'
+    +'<th style="background:#1e40af;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px 10px;text-align:center;border-right:2px solid rgba(255,255,255,0.3)">원순</th>'
+    +'<th style="background:#166534;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px 10px;text-align:center;border-right:1px dashed rgba(255,255,255,0.5)">평순</th>'
+    +'<th style="background:#166534;color:rgba(255,255,255,0.95);font-size:12px;font-weight:600;padding:6px 10px;text-align:center">원순</th>'
     +'</tr>';
 
   var tbody2='';
   vowelData.forEach(function(r){
     tbody2+='<tr>'
-      +'<td style="background:var(--of);font-size:13px;font-weight:700;color:var(--od);padding:10px 12px;text-align:center;border-right:3px solid #cbd5e1;border-bottom:1px solid #e2e8f0;white-space:nowrap">'+r.row+'</td>'
-      +'<td style="padding:0;border-right:2px solid #e2e8f0;border-bottom:1px solid #e2e8f0">'
-        +'<div style="display:flex;height:100%">'
-          +'<div style="flex:1;text-align:center;padding:12px 6px;border-right:1px dashed #cbd5e1">'
-            +'<div style="font-size:16px;font-weight:700;color:#1d4ed8">'+(r.front[0]||'&nbsp;')+'</div>'
-            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">평순</div>'
-          +'</div>'
-          +'<div style="flex:1;text-align:center;padding:12px 6px">'
-            +'<div style="font-size:16px;font-weight:700;color:#7c3aed">'+(r.front[1]||'&nbsp;')+'</div>'
-            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">'+(r.front[1]?'원순':'')+'</div>'
-          +'</div>'
-        +'</div>'
+      +'<td style="background:var(--of);font-size:13px;font-weight:700;color:var(--od);padding:12px 14px;text-align:center;border-right:3px solid #cbd5e1;border-bottom:1px solid #e2e8f0;white-space:nowrap">'+r.row+'</td>'
+      +'<td style="text-align:center;padding:14px 10px;border-right:1px dashed #cbd5e1;border-bottom:1px solid #e2e8f0">'
+        +'<div style="font-size:16px;font-weight:700;color:#1d4ed8">'+(r.front[0]||'')+'</div>'
       +'</td>'
-      +'<td style="padding:0;border-bottom:1px solid #e2e8f0">'
-        +'<div style="display:flex;height:100%">'
-          +'<div style="flex:1;text-align:center;padding:12px 6px;border-right:1px dashed #cbd5e1">'
-            +'<div style="font-size:16px;font-weight:700;color:#15803d">'+(r.back[0]||'&nbsp;')+'</div>'
-            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">평순</div>'
-          +'</div>'
-          +'<div style="flex:1;text-align:center;padding:12px 6px">'
-            +'<div style="font-size:16px;font-weight:700;color:#c2410c">'+(r.back[1]||'&nbsp;')+'</div>'
-            +'<div style="font-size:11px;font-weight:600;color:#94a3b8;margin-top:3px">'+(r.back[1]?'원순':'')+'</div>'
-          +'</div>'
-        +'</div>'
+      +'<td style="text-align:center;padding:14px 10px;border-right:2px solid #e2e8f0;border-bottom:1px solid #e2e8f0">'
+        +'<div style="font-size:16px;font-weight:700;color:#7c3aed">'+(r.front[1]||'')+'</div>'
+      +'</td>'
+      +'<td style="text-align:center;padding:14px 10px;border-right:1px dashed #cbd5e1;border-bottom:1px solid #e2e8f0">'
+        +'<div style="font-size:16px;font-weight:700;color:#15803d">'+(r.back[0]||'')+'</div>'
+      +'</td>'
+      +'<td style="text-align:center;padding:14px 10px;border-bottom:1px solid #e2e8f0">'
+        +'<div style="font-size:16px;font-weight:700;color:#c2410c">'+(r.back[1]||'')+'</div>'
       +'</td>'
       +'</tr>';
   });
