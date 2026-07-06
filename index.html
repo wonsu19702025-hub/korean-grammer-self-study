@@ -484,7 +484,7 @@ const PARTS=[
     {type:'mc',q:'현대 국어 표준어의 비분절 음운(운소)은?',opts:['자음 ㄱ','모음 ㅏ','장단(소리의 길이)','반모음 j'],ans:2,exp:'현대 표준어에서 비분절 음운은 장단만 인정합니다.'},
     {type:'mc',q:'"살:쌀"은 어떤 음운 차이로 뜻이 구별되는가?',opts:['모음','자음 ㅅ:ㅆ','장단','반모음'],ans:1,exp:'예사소리(ㅅ)와 된소리(ㅆ)의 차이로 구별됩니다.'},
     {type:'fill',q:'하나의 음운 차이로 뜻이 구별되는 단어 쌍을 최소 ___쌍이라 한다.',blank:'대립',exp:'최소 대립쌍 예: 불/뿔(ㅂ:ㅃ)'},
-    {type:'fill',q:'현대 국어 표준어에서 인정하는 비분절 음운은 소리의 ___이다.',blank:'길이',exp:'눈(目)[눈:]과 눈(雪)[눈]이 장단으로 구별됩니다.'}
+    {type:'fill',q:'현대 국어 표준어에서 인정하는 비분절 음운은 소리의 ___이다.',blank:'길이',altBlanks:['장단','장단(길이)','길이(장단)'],exp:'눈(目)[눈:]과 눈(雪)[눈]이 장단으로 구별됩니다.'}
    ]},
   {id:'ph2',title:'음운 체계',desc:'자음·모음 체계와 자음의 삼중체계',badge:'new',
    theory:{title:'국어의 음운 체계',sections:[
@@ -730,6 +730,7 @@ function doLogin(){
     const aid=document.getElementById('admin-id').value.trim();
     const apw=document.getElementById('pw').value.trim();
     if(aid==='wonsu19702025@gmail.com'&&apw==='123456789!'){
+      sessionStorage.setItem('kgrammar_session', JSON.stringify({mode:'admin'}));
       document.getElementById('admin-nav-badge').style.display='block';
       renderAdmin();show('sa');
     } else {
@@ -767,6 +768,8 @@ function doLogin(){
     if(idx>=0) list[idx]=u;
   }
   localStorage.setItem('kgrammar_users',JSON.stringify(list));
+  // 세션 저장 (새로고침 유지)
+  sessionStorage.setItem('kgrammar_session', JSON.stringify({email:e, name:u.name, mode:'student'}));
   currentUserEmail=e;
   ['uname','uname2','uname3'].forEach(function(id){
     var el=document.getElementById(id);
@@ -778,6 +781,7 @@ function doLogin(){
 }
 
 function logout(){
+  sessionStorage.removeItem('kgrammar_session');
   setMode('student');
   document.getElementById('nickname').value='';
   document.getElementById('em').value='';
@@ -839,13 +843,18 @@ function openPart(id){
   document.getElementById('sdesc').textContent=CP.desc+' · '+CP.sessions;
   const lbl={new:'미학습',done:'완료',wip:'진행 중'};
   const ic={new:'○',done:'✅',wip:'⏱'};
-  document.getElementById('stiles').innerHTML=CP.subs.map(s=>
-    `<div class="sub-tile" onclick="openStudy('${s.id}')">
-      <div class="sub-tile-title">${s.title}</div>
-      <div class="sub-tile-desc">${s.desc}</div>
-      <span class="badge ${s.badge}">${ic[s.badge]} ${lbl[s.badge]}</span>
-    </div>`
-  ).join('');
+  // localStorage에서 완료 여부 확인
+  var localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var u=localList.find(function(x){return x.email===currentUserEmail;});
+  var userProg=(u&&u.progress)||{};
+  document.getElementById('stiles').innerHTML=CP.subs.map(function(s){
+    var badge=userProg[s.id]?'done':s.badge;
+    return '<div class="sub-tile" onclick="openStudy(\''+s.id+'\')">'+
+      '<div class="sub-tile-title">'+s.title+'</div>'+
+      '<div class="sub-tile-desc">'+s.desc+'</div>'+
+      '<span class="badge '+badge+'">'+ic[badge]+' '+lbl[badge]+'</span>'+
+    '</div>';
+  }).join('');
   show('ss');
 }
 function goSub(){openPart(CP.id)}
@@ -1055,8 +1064,12 @@ function selOpt(i){
 }
 function chkFill(){
   if(ANS)return;ANS=true;
-  const q=CS.quizzes[CQ],v=document.getElementById('fi').value.trim();
-  const ok=v===q.blank||v.replace(/\s/g,'')===q.blank.replace(/\s/g,'');
+  const q=CS.quizzes[CQ];
+  const raw=document.getElementById('fi').value.trim();
+  const v=raw.replace(/\s/g,'');
+  // 정답 후보: blank 자체 + 동의어 배열(altBlanks) + 공백 제거 비교
+  const blanks=[q.blank].concat(q.altBlanks||[]);
+  const ok=blanks.some(function(b){ return v===b.replace(/\s/g,''); });
   if(ok)CC_CNT++;
   const bl=document.getElementById('bl');if(bl)bl.textContent=q.blank;
   showFB(ok,ok?'정답입니다!':'정답: '+q.blank+' — '+q.exp);
@@ -2249,6 +2262,25 @@ function deleteExamSet(id){
 
 
 document.addEventListener('DOMContentLoaded', function(){
+  // ── 세션 복원 (새로고침 후 로그인 유지) ──
+  var saved=sessionStorage.getItem('kgrammar_session');
+  if(saved){
+    try{
+      var sess=JSON.parse(saved);
+      if(sess.mode==='admin'){
+        document.getElementById('admin-nav-badge').style.display='block';
+        renderAdmin();show('sa');
+      } else if(sess.mode==='student'&&sess.email){
+        currentUserEmail=sess.email;
+        ['uname','uname2','uname3'].forEach(function(id){
+          var el=document.getElementById(id);
+          if(el) el.textContent=sess.name||sess.email.split('@')[0];
+        });
+        document.getElementById('admin-nav-badge').style.display='none';
+        renderHome();show('sh');
+      }
+    }catch(e){ sessionStorage.removeItem('kgrammar_session'); }
+  }
   // 모드 탭 버튼
   var btnStudent = document.getElementById('mt-student');
   var btnAdmin   = document.getElementById('mt-admin');
