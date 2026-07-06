@@ -1211,30 +1211,92 @@ function renderUsersAdmin(c){
 
 function showUserDetail(i){
   users=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var examSets=loadExamSets();
   const u=users[i];
-  const totalSubs=PARTS.reduce((a,p)=>a+p.subs.length,0);
-  const allSubs=PARTS.flatMap(p=>p.subs.map(s=>({pid:p.id,ptitle:p.title,sid:s.id,stitle:s.title})));
+  const allSubs=PARTS.flatMap(function(p){return p.subs.map(function(s){return{pid:p.id,ptitle:p.title,sid:s.id,stitle:s.title,qCount:s.quizzes.length};});});
   const card=document.getElementById('user-detail-card');
   card.style.display='block';
-  card.innerHTML=`
-    <h3>📊 ${u.name} (${u.email}) 학습 상세</h3>
-    <div class="table-wrap"><table>
-      <tr><th>파트</th><th>세부 항목</th><th>완료 여부</th><th>완료일</th><th>점수</th><th>정답률</th></tr>
-      ${allSubs.map(s=>{
-        const prog=u.progress&&u.progress[s.sid];
-        const sc=u.scores&&u.scores[s.sid];
-        const done=!!prog;
-        return`<tr>
-          <td><span class="tag blue">${s.ptitle}</span></td>
-          <td style="font-size:13px">${s.stitle}</td>
-          <td>${done?'<span class="tag green">✅ 완료</span>':'<span class="tag" style="background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0">미완료</span>'}</td>
-          <td style="font-size:12px;color:#64748b">${prog?prog.date:'-'}</td>
-          <td style="font-weight:600;color:var(--ol)">${sc?sc.score+'/'+sc.total:'-'}</td>
-          <td>${sc?`<div style="display:flex;align-items:center;gap:6px"><div class="progress-bar-wrap"><div class="progress-bar-inner" style="width:${sc.pct}%;background:${sc.pct>=80?'#15803d':sc.pct>=60?'var(--ol)':'#dc2626'}"></div></div><span style="font-size:12px;font-weight:600;color:${sc.pct>=80?'#15803d':sc.pct>=60?'var(--ol)':'#dc2626'}">${sc.pct}점</span></div>`:'-'}</td>
-        </tr>`;
-      }).join('')}
-    </table></div>
-    <button class="btn-gh" style="margin-top:.75rem;padding:6px 16px;font-size:12px" onclick="document.getElementById('user-detail-card').style.display='none'">닫기</button>`;
+
+  // ── 학습 파트 진도 테이블 ──
+  var subRows=allSubs.map(function(s){
+    var prog=u.progress&&u.progress[s.sid];
+    var sc=u.scores&&u.scores[s.sid];
+    var theoryDone=!!prog;
+    var quizDone=!!(sc&&sc.total>0);
+    var bothDone=theoryDone&&quizDone;
+    var pct=sc?sc.pct:0;
+    var pctColor=pct>=80?'#15803d':pct>=60?'var(--ol)':'#dc2626';
+    return '<tr>'
+      +'<td><span class="tag blue">'+s.ptitle+'</span></td>'
+      +'<td style="font-size:13px;font-weight:500">'+s.stitle+'</td>'
+      +'<td style="text-align:center">'+(theoryDone?'<span class="tag green" style="font-size:11px">✅ 완료</span>':'<span style="font-size:11px;color:#94a3b8">미완료</span>')+'</td>'
+      +'<td style="text-align:center">'+(quizDone?'<span class="tag green" style="font-size:11px">✅ 완료</span>':'<span style="font-size:11px;color:#94a3b8">미완료</span>')+'</td>'
+      +'<td style="font-size:12px;color:#64748b">'+(prog?prog.date:'-')+'</td>'
+      +'<td style="font-weight:600;color:var(--ol)">'+(sc?sc.score+'/'+sc.total:'-')+'</td>'
+      +'<td>'+(sc?'<div style="display:flex;align-items:center;gap:5px"><div class="progress-bar-wrap"><div class="progress-bar-inner" style="width:'+pct+'%;background:'+pctColor+'"></div></div><span style="font-size:11px;font-weight:600;color:'+pctColor+'">'+pct+'점</span></div>':'-')+'</td>'
+      +'<td style="text-align:center">'+(bothDone?'<span style="font-size:18px">🏆</span>':theoryDone?'<span style="font-size:15px">📖</span>':'<span style="font-size:15px;color:#e2e8f0">○</span>')+'</td>'
+      +'</tr>';
+  }).join('');
+
+  // ── 기출문제 진도 테이블 ──
+  var examScores=u.examScores||{};
+  var examRows='';
+  if(examSets.length===0){
+    examRows='<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:1.5rem">등록된 기출문제 세트가 없습니다.</td></tr>';
+  } else {
+    examRows=examSets.map(function(es){
+      var key='exam_'+es.id;
+      var exsc=examScores[key];
+      var gradeColors={1:'blue',2:'green',3:'yellow'};
+      var total=(es.questions||[]).length;
+      var pct=exsc?exsc.pct:0;
+      var pctColor=pct>=80?'#15803d':pct>=60?'var(--ol)':'#dc2626';
+      return '<tr>'
+        +'<td><span class="tag '+(gradeColors[es.grade]||'blue')+'">고'+es.grade+'</span></td>'
+        +'<td style="font-size:13px"><strong>'+es.title+'</strong></td>'
+        +'<td style="font-size:12px;color:#64748b">'+es.year+'년 '+es.month+'월</td>'
+        +'<td style="text-align:center">'+(exsc?'<span class="tag green" style="font-size:11px">✅ 완료</span>':'<span style="font-size:11px;color:#94a3b8">미응시</span>')+'</td>'
+        +'<td style="font-weight:600;color:var(--ol)">'+(exsc?exsc.score+'/'+total:'-/'+total)+'</td>'
+        +'<td>'+(exsc?'<div style="display:flex;align-items:center;gap:5px"><div class="progress-bar-wrap" style="width:80px"><div class="progress-bar-inner" style="width:'+pct+'%;background:'+pctColor+'"></div></div><span style="font-size:11px;font-weight:600;color:'+pctColor+'">'+pct+'점</span></div>':'-')+'</td>'
+        +'<td style="font-size:12px;color:#64748b">'+(exsc?exsc.date:'-')+'</td>'
+        +'</tr>';
+    }).join('');
+  }
+
+  // ── 전체 요약 ──
+  var theoryTotal=allSubs.length;
+  var theoryDoneCount=allSubs.filter(function(s){return u.progress&&u.progress[s.sid];}).length;
+  var quizDoneCount=allSubs.filter(function(s){return u.scores&&u.scores[s.sid]&&u.scores[s.sid].total>0;}).length;
+  var examDoneCount=Object.keys(examScores).length;
+  var overallPct=Math.round((theoryDoneCount+quizDoneCount)/(theoryTotal*2)*100);
+
+  card.innerHTML=
+    '<h3 style="margin-bottom:1rem">📊 '+u.name+' <span style="font-size:13px;color:#94a3b8;font-weight:400">('+u.email+')</span> 학습 상세</h3>'
+
+    // 요약 카드
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem">'
+    +'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;text-align:center"><div style="font-size:20px;font-weight:700;color:#15803d">'+theoryDoneCount+'/'+theoryTotal+'</div><div style="font-size:11px;color:#166534;margin-top:2px">📖 이론 완료</div></div>'
+    +'<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;text-align:center"><div style="font-size:20px;font-weight:700;color:#1d4ed8">'+quizDoneCount+'/'+theoryTotal+'</div><div style="font-size:11px;color:#1e40af;margin-top:2px">✏️ 문제풀이 완료</div></div>'
+    +'<div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:10px 12px;text-align:center"><div style="font-size:20px;font-weight:700;color:#7c3aed">'+examDoneCount+'</div><div style="font-size:11px;color:#6d28d9;margin-top:2px">📄 기출 응시</div></div>'
+    +'<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 12px;text-align:center"><div style="font-size:20px;font-weight:700;color:#c2410c">'+overallPct+'%</div><div style="font-size:11px;color:#9a3412;margin-top:2px">📈 전체 진도</div></div>'
+    +'</div>'
+
+    // 학습 파트 진도
+    +'<h4 style="font-size:14px;font-weight:600;color:var(--od);margin-bottom:.6rem">📚 학습 파트 진도</h4>'
+    +'<div class="table-wrap"><table>'
+    +'<tr><th>파트</th><th>항목</th><th>이론</th><th>문제풀이</th><th>완료일</th><th>점수</th><th>정답률</th><th>상태</th></tr>'
+    +subRows
+    +'</table></div>'
+    +'<div style="font-size:11px;color:#94a3b8;margin-top:.4rem;margin-bottom:1.25rem">🏆 이론+문제풀이 모두 완료 &nbsp;|&nbsp; 📖 이론만 완료</div>'
+
+    // 기출문제 진도
+    +'<h4 style="font-size:14px;font-weight:600;color:var(--od);margin-bottom:.6rem">📄 EBS 기출문제 응시 현황</h4>'
+    +'<div class="table-wrap"><table>'
+    +'<tr><th>학년</th><th>시험명</th><th>연도·월</th><th>응시여부</th><th>점수</th><th>정답률</th><th>응시일</th></tr>'
+    +examRows
+    +'</table></div>'
+    +'<button class="btn-gh" style="margin-top:1rem;padding:6px 16px;font-size:12px" onclick="document.getElementById(\'user-detail-card\').style.display=\'none\'">닫기</button>';
+
   card.scrollIntoView({behavior:'smooth'});
 }
 
