@@ -329,7 +329,7 @@ tr:hover td{background:#f8fbff}
     <div style="background:linear-gradient(135deg,#1a1a4e,#2d1b69,#1a4f7a);border-radius:16px;padding:1.4rem 1.5rem;margin-bottom:1.75rem;cursor:pointer;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden" onclick="goExam()">
       <div style="font-size:36px;flex-shrink:0">📄</div>
       <div style="flex:1">
-        <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px">EBS 기출문제 풀이</div>
+        <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px">EBS 언어(문법)기출문제 풀이</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.7)">고1·고2·고3 모의고사 기출 · 학년·연도별 필터</div>
       </div>
       <div style="background:rgba(255,255,255,0.15);color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;flex-shrink:0">시작 →</div>
@@ -398,9 +398,9 @@ tr:hover td{background:#f8fbff}
   </nav>
   <div class="exam-hero">
     <div class="sub-bc" style="margin-bottom:.6rem">
-      <span class="lk" onclick="goHome()">🏠 홈</span> › <span style="color:rgba(255,255,255,0.8)">EBS 기출문제 풀이</span>
+      <span class="lk" onclick="goHome()">🏠 홈</span> › <span style="color:rgba(255,255,255,0.8)">EBS 언어(문법)기출문제 풀이</span>
     </div>
-    <h2>📄 EBS 기출문제 풀이</h2>
+    <h2>📄 EBS 언어(문법)기출문제 풀이</h2>
     <p>고1·고2·고3 모의고사 기출문제를 학년과 연도별로 선택하여 풀어보세요.</p>
     <div class="exam-filters" id="exam-grade-filter">
       <button class="ef-btn active" onclick="setExamFilter('grade','all',this)">전체 학년</button>
@@ -500,7 +500,7 @@ const PARTS=[
     {type:'mc',q:'"ㄴ, ㅁ, ㅇ"의 공통 조음 방법은?',opts:['파열음','파찰음','비음','유음'],ans:2,exp:'ㄴ·ㅁ·ㅇ은 모두 비음입니다.'},
     {type:'mc',q:'파열음이 아닌 것은?',opts:['ㄱ','ㄷ','ㅈ','ㅋ'],ans:2,exp:'ㅈ는 파찰음입니다.'},
     {type:'fill',q:'혀끝이 윗잇몸에 닿아 나는 자음을 ___ 음이라 한다.',blank:'치조',exp:'치조음: ㄷ,ㄸ,ㅌ,ㄴ,ㄹ,ㅅ,ㅆ'},
-    {type:'fill',q:'예사소리·된소리·거센소리의 세 계열 체계를 ___ 상관속이라 한다.',blank:'삼지적',exp:'삼지적 상관속은 한국어 자음 체계의 주요 특징입니다.'}
+    {type:'fill',q:'우리나라 자음 중 파열음과 파찰음은 예사소리, 된소리, 거센소리의 ___를 이루고 있다.',blank:'삼중체계',altBlanks:['삼중 체계','자음의삼중체계'],exp:'파열음(ㄱ·ㄷ·ㅂ)과 파찰음(ㅈ)이 예사소리·된소리·거센소리 세 계열로 나뉘는 체계입니다.'}
    ]},
   {id:'ph3',title:'음운 변동',desc:'교체·탈락·첨가·축약',badge:'new',
    theory:{title:'국어의 음운 변동',sections:[
