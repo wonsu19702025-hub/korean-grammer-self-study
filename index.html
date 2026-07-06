@@ -84,7 +84,7 @@ body{background:var(--od);min-height:100vh}
 .c3::before{background:linear-gradient(90deg,#b45309,#fbbf24)}
 .c4::before{background:linear-gradient(90deg,#be185d,#f472b6)}
 .c5::before{background:linear-gradient(90deg,#065f46,#34d399)}
-.tile-icon{font-size:20px;color:var(--ol);margin-bottom:.55rem}
+.tile-icon{font-size:20px;color:var(--ol);margin-bottom:.55rem;height:28px;display:flex;align-items:center;justify-content:flex-start}
 .tile-name{font-size:16px;font-weight:700;color:var(--od);margin-bottom:4px}
 .tile-desc{font-size:13px;color:#64748b;margin-bottom:.4rem;line-height:1.5}
 .tile-sess{font-size:11px;color:var(--ol);font-weight:600;margin-bottom:.7rem}
@@ -468,7 +468,14 @@ tr:hover td{background:#f8fbff}
 //  DATA
 // ════════════════════════════════════════
 const CC=['c0','c1','c2','c3','c4','c5'];
-const IC=['🔊','📝','📋','🏛️','🌐','✏️'];
+const IC=[
+  '<span style="font-size:20px;font-weight:900;color:var(--ol);font-family:\'Noto Sans KR\',sans-serif;line-height:1">ㄱㄴ</span>',
+  '<span style="font-size:20px;font-weight:900;color:var(--ol);font-family:\'Noto Sans KR\',sans-serif;line-height:1">어휘</span>',
+  '<span style="font-size:20px;font-weight:900;color:var(--ol);font-family:\'Noto Sans KR\',sans-serif;line-height:1">문장</span>',
+  '<span style="font-size:20px;font-weight:900;color:var(--ol);font-family:\'Noto Sans KR\',sans-serif;line-height:1">훈민</span>',
+  '<span style="font-size:20px;font-weight:900;color:var(--ol);font-family:\'Noto Sans KR\',sans-serif;line-height:1">ABC</span>',
+  '<span style="font-size:20px;font-weight:900;color:var(--ol);font-family:\'Noto Sans KR\',sans-serif;line-height:1">맞춤</span>'
+];
 
 const PARTS=[
 {id:'phoneme',title:'음운',desc:'음운 체계와 음운 변동',sessions:'4·5회차',subs:[
@@ -825,7 +832,6 @@ function renderHome(){
       <div class="tile-icon">${IC[i]}</div>
       <div class="tile-name">${p.title}</div>
       <div class="tile-desc">${p.desc}</div>
-      <div class="tile-sess">📅 ${p.sessions}</div>
       <div class="tile-bar"><div class="tile-bar-fill" style="width:${pct}%"></div></div>
       <div class="tile-cnt">${d}/${tot} 완료</div>
     </div>`;
@@ -840,7 +846,7 @@ function openPart(id){
   CP=PARTS.find(p=>p.id===id);
   document.getElementById('bcp').textContent=CP.title;
   document.getElementById('stitle').textContent=CP.title;
-  document.getElementById('sdesc').textContent=CP.desc+' · '+CP.sessions;
+  document.getElementById('sdesc').textContent=CP.desc;
   const lbl={new:'미학습',done:'완료',wip:'진행 중'};
   const ic={new:'○',done:'✅',wip:'⏱'};
   // localStorage에서 완료 여부 확인
