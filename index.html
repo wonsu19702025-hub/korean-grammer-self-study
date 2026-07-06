@@ -291,6 +291,10 @@ tr:hover td{background:#f8fbff}
       <div id="admin-fields" style="display:none">
         <div class="login-field"><label>관리자 아이디</label><input type="text" id="admin-id" placeholder="아이디 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
         <div class="login-field"><label>비밀번호</label><input type="password" id="pw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:.25rem">
+          <input type="checkbox" id="remember-admin" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ol)"/>
+          <label for="remember-admin" style="font-size:12px;color:#64748b;cursor:pointer">아이디 기억하기</label>
+        </div>
       </div>
       <div class="login-err" id="err">아이디 또는 비밀번호가 올바르지 않습니다.</div>
       <button class="login-btn" id="login-btn">로그인</button>
@@ -729,8 +733,21 @@ function setMode(m){
   document.getElementById('admin-fields').style.display=m==='admin'?'':'none';
   document.getElementById('err').style.display='none';
   document.getElementById('em').value='';
-  if(document.getElementById('admin-id')) document.getElementById('admin-id').value='';
   document.getElementById('pw').value='';
+  if(m==='admin'){
+    // 저장된 아이디 복원
+    var savedId=localStorage.getItem('kgrammar_admin_id');
+    var aidEl=document.getElementById('admin-id');
+    var remEl=document.getElementById('remember-admin');
+    if(savedId&&aidEl){
+      aidEl.value=savedId;
+      if(remEl) remEl.checked=true;
+      // 비밀번호 란으로 바로 포커스
+      setTimeout(function(){document.getElementById('pw').focus();},50);
+    } else {
+      if(aidEl) aidEl.value='';
+    }
+  }
 }
 
 function doLogin(){
@@ -740,7 +757,14 @@ function doLogin(){
   if(currentMode==='admin'){
     const aid=document.getElementById('admin-id').value.trim();
     const apw=document.getElementById('pw').value.trim();
+    const rememberChk=document.getElementById('remember-admin');
     if(aid==='wonsu19702025@gmail.com'&&apw==='123456789!'){
+      // 아이디 기억하기 처리
+      if(rememberChk&&rememberChk.checked){
+        localStorage.setItem('kgrammar_admin_id', aid);
+      } else {
+        localStorage.removeItem('kgrammar_admin_id');
+      }
       sessionStorage.setItem('kgrammar_session', JSON.stringify({mode:'admin'}));
       document.getElementById('admin-nav-badge').style.display='block';
       renderAdmin();show('sa');
@@ -2367,6 +2391,14 @@ document.addEventListener('DOMContentLoaded', function(){
   if(emInput)  emInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
   if(pwInput)  pwInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
   if(aidInput) aidInput.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+  // 저장된 관리자 아이디 자동 채우기
+  var savedAdminId=localStorage.getItem('kgrammar_admin_id');
+  if(savedAdminId&&aidInput){
+    aidInput.value=savedAdminId;
+    var remChk=document.getElementById('remember-admin');
+    if(remChk) remChk.checked=true;
+  }
 });
 </script>
 </body>
