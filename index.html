@@ -238,6 +238,12 @@ tr:hover td{background:#f8fbff}
 .exam-play-sub{font-size:11px;color:#94a3b8;margin-top:1px}
 .exam-q-card{background:#fff;border-radius:14px;border:1px solid rgba(33,118,174,0.1);padding:1.5rem;margin-bottom:1rem}
 .exam-q-num{font-size:11px;font-weight:600;color:var(--ol);margin-bottom:.6rem}
+.exam-q-text u, .exam-q-passage u, .exam-opt u, .quiz-q u, .opts u{
+  text-decoration:underline;
+  text-underline-offset:3px;
+  font-weight:600;
+  color:var(--od);
+}
 .exam-q-text{font-size:14px;color:var(--od);line-height:1.9;margin-bottom:.7rem;font-weight:500}
 .exam-q-passage{background:#f8fbff;border-left:3px solid var(--ob);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:.9rem;font-size:13px;color:#374151;line-height:1.9;white-space:pre-line}
 .exam-opts{display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:1rem}
@@ -1895,8 +1901,8 @@ function saveExamSets(sets){
      ans:0,exp:'\'국물\'→[궁물]: 파열음 ㄱ이 비음 ㅁ 앞에서 비음 ㅇ으로 바뀌는 비음화. \'닫는\'→[단는]: 파열음 ㄷ이 비음 ㄴ 앞에서 비음 ㄴ으로 바뀌는 비음화입니다.'},
     {num:4,passage:'',
      q:'다음 밑줄 친 단어의 품사가 나머지와 다른 것은?',
-     opts:['저 산이 정말 높다.','그 책이 참 재미있다.','이 집은 꽤 오래되었다.','새 옷을 사 입었다.'],
-     ans:3,exp:'\'새\'는 관형사입니다. \'저\', \'그\', \'이\'는 지시 관형사이지만, 여기서 \'새\'는 \'새로운\'의 의미를 지닌 관형사입니다. 다른 선택지의 밑줄 친 단어들(저, 그, 이)도 모두 관형사이므로, \'새\'만 의미가 다른 관형사라 볼 수 있습니다. 실제 정답은 \'저, 그, 이\'는 지시 관형사, \'새\'는 성상 관형사입니다.'},
+     opts:['<u>저</u> 산이 정말 높다.','<u>그</u> 책이 참 재미있다.','<u>이</u> 집은 꽤 오래되었다.','<u>새</u> 옷을 사 입었다.'],
+     ans:3,exp:'<u>새</u>는 성상 관형사입니다. <u>저</u>·<u>그</u>·<u>이</u>는 지시 관형사이고, <u>새</u>만 성상 관형사로 품사의 종류가 같지만 의미상 분류가 다릅니다.'},
     {num:5,passage:'다음 글을 읽고 물음에 답하시오.\n\n선어말 어미 \'-(으)시-\'는 주로 주어가 가리키는 대상을 높일 때 사용한다. 그러나 \'선생님은 손이 크시다\'처럼 주어와 밀접하게 관련된 대상(신체 부위 등)을 높이는 간접 높임에도 쓰인다.',
      q:'다음 중 \'간접 높임\'이 쓰인 예로 가장 적절한 것은?',
      opts:['할머니께서 주무신다.','사장님이 오셨습니다.','교수님의 연구실이 넓으시다.','아버지가 식사하신다.'],
