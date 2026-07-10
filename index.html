@@ -2023,12 +2023,15 @@ function renderAdmin(){
 var WEBHOOK_URL = ''; // ← 여기에 Google Apps Script 배포 URL 붙여넣기
 
 function sendToSheets(data){
-  if(!WEBHOOK_URL) return; // URL 미설정 시 조용히 스킵
+  if(!WEBHOOK_URL) return;
+  // Google Apps Script는 Content-Type:application/json 시 CORS preflight 발생
+  // text/plain + no-cors 조합으로 전송
   fetch(WEBHOOK_URL, {
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
     body:JSON.stringify(data)
-  }).catch(function(){}); // 오류 시 조용히 무시 (학습 흐름 방해 안 함)
+  }).catch(function(){});
 }
 
 function getUserName(){
