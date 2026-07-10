@@ -723,6 +723,8 @@ const PARTS=[
 //  STATE
 // ════════════════════════════════════════
 let CP=null,CS=null,CQ=0,ANS=false,CC_CNT=0,WRONG_QS=[];
+// 오늘 세션 학습 기록
+var sessionLog=[];
 let currentMode='student';
 let currentUserEmail='';
 const PROG={};
@@ -863,7 +865,111 @@ function doLogin(){
 }
 
 function logout(){
+  // 학습 요약 팝업 표시 (학습 기록이 있을 때만)
+  if(sessionLog.length>0){
+    showLogoutSummary();
+    return; // 팝업에서 확인 후 로그아웃
+  }
+  doLogout();
+}
+
+function showLogoutSummary(){
+  var name=getUserName();
+  var totalItems=sessionLog.length;
+  var avgPct=Math.round(sessionLog.reduce(function(a,s){return a+s.pct;},0)/totalItems);
+  var avgColor=avgPct>=80?'#15803d':avgPct>=60?'var(--ol)':'#dc2626';
+
+  // 학습 항목 목록
+  var itemRows=sessionLog.map(function(s){
+    var pctColor=s.pct>=80?'#15803d':s.pct>=60?'var(--ol)':'#dc2626';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9">'
+      +'<div>'
+        +'<span style="font-size:11px;background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:1px 6px;margin-right:5px">'+s.partTitle+'</span>'
+        +'<span style="font-size:13px;font-weight:500;color:#1e293b">'+s.subTitle+'</span>'
+      +'</div>'
+      +'<span style="font-size:13px;font-weight:700;color:'+pctColor+'">'+s.score+'/'+s.total+' ('+s.pct+'%)</span>'
+      +'</div>';
+  }).join('');
+
+  // 틀린 문제 모아보기
+  var allWrong=[];
+  sessionLog.forEach(function(s){
+    s.wrongItems.forEach(function(q){
+      if(q) allWrong.push({sub:s.subTitle, q:q});
+    });
+  });
+  var wrongSection='';
+  if(allWrong.length>0){
+    wrongSection='<div style="margin-top:1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px">'
+      +'<div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:.5rem">✗ 오늘 틀린 문제 — 다음에 다시 도전해 보세요!</div>'
+      +allWrong.map(function(w){
+        return '<div style="font-size:12px;color:#7f1d1d;padding:3px 0;border-bottom:1px solid #fecaca;line-height:1.5">'
+          +'<span style="color:#dc2626;font-weight:600">['+w.sub+']</span> '+w.q+'…'
+          +'</div>';
+      }).join('')
+      +'</div>';
+  }
+
+  // 격려 메시지
+  var msg=avgPct===100?'완벽한 학습이었어요! 🎉'
+    :avgPct>=80?'오늘도 훌륭한 학습이었어요! 👍'
+    :avgPct>=60?'꾸준히 하면 더 잘할 수 있어요! 📚'
+    :'오늘 틀린 문제를 다시 복습해 보세요! 🔍';
+
+  // 팝업 생성
+  var overlay=document.createElement('div');
+  overlay.id='logout-summary-overlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem';
+  overlay.innerHTML=
+    '<div style="background:#fff;border-radius:20px;padding:2rem;width:100%;max-width:460px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">'
+
+    // 헤더
+    +'<div style="text-align:center;margin-bottom:1.25rem">'
+      +'<div style="font-size:32px;margin-bottom:.4rem">📚</div>'
+      +'<div style="font-size:18px;font-weight:700;color:#1e293b">'+name+'님, 오늘 학습 완료!</div>'
+      +'<div style="font-size:13px;color:#64748b;margin-top:4px">'+msg+'</div>'
+    +'</div>'
+
+    // 요약 카드
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem">'
+      +'<div style="background:#eff6ff;border-radius:12px;padding:12px;text-align:center">'
+        +'<div style="font-size:22px;font-weight:700;color:#1d4ed8">'+totalItems+'개</div>'
+        +'<div style="font-size:11px;color:#64748b;margin-top:2px">완료한 학습 항목</div>'
+      +'</div>'
+      +'<div style="background:#f0fdf4;border-radius:12px;padding:12px;text-align:center">'
+        +'<div style="font-size:22px;font-weight:700;color:'+avgColor+'">'+avgPct+'%</div>'
+        +'<div style="font-size:11px;color:#64748b;margin-top:2px">평균 정답률</div>'
+      +'</div>'
+    +'</div>'
+
+    // 학습 항목 목록
+    +'<div style="margin-bottom:.5rem">'
+      +'<div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:.4rem">오늘 학습한 내용</div>'
+      +itemRows
+    +'</div>'
+
+    // 틀린 문제
+    +wrongSection
+
+    // 버튼
+    +'<div style="display:flex;gap:8px;margin-top:1.25rem">'
+      +'<button onclick="document.getElementById(\'logout-summary-overlay\').remove()" '
+        +'style="flex:1;background:var(--of);color:var(--od);border:1px solid var(--op);border-radius:20px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">'
+        +'계속 학습하기'
+      +'</button>'
+      +'<button onclick="document.getElementById(\'logout-summary-overlay\').remove();doLogout()" '
+        +'style="flex:1;background:linear-gradient(135deg,var(--om),var(--ol));color:#fff;border:none;border-radius:20px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">'
+        +'로그아웃'
+      +'</button>'
+    +'</div>'
+    +'</div>';
+
+  document.body.appendChild(overlay);
+}
+
+function doLogout(){
   sessionStorage.removeItem('kgrammar_session');
+  sessionLog=[];
   setMode('student');
   document.getElementById('nickname').value='';
   document.getElementById('em').value='';
@@ -1236,6 +1342,20 @@ function renderScore(){
   var idx=localList.findIndex(function(x){return x.email===currentUserEmail;});
   if(idx>=0)localList[idx]=u; else localList.push(u);
   localStorage.setItem('kgrammar_users',JSON.stringify(localList));
+
+  // 세션 로그에 기록 (로그아웃 시 요약에 사용)
+  var wrongItems=WRONG_QS.map(function(qi){
+    var q=CS.quizzes[qi];
+    return q?q.q.replace(/<[^>]+>/g,'').slice(0,40):'';
+  }).filter(Boolean);
+  sessionLog.push({
+    partTitle:CP.title,
+    subTitle:CS.title,
+    score:CC_CNT,
+    total:CS.quizzes.length,
+    pct:scorePct,
+    wrongItems:wrongItems
+  });
   // Google Sheets 학습 기록 전송
   sendToSheets({
     type:'study',
