@@ -721,7 +721,7 @@ const PARTS=[
 // ════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════
-let CP=null,CS=null,CQ=0,ANS=false,CC_CNT=0;
+let CP=null,CS=null,CQ=0,ANS=false,CC_CNT=0,WRONG_QS=[];
 let currentMode='student';
 let currentUserEmail='';
 const PROG={};
@@ -955,7 +955,7 @@ function openStudy(subId){
   CS=CP.subs.find(s=>s.id===subId);
   document.getElementById('bcp2').textContent=CP.title;
   document.getElementById('bcsub').textContent=CS.title;
-  CQ=0;ANS=false;CC_CNT=0;
+  CQ=0;ANS=false;CC_CNT=0;WRONG_QS=[];
   document.getElementById('tth').classList.add('active');
   document.getElementById('tqz').classList.remove('active');
   document.getElementById('thc').style.display='';
@@ -968,7 +968,7 @@ function swTab(tab){
   document.getElementById('tqz').classList.toggle('active',tab==='quiz');
   document.getElementById('thc').style.display=tab==='theory'?'':'none';
   document.getElementById('qzc').style.display=tab==='quiz'?'':'none';
-  if(tab==='quiz'){CQ=0;ANS=false;CC_CNT=0;renderQuiz();}
+  if(tab==='quiz'){CQ=0;ANS=false;CC_CNT=0;WRONG_QS=[];renderQuiz();}
   else renderTheory();
 }
 
@@ -1115,7 +1115,7 @@ function goToQuiz(){
   document.getElementById('tqz').classList.add('active');
   document.getElementById('thc').style.display='none';
   document.getElementById('qzc').style.display='';
-  CQ=0;ANS=false;CC_CNT=0;renderQuiz();
+  CQ=0;ANS=false;CC_CNT=0;WRONG_QS=[];renderQuiz();
 }
 
 function renderQuiz(){
@@ -1145,6 +1145,7 @@ function renderQuiz(){
 function selOpt(i){
   if(ANS)return;ANS=true;
   const q=CS.quizzes[CQ],ok=i===q.ans;if(ok)CC_CNT++;
+  if(!ok&&!WRONG_QS.includes(CQ)) WRONG_QS.push(CQ);
   document.querySelectorAll('.opt').forEach((b,j)=>{
     if(j===i)b.classList.add(ok?'ok':'no');
     if(j===q.ans&&!ok)b.classList.add('ok');
@@ -1162,18 +1163,58 @@ function chkFill(){
     return v.toLowerCase()===b.replace(/\s/g,'').toLowerCase();
   });
   if(ok)CC_CNT++;
-  const bl=document.getElementById('bl');if(bl)bl.textContent=q.blank;
+  else if(!WRONG_QS.includes(CQ)) WRONG_QS.push(CQ);if(bl)bl.textContent=q.blank;
   showFB(ok,ok?'정답입니다!':'정답: '+q.blank+' — '+q.exp);
 }
 function showFB(ok,msg){
   const fb=document.getElementById('fb');
   fb.className='fb '+(ok?'ok':'no');
-  fb.innerHTML=`•<span>${ok?'✓ 정답! ':'✗ 오답. '}${msg}</span>`;
+  fb.innerHTML='•<span>'+(ok?'✓ 정답! ':'✗ 오답. ')+msg+'</span>'
+    +(!ok?'<button onclick="retryThisQ()" style="margin-top:8px;display:block;background:#fff;border:1px solid #dc2626;color:#dc2626;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:inherit">🔄 이 문제 다시 풀기</button>':'');
   const nb=document.getElementById('nb');nb.style.display='flex';
 }
-function nextQ(){CQ++;renderQuiz();}
+
+function retryThisQ(){
+  ANS=false;
+  // WRONG_QS에서 제거 후 다시 추적
+  WRONG_QS=WRONG_QS.filter(function(q){return q!==CQ;});
+  renderQuiz();
+}
+function nextQ(){
+  // 주관식 문제에서 아직 답을 제출하지 않은 경우 차단
+  const q=CS.quizzes[CQ];
+  if(q&&q.type==='fill'&&!ANS){
+    const fi=document.getElementById('fi');
+    if(fi){
+      fi.style.borderColor='#dc2626';
+      fi.placeholder='답을 먼저 입력하고 확인 버튼을 눌러 주세요!';
+      fi.focus();
+      // 1.5초 후 원래 상태로
+      setTimeout(function(){
+        fi.style.borderColor='';
+        fi.placeholder='답을 입력하세요...';
+      },1500);
+    }
+    return;
+  }
+  CQ++;renderQuiz();
+}
+
+function retryWrongQs(){
+  if(!WRONG_QS.length) return;
+  // 틀린 문제만 임시 퀴즈 배열로 만들어 풀기
+  var wrongQuizzes=WRONG_QS.map(function(qi){return CS.quizzes[qi];});
+  var savedQuizzes=CS.quizzes;
+  CS=Object.assign({},CS,{quizzes:wrongQuizzes,_isRetry:true,_savedQuizzes:savedQuizzes});
+  CQ=0;ANS=false;CC_CNT=0;WRONG_QS=[];
+  renderQuiz();
+}
 
 function renderScore(){
+  // 틀린 문제 재시도 후 원래 퀴즈 복원
+  if(CS._isRetry){
+    CS=Object.assign({},CS,{quizzes:CS._savedQuizzes,_isRetry:false,_savedQuizzes:null});
+  }
   if(!PROG[CP.id])PROG[CP.id]=0;
   PROG[CP.id]=Math.min(CP.subs.length,(PROG[CP.id]||0)+1);
   // 학습자 점수/진도 저장
@@ -1195,20 +1236,35 @@ function renderScore(){
   var tot=CS.quizzes.length,pct=Math.round(CC_CNT/tot*100);
   var msg=pct===100?'완벽해요! 🎉':pct>=80?'잘했어요! 👍':pct>=60?'조금 더 연습해요 📚':'이론을 복습해 보세요 🔍';
   var bc=pct===100?'#15803d':pct>=60?'var(--ol)':'#dc2626';
+
+  // 틀린 문제 목록
+  var wrongList='';
+  if(WRONG_QS.length>0){
+    wrongList='<div style="margin-top:1rem;padding:1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;text-align:left">'
+      +'<div style="font-size:13px;font-weight:600;color:#dc2626;margin-bottom:.5rem">✗ 틀린 문제 ('+WRONG_QS.length+'개)</div>'
+      +WRONG_QS.map(function(qi){
+        var q=CS.quizzes[qi];
+        return '<div style="font-size:12px;color:#7f1d1d;padding:3px 0;border-bottom:1px solid #fecaca">'+(qi+1)+'번. '+q.q.replace(/<[^>]+>/g,'').slice(0,40)+'…</div>';
+      }).join('')
+      +'</div>';
+  }
+
   document.getElementById('qzc').innerHTML=
-    `<div class="score-card">
-      <div class="score-circle" style="border-color:${bc}">
-        <div class="score-big">${CC_CNT}/${tot}</div>
-        <div class="score-sub">${pct}점</div>
-      </div>
-      <div class="score-msg">${msg}</div>
-      <div class="score-det">맞힌 문제 ${CC_CNT}개 · 틀린 문제 ${tot-CC_CNT}개</div>
-      <div class="score-btns">
-        <button class="btn-oc" onclick="goSub()">목록으로 돌아가기</button>
-        <button class="btn-gh" onclick="CQ=0;CC_CNT=0;renderQuiz()">다시 풀기</button>
-        <button class="btn-gh" onclick="swTab('theory')">이론 복습하기</button>
-      </div>
-    </div>`;
+    '<div class="score-card">'
+    +'<div class="score-circle" style="border-color:'+bc+'">'
+    +'<div class="score-big">'+CC_CNT+'/'+tot+'</div>'
+    +'<div class="score-sub">'+pct+'점</div>'
+    +'</div>'
+    +'<div class="score-msg">'+msg+'</div>'
+    +'<div class="score-det">맞힌 문제 '+CC_CNT+'개 · 틀린 문제 '+(tot-CC_CNT)+'개</div>'
+    +wrongList
+    +'<div class="score-btns">'
+    +'<button class="btn-oc" onclick="goSub()">목록으로 돌아가기</button>'
+    +(WRONG_QS.length>0?'<button class="btn-gh" style="background:#dc2626;color:#fff;border:none" onclick="retryWrongQs()">🔄 틀린 문제만 다시 풀기 ('+WRONG_QS.length+'개)</button>':'')
+    +'<button class="btn-gh" onclick="CQ=0;CC_CNT=0;WRONG_QS=[];renderQuiz()">전체 다시 풀기</button>'
+    +'<button class="btn-gh" onclick="swTab(\'theory\')">이론 복습하기</button>'
+    +'</div>'
+    +'</div>';
 }
 
 // ════════════════════════════════════════
@@ -1277,7 +1333,11 @@ function renderUsersAdmin(c){
 
   var rows='';
   if(!users.length){
-    rows='<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:2.5rem;font-size:14px">등록된 학습자가 없습니다.<br><span style="font-size:12px">학습자가 로그인하면 자동으로 등록됩니다.</span></td></tr>';
+    rows='<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:2.5rem;font-size:14px">'
+      +'등록된 학습자가 없습니다.<br>'
+      +'<span style="font-size:12px">학습자가 <strong>이 기기(PC/태블릿)</strong>에서 로그인하면 자동으로 등록됩니다.<br>'
+      +'⚠️ 학습자가 다른 기기에서 접속한 경우 이 목록에 표시되지 않습니다.</span>'
+      +'</td></tr>';
   } else {
     rows=users.map(function(u,i){
       var theoryDone=u.progress?Object.keys(u.progress).length:0;
@@ -1305,9 +1365,15 @@ function renderUsersAdmin(c){
 
   c.innerHTML=
     '<div class="admin-card">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem">'
     +'<h3 style="margin:0">👥 학습자 관리 <span style="font-size:13px;color:var(--ol);font-weight:600">('+users.length+'명 등록)</span></h3>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button class="btn-add" style="margin:0;padding:6px 14px;font-size:12px" onclick="renderUsersAdmin(document.getElementById(\'admin-content\'))">🔄 새로고침</button>'
     +(users.length?'<button class="btn-del" onclick="clearAllUsers()">🗑 전체 초기화</button>':'')
+    +'</div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#94a3b8;margin-bottom:.75rem;background:#f8fafc;border-radius:8px;padding:7px 12px">'
+    +'⚠️ 학습자 데이터는 <strong>이 기기의 브라우저</strong>에 저장됩니다. 학습자가 같은 기기·브라우저에서 접속해야 이 목록에 표시됩니다.'
     +'</div>'
     +'<div class="table-wrap"><table>'
     +'<tr><th>이름</th><th>이메일</th><th>가입일</th><th>이론완료</th><th>문제완료</th><th>기출응시</th><th>진도율</th><th>삭제</th></tr>'
