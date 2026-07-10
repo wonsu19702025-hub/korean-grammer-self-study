@@ -2374,9 +2374,15 @@ function renderSheetsView(c){
 
 function saveWebhookUrl(){
   var url=document.getElementById('webhook-url-input').value.trim();
+  // URL 끝 자동 교정
+  if(url && !url.endsWith('/exec')){
+    url=url.replace(/\/exec\w*$/, '/exec');
+    if(!url.endsWith('/exec')) url=url+'/exec';
+    document.getElementById('webhook-url-input').value=url;
+  }
   WEBHOOK_URL=url;
   localStorage.setItem('kgrammar_webhook_url',url);
-  alert(url?'✅ URL이 저장되었습니다!':'웹훅 URL이 초기화되었습니다.');
+  alert(url?'✅ URL이 저장되었습니다!\n저장된 URL: '+url:'웹훅 URL이 초기화되었습니다.');
   renderSheetsView(document.getElementById('admin-content'));
 }
 
@@ -2385,14 +2391,36 @@ function fetchSheetsData(){
   var area=document.getElementById('sheets-data-area');
   area.innerHTML='<div style="text-align:center;padding:2rem;color:var(--ol)"><div style="font-size:14px">⏳ 데이터를 불러오는 중...</div></div>';
 
-  var url=WEBHOOK_URL.replace('/exec','/exec')+'?action=read';
-  fetch(url)
-    .then(function(r){ return r.json(); })
+  // URL 끝 /exec 확인 및 자동 수정
+  var url=WEBHOOK_URL.trim();
+  if(!url.endsWith('/exec')){
+    // execXXX 형태면 /exec로 교체
+    url=url.replace(/\/exec\w*$/, '/exec');
+    if(!url.endsWith('/exec')) url=url+'/exec';
+  }
+  var fetchUrl=url+'?action=read';
+
+  fetch(fetchUrl, {mode:'cors'})
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    })
     .then(function(d){ renderSheetsData(d); })
     .catch(function(err){
-      area.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:1rem;font-size:13px;color:#dc2626">'
-        +'❌ 데이터를 불러올 수 없습니다.<br>'
-        +'<span style="font-size:12px;color:#7f1d1d">Apps Script를 새 버전으로 재배포했는지 확인해 주세요.<br>오류: '+err.message+'</span>'
+      // CORS 오류 시 안내
+      area.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:1.25rem;font-size:13px">'
+        +'<div style="font-weight:600;color:#dc2626;margin-bottom:.5rem">❌ 데이터를 불러올 수 없습니다.</div>'
+        +'<div style="color:#7f1d1d;line-height:1.8">'
+        +'<strong>확인할 사항:</strong><br>'
+        +'① URL이 <code style="background:#fee2e2;padding:1px 5px;border-radius:4px">/exec</code>로 끝나는지 확인<br>'
+        +'② Apps Script를 <strong>새 버전으로 재배포</strong>했는지 확인<br>'
+        +'③ 배포 시 액세스 권한이 <strong>"모든 사용자"</strong>인지 확인<br>'
+        +'④ 재배포 후 Google 계정 <strong>권한 허용</strong>을 했는지 확인'
+        +'</div>'
+        +'<div style="margin-top:.75rem;padding:.75rem;background:#fff;border-radius:8px;font-size:12px;color:#64748b">'
+        +'현재 URL: <span style="color:var(--ol);word-break:break-all">'+fetchUrl+'</span>'
+        +'</div>'
+        +'<div style="margin-top:.5rem;font-size:12px;color:#94a3b8">오류: '+err.message+'</div>'
         +'</div>';
     });
 }
