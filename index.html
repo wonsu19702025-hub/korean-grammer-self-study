@@ -473,6 +473,7 @@ tr:hover td{background:#f8fbff}
         <button class="admin-tab" onclick="showAdminTab('content',this)">📝 내용 관리</button>
         <button class="admin-tab" onclick="showAdminTab('questions',this)">❓ 문제 관리</button>
         <button class="admin-tab" onclick="showAdminTab('examAdmin',this)">📄 기출문제 관리</button>
+        <button class="admin-tab" onclick="showAdminTab('sheetsView',this)">📈 학습 현황(Sheets)</button>
         <button class="admin-tab" onclick="showAdminTab('users',this)">👥 학습자 관리</button>
       </div>
     </div>
@@ -850,6 +851,8 @@ function doLogin(){
   // 세션 저장 (새로고침 유지)
   sessionStorage.setItem('kgrammar_session', JSON.stringify({email:e, name:u.name, mode:'student'}));
   currentUserEmail=e;
+  // Google Sheets 접속 기록 전송
+  sendToSheets({type:'login', email:e, name:u.name, mode:'student'});
   ['uname','uname2','uname3'].forEach(function(id){
     var el=document.getElementById(id);
     if(el) el.textContent=u.name;
@@ -1233,6 +1236,18 @@ function renderScore(){
   var idx=localList.findIndex(function(x){return x.email===currentUserEmail;});
   if(idx>=0)localList[idx]=u; else localList.push(u);
   localStorage.setItem('kgrammar_users',JSON.stringify(localList));
+  // Google Sheets 학습 기록 전송
+  sendToSheets({
+    type:'study',
+    email:currentUserEmail,
+    name:getUserName(),
+    partTitle:CP.title,
+    subTitle:CS.title,
+    theoryDone:true,
+    score:CC_CNT,
+    total:CS.quizzes.length,
+    pct:scorePct
+  });
   var tot=CS.quizzes.length,pct=Math.round(CC_CNT/tot*100);
   var msg=pct===100?'완벽해요! 🎉':pct>=80?'잘했어요! 👍':pct>=60?'조금 더 연습해요 📚':'이론을 복습해 보세요 🔍';
   var bc=pct===100?'#15803d':pct>=60?'var(--ol)':'#dc2626';
@@ -1280,6 +1295,7 @@ function showAdminTab(tab,btn){
   else if(tab==='content') renderContentAdmin(c);
   else if(tab==='questions') renderQuestionsAdmin(c);
   else if(tab==='examAdmin') renderExamAdmin(c);
+  else if(tab==='sheetsView') renderSheetsView(c);
   else if(tab==='users') renderUsersAdmin(c);
 }
 
@@ -2001,8 +2017,25 @@ function renderAdmin(){
 }
 
 // ════════════════════════════════════════
-//  PAST EXAM DATA (localStorage 기반)
+//  GOOGLE SHEETS 연동
+//  배포 후 아래 URL을 실제 웹훅 URL로 교체하세요
 // ════════════════════════════════════════
+var WEBHOOK_URL = ''; // ← 여기에 Google Apps Script 배포 URL 붙여넣기
+
+function sendToSheets(data){
+  if(!WEBHOOK_URL) return; // URL 미설정 시 조용히 스킵
+  fetch(WEBHOOK_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
+  }).catch(function(){}); // 오류 시 조용히 무시 (학습 흐름 방해 안 함)
+}
+
+function getUserName(){
+  var list=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var u=list.find(function(x){return x.email===currentUserEmail;});
+  return u?u.name:(currentUserEmail?currentUserEmail.split('@')[0]:'');
+}
 function loadExamSets(){
   try{ return JSON.parse(localStorage.getItem('kgrammar_exam_sets')||'[]'); }
   catch(e){ return []; }
@@ -2250,6 +2283,17 @@ function renderExamScore(){
       const idx=list.findIndex(x=>x.email===currentUserEmail);
       if(idx>=0) list[idx]=u;
       localStorage.setItem('kgrammar_users',JSON.stringify(list));
+      // Google Sheets 기출문제 기록 전송
+      sendToSheets({
+        type:'exam',
+        email:currentUserEmail,
+        name:getUserName(),
+        examTitle:currentExamSet.title,
+        grade:currentExamSet.grade,
+        score:examCorrect,
+        total:tot,
+        pct:pct
+      });
     }
   }catch(e){}
 
@@ -2278,9 +2322,89 @@ function renderExamScore(){
     </div>`;
 }
 
-// ════════════════════════════════════════
-//  ADMIN — 기출문제 관리
-// ════════════════════════════════════════
+// ── Google Sheets 학습 현황 조회 ──
+function renderSheetsView(c){
+  c.innerHTML=
+    '<div class="admin-card">'
+    +'<h3>📈 Google Sheets 학습 현황</h3>'
+    +'<p style="font-size:13px;color:#64748b;margin-bottom:1.25rem">'
+    +'학습자들의 접속·학습·기출문제 기록이 Google Sheets에 실시간으로 쌓입니다.<br>'
+    +'웹훅 URL을 설정하면 어떤 기기에서 접속한 학습자도 모두 기록됩니다.'
+    +'</p>'
+
+    // 웹훅 URL 설정
+    +'<div style="background:#f8fafc;border:1px solid var(--op);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">'
+    +'<div style="font-size:13px;font-weight:600;color:var(--od);margin-bottom:.6rem">🔗 웹훅 URL 설정</div>'
+    +'<div style="display:flex;gap:8px;align-items:center">'
+    +'<input id="webhook-url-input" type="text" value="'+WEBHOOK_URL+'" placeholder="https://script.google.com/macros/s/..." '
+    +'style="flex:1;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:12px;outline:none;font-family:inherit"/>'
+    +'<button class="btn-add" style="margin:0;white-space:nowrap" onclick="saveWebhookUrl()">저장</button>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#94a3b8;margin-top:.4rem">Google Apps Script 배포 후 받은 URL을 입력하세요. 저장하면 localStorage에 기억됩니다.</div>'
+    +'</div>'
+
+    // Sheets 바로가기
+    +(WEBHOOK_URL?
+      '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px">'
+      +'<span style="font-size:22px">✅</span>'
+      +'<div>'
+      +'<div style="font-size:13px;font-weight:600;color:#15803d">웹훅 URL이 설정되었습니다!</div>'
+      +'<div style="font-size:12px;color:#166534;margin-top:2px">학습자가 로그인·학습·기출문제를 완료할 때마다 자동으로 Sheets에 기록됩니다.</div>'
+      +'</div>'
+      +'</div>'
+    :
+      '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:12px;padding:1rem;margin-bottom:1.25rem">'
+      +'<div style="font-size:13px;font-weight:600;color:#92400e">⚠️ 웹훅 URL이 설정되지 않았습니다.</div>'
+      +'<div style="font-size:12px;color:#78350f;margin-top:4px">아래 설정 방법을 따라 Google Apps Script를 배포한 후 URL을 입력해 주세요.</div>'
+      +'</div>'
+    )
+
+    // 설정 방법 안내
+    +'<details style="margin-bottom:1.25rem">'
+    +'<summary style="font-size:13px;font-weight:600;color:var(--ol);cursor:pointer">📋 Google Apps Script 설정 방법 (클릭하여 펼치기)</summary>'
+    +'<ol style="font-size:13px;color:#475569;line-height:2;margin-top:.75rem;padding-left:1.25rem">'
+    +'<li><strong>Google Sheets</strong>에서 새 파일 생성 (이름: 한국어문법학습_기록)</li>'
+    +'<li>상단 메뉴 <strong>[확장 프로그램] → [Apps Script]</strong> 클릭</li>'
+    +'<li>다운로드한 <strong>google_apps_script.js</strong> 파일의 내용을 전체 붙여넣기</li>'
+    +'<li><strong>[저장]</strong> 후 <strong>[배포] → [새 배포]</strong> 클릭</li>'
+    +'<li>유형: <strong>웹 앱</strong> / 실행 계정: <strong>나</strong> / 액세스: <strong>모든 사용자</strong></li>'
+    +'<li><strong>[배포]</strong> → Google 계정 권한 허용 → <strong>URL 복사</strong></li>'
+    +'<li>위 웹훅 URL 입력란에 붙여넣고 <strong>[저장]</strong></li>'
+    +'</ol>'
+    +'</details>'
+
+    // 기록 시트 목록
+    +'<div style="font-size:13px;font-weight:600;color:var(--od);margin-bottom:.6rem">📊 Google Sheets에 생성되는 시트</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">'
+    +[
+      {icon:'🔑',name:'접속기록',cols:'접속일시 / 이름 / 이메일 / 모드',color:'#eff6ff',border:'#bfdbfe',text:'#1d4ed8'},
+      {icon:'📚',name:'학습기록',cols:'완료일시 / 이름 / 이메일 / 파트 / 세부항목 / 이론완료 / 점수 / 총문항 / 정답률',color:'#f0fdf4',border:'#bbf7d0',text:'#15803d'},
+      {icon:'📄',name:'기출문제기록',cols:'완료일시 / 이름 / 이메일 / 시험명 / 학년 / 점수 / 총문항 / 정답률',color:'#fdf4ff',border:'#e9d5ff',text:'#7c3aed'}
+    ].map(function(s){
+      return '<div style="background:'+s.color+';border:1px solid '+s.border+';border-radius:10px;padding:12px">'
+        +'<div style="font-size:18px;margin-bottom:4px">'+s.icon+'</div>'
+        +'<div style="font-size:13px;font-weight:700;color:'+s.text+';margin-bottom:4px">'+s.name+'</div>'
+        +'<div style="font-size:11px;color:#64748b;line-height:1.6">'+s.cols+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div>'
+    +'</div>';
+
+  // 저장된 웹훅 URL 불러오기
+  var saved=localStorage.getItem('kgrammar_webhook_url');
+  if(saved&&!WEBHOOK_URL){
+    WEBHOOK_URL=saved;
+    document.getElementById('webhook-url-input').value=saved;
+  }
+}
+
+function saveWebhookUrl(){
+  var url=document.getElementById('webhook-url-input').value.trim();
+  WEBHOOK_URL=url;
+  localStorage.setItem('kgrammar_webhook_url',url);
+  alert(url?'✅ 웹훅 URL이 저장되었습니다!\n이제 학습자 활동이 Google Sheets에 자동 기록됩니다.':'웹훅 URL이 초기화되었습니다.');
+  renderSheetsView(document.getElementById('admin-content'));
+}
 function renderExamAdmin(c){
   const sets=loadExamSets();
   c.innerHTML=`
@@ -2541,6 +2665,10 @@ document.addEventListener('DOMContentLoaded', function(){
   if(emInput)  emInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
   if(pwInput)  pwInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
   if(aidInput) aidInput.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+  // 저장된 웹훅 URL 복원
+  var savedWebhook=localStorage.getItem('kgrammar_webhook_url');
+  if(savedWebhook) WEBHOOK_URL=savedWebhook;
 
   // 저장된 관리자 아이디 자동 채우기
   var savedAdminId=localStorage.getItem('kgrammar_admin_id');
