@@ -797,7 +797,16 @@ function setMode(m){
   }
 }
 
-function doLogin(){
+// 관리자 계정 해시 (아이디:비밀번호 문자열의 SHA-256)
+// 소스보기로 비밀번호가 그대로 노출되지 않도록 평문 대신 해시값만 저장합니다.
+var ADMIN_HASH = 'cf1961e149ee953925b401525595e42e97b9c06ddd24444ec4b4c033a732fca2';
+async function sha256Hex(str){
+  var enc = new TextEncoder().encode(str);
+  var buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
+
+async function doLogin(){
   document.getElementById('err').style.display='none';
 
   // ── 관리자 모드 ──
@@ -805,7 +814,8 @@ function doLogin(){
     const aid=document.getElementById('admin-id').value.trim();
     const apw=document.getElementById('pw').value.trim();
     const rememberChk=document.getElementById('remember-admin');
-    if(aid==='wonsu19702025@gmail.com'&&apw==='123456789!'){
+    const hash = await sha256Hex(aid+':'+apw);
+    if(hash===ADMIN_HASH){
       // 아이디 기억하기 처리
       if(rememberChk&&rememberChk.checked){
         localStorage.setItem('kgrammar_admin_id', aid);
@@ -2141,32 +2151,111 @@ function renderAdmin(){
 //  배포 후 아래 URL을 실제 웹훅 URL로 교체하세요
 // ════════════════════════════════════════
 var WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxdqu8nPCc2pzickLThNbmqetrWIpSGxd1YklLyCEp9KUTwe_TsGsfmJB8RV6jJhVLkiA/exec';
+var PENDING_SYNC_KEY = 'kgrammar_pending_sync';
 
-function sendToSheets(data){
+// ── JSONP 요청 (CORS 영향 없음, 응답 확인 가능) ──
+var _jsonpSeq = 0;
+function jsonpRequest(url, params, timeoutMs){
+  return new Promise(function(resolve){
+    var cbName = '_kgcb_' + (_jsonpSeq++) + '_' + Date.now();
+    var script = document.createElement('script');
+    var done = false;
+
+    function cleanup(){
+      clearTimeout(timer);
+      try{ delete window[cbName]; }catch(e){ window[cbName]=undefined; }
+      if(script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    var timer = setTimeout(function(){
+      if(done) return; done = true;
+      cleanup();
+      resolve({ok:false, error:'timeout'});
+    }, timeoutMs || 6000);
+
+    window[cbName] = function(data){
+      if(done) return; done = true;
+      cleanup();
+      resolve({ok:true, data:data});
+    };
+    script.onerror = function(){
+      if(done) return; done = true;
+      cleanup();
+      resolve({ok:false, error:'network'});
+    };
+    script.src = url + (url.indexOf('?')>=0?'&':'?') + params + '&callback=' + cbName;
+    document.body.appendChild(script);
+  });
+}
+
+// ── 작은 상태 알림(우측 하단, 자동으로 사라짐) ──
+function showSyncToast(msg, isWarning){
+  var el = document.getElementById('sync-toast');
+  if(!el){
+    el = document.createElement('div');
+    el.id='sync-toast';
+    el.style.cssText='position:fixed;bottom:16px;right:16px;z-index:9999;padding:9px 15px;border-radius:10px;'
+      +'font-size:12px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.15);transition:opacity .35s;max-width:260px;pointer-events:none;';
+    document.body.appendChild(el);
+  }
+  el.style.background = isWarning?'#fef3c7':'#dcfce7';
+  el.style.color = isWarning?'#92400e':'#166534';
+  el.textContent = msg;
+  el.style.opacity='1';
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){ el.style.opacity='0'; }, isWarning?4000:1800);
+}
+
+// ── 재동기화 대기열 (전송 실패 시 다음 접속에서 자동 재시도) ──
+function queuePendingSync(data){
+  try{
+    var q = JSON.parse(localStorage.getItem(PENDING_SYNC_KEY)||'[]');
+    q.push(data);
+    if(q.length>300) q = q.slice(-300);
+    localStorage.setItem(PENDING_SYNC_KEY, JSON.stringify(q));
+  }catch(e){}
+}
+
+async function retryPendingSync(){
+  if(!WEBHOOK_URL) return;
+  var q;
+  try{ q = JSON.parse(localStorage.getItem(PENDING_SYNC_KEY)||'[]'); }catch(e){ q=[]; }
+  if(!q || !q.length) return;
+  var url=WEBHOOK_URL.trim();
+  if(!url.endsWith('/exec')) url=url.replace(/\/exec\w*$/,'/exec');
+  var remaining=[];
+  for(var i=0;i<q.length;i++){
+    var params='action=write&d='+encodeURIComponent(JSON.stringify(q[i]));
+    var res = await jsonpRequest(url, params, 5000);
+    if(!(res.ok && res.data && res.data.status==='ok')) remaining.push(q[i]);
+  }
+  localStorage.setItem(PENDING_SYNC_KEY, JSON.stringify(remaining));
+  if(remaining.length < q.length){
+    showSyncToast('🔄 밀렸던 학습기록 '+(q.length-remaining.length)+'건 동기화 완료', false);
+  }
+}
+
+// ── 실제 전송: JSONP로 성공을 확인하고, 실패 시 폴백 + 재시도 대기열 ──
+async function sendToSheets(data){
   if(!WEBHOOK_URL) return;
   var url=WEBHOOK_URL.trim();
   if(!url.endsWith('/exec')) url=url.replace(/\/exec\w*$/,'/exec');
+  var params='action=write&d='+encodeURIComponent(JSON.stringify(data));
 
-  // GET 방식을 기본으로 사용 (CORS 문제 없음, 모바일/PC 모두 작동)
-  sendToSheetsGet(url, data);
+  var res = await jsonpRequest(url, params, 6000);
+  if(res.ok && res.data && res.data.status==='ok'){
+    return; // 정상 저장 확인됨 (평소엔 조용히 처리, 알림 생략)
+  }
 
-  // POST도 함께 시도 (혹시 GET이 막히는 환경 대비)
-  try {
-    fetch(url, {
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify(data)
-    }).catch(function(){});
-  } catch(e) {}
-}
+  // JSONP 실패 → 이미지 비콘 + no-cors POST 병행 시도(응답 확인은 불가하나 저장 확률을 높임)
+  try{ var img=new Image(); img.src=url+'?'+params; }catch(e){}
+  try{
+    fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)}).catch(function(){});
+  }catch(e){}
 
-function sendToSheetsGet(url, data){
-  try {
-    var params='?action=write&d='+encodeURIComponent(JSON.stringify(data));
-    var img=new Image();
-    img.src=url+params;
-  } catch(e) {}
+  // 확실히 저장됐는지 알 수 없으므로 재동기화 대기열에도 넣어 다음 접속 때 재확인
+  queuePendingSync(data);
+  showSyncToast('⚠️ 기록 저장 확인 안 됨 · 다음 접속 시 자동 재시도', true);
 }
 
 function getUserName(){
@@ -2521,7 +2610,7 @@ function saveWebhookUrl(){
   renderSheetsView(document.getElementById('admin-content'));
 }
 
-function fetchSheetsData(){
+async function fetchSheetsData(){
   if(!WEBHOOK_URL){ alert('웹훅 URL을 먼저 입력해 주세요.'); return; }
   var area=document.getElementById('sheets-data-area');
   area.innerHTML='<div style="text-align:center;padding:2rem;color:var(--ol)"><div style="font-size:14px">⏳ 데이터를 불러오는 중...</div></div>';
@@ -2529,35 +2618,30 @@ function fetchSheetsData(){
   // URL 끝 /exec 확인 및 자동 수정
   var url=WEBHOOK_URL.trim();
   if(!url.endsWith('/exec')){
-    // execXXX 형태면 /exec로 교체
     url=url.replace(/\/exec\w*$/, '/exec');
     if(!url.endsWith('/exec')) url=url+'/exec';
   }
-  var fetchUrl=url+'?action=read';
 
-  fetch(fetchUrl, {mode:'cors'})
-    .then(function(r){
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      return r.json();
-    })
-    .then(function(d){ renderSheetsData(d); })
-    .catch(function(err){
-      // CORS 오류 시 안내
-      area.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:1.25rem;font-size:13px">'
-        +'<div style="font-weight:600;color:#dc2626;margin-bottom:.5rem">❌ 데이터를 불러올 수 없습니다.</div>'
-        +'<div style="color:#7f1d1d;line-height:1.8">'
-        +'<strong>확인할 사항:</strong><br>'
-        +'① URL이 <code style="background:#fee2e2;padding:1px 5px;border-radius:4px">/exec</code>로 끝나는지 확인<br>'
-        +'② Apps Script를 <strong>새 버전으로 재배포</strong>했는지 확인<br>'
-        +'③ 배포 시 액세스 권한이 <strong>"모든 사용자"</strong>인지 확인<br>'
-        +'④ 재배포 후 Google 계정 <strong>권한 허용</strong>을 했는지 확인'
-        +'</div>'
-        +'<div style="margin-top:.75rem;padding:.75rem;background:#fff;border-radius:8px;font-size:12px;color:#64748b">'
-        +'현재 URL: <span style="color:var(--ol);word-break:break-all">'+fetchUrl+'</span>'
-        +'</div>'
-        +'<div style="margin-top:.5rem;font-size:12px;color:#94a3b8">오류: '+err.message+'</div>'
-        +'</div>';
-    });
+  // JSONP 방식(<script> 태그)으로 요청 → 브라우저 CORS 정책의 영향을 받지 않음
+  var res = await jsonpRequest(url, 'action=read', 8000);
+
+  if(res.ok && res.data && !res.data.error){
+    renderSheetsData(res.data);
+  } else {
+    area.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:1.25rem;font-size:13px">'
+      +'<div style="font-weight:600;color:#dc2626;margin-bottom:.5rem">❌ 데이터를 불러올 수 없습니다.</div>'
+      +'<div style="color:#7f1d1d;line-height:1.8">'
+      +'<strong>확인할 사항:</strong><br>'
+      +'① Apps Script를 <strong>새 버전으로 재배포</strong>했는지 확인 (JSONP 지원 최신 코드인지)<br>'
+      +'② 배포 시 액세스 권한이 <strong>"모든 사용자"</strong>인지 확인<br>'
+      +'③ 웹훅 URL이 <code style="background:#fee2e2;padding:1px 5px;border-radius:4px">/exec</code>로 끝나는지 확인'
+      +'</div>'
+      +'<div style="margin-top:.75rem;padding:.75rem;background:#fff;border-radius:8px;font-size:12px;color:#64748b">'
+      +'현재 URL: <span style="color:var(--ol);word-break:break-all">'+url+'?action=read</span>'
+      +'</div>'
+      +'<div style="margin-top:.5rem;font-size:12px;color:#94a3b8">오류: '+((res.data&&res.data.error)||res.error||'응답 없음')+'</div>'
+      +'</div>';
+  }
 }
 
 function renderSheetsData(d){
@@ -2932,6 +3016,9 @@ document.addEventListener('DOMContentLoaded', function(){
   // 저장된 웹훅 URL 복원
   var savedWebhook=localStorage.getItem('kgrammar_webhook_url');
   if(savedWebhook) WEBHOOK_URL=savedWebhook;
+
+  // 이전 접속에서 저장 확인이 안 됐던 기록이 있으면 자동 재동기화 시도
+  setTimeout(function(){ retryPendingSync(); }, 800);
 
   // 저장된 관리자 아이디 자동 채우기
   var savedAdminId=localStorage.getItem('kgrammar_admin_id');
