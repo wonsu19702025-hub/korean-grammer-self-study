@@ -2027,24 +2027,21 @@ function sendToSheets(data){
   var url=WEBHOOK_URL.trim();
   if(!url.endsWith('/exec')) url=url.replace(/\/exec\w*$/,'/exec');
 
-  // POST no-cors 시도 (PC/최신 모바일)
+  // GET 방식을 기본으로 사용 (CORS 문제 없음, 모바일/PC 모두 작동)
+  sendToSheetsGet(url, data);
+
+  // POST도 함께 시도 (혹시 GET이 막히는 환경 대비)
   try {
     fetch(url, {
       method:'POST',
       mode:'no-cors',
       headers:{'Content-Type':'text/plain'},
       body:JSON.stringify(data)
-    }).catch(function(){
-      // fetch 실패 시 GET 이미지 비컨으로 폴백 (모바일)
-      sendToSheetsGet(url, data);
-    });
-  } catch(e) {
-    sendToSheetsGet(url, data);
-  }
+    }).catch(function(){});
+  } catch(e) {}
 }
 
 function sendToSheetsGet(url, data){
-  // GET 방식 폴백 — Apps Script doGet의 action=write 처리
   try {
     var params='?action=write&d='+encodeURIComponent(JSON.stringify(data));
     var img=new Image();
