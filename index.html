@@ -58,6 +58,7 @@ body{background:var(--od);min-height:100vh}
 .hero-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
 .falling-star{position:absolute;top:-20px;opacity:0;animation:starFall linear infinite;color:var(--wv)}
 .falling-star svg{display:block;filter:drop-shadow(0 0 4px rgba(255,255,255,0.6))}
+.falling-glyph{position:absolute;top:-20px;opacity:0;animation:starFall linear infinite;font-weight:800;font-family:'Noto Sans KR',sans-serif;text-shadow:0 0 5px rgba(255,255,255,0.55);line-height:1}
 @keyframes starFall{
   0%{transform:translateY(-20px) translateX(0) rotate(0deg);opacity:0}
   8%{opacity:1}
@@ -339,11 +340,20 @@ tr:hover td{background:#f8fbff}
     <div class="sec-title">▦ 학습 파트 선택</div>
     <div class="tiles" id="tiles"></div>
     <!-- 기출문제 풀이 배너 -->
-    <div style="background:linear-gradient(135deg,#1a1a4e,#2d1b69,#1a4f7a);border-radius:16px;padding:1.4rem 1.5rem;margin-bottom:1.75rem;cursor:pointer;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden" onclick="goExam()">
+    <div style="background:linear-gradient(135deg,#1a1a4e,#2d1b69,#1a4f7a);border-radius:16px;padding:1.4rem 1.5rem;margin-bottom:1.25rem;cursor:pointer;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden" onclick="goExam()">
       <div style="font-size:36px;flex-shrink:0">📄</div>
       <div style="flex:1">
         <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px">EBS 언어(문법)기출문제 풀이</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.7)">고1·고2·고3 모의고사 기출 · 학년·연도별 필터</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.15);color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;flex-shrink:0">시작 →</div>
+    </div>
+    <!-- 질문/코칭 배너 -->
+    <div style="background:linear-gradient(135deg,#3730a3,#1e3a8a);border-radius:16px;padding:1.4rem 1.5rem;margin-bottom:1.75rem;cursor:pointer;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden" onclick="goQna()">
+      <div style="font-size:36px;flex-shrink:0">💬</div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px">선생님께 질문하기</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7)">궁금한 점을 남기고 선생님의 코칭을 확인해 보세요</div>
       </div>
       <div style="background:rgba(255,255,255,0.15);color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;flex-shrink:0">시작 →</div>
     </div>
@@ -456,6 +466,27 @@ tr:hover td{background:#f8fbff}
   </div>
 </div>
 
+<!-- ═══════════════ QNA (학생: 질문/코칭) ═══════════════ -->
+<div id="sq" class="screen">
+  <nav class="nav">
+    <div class="nav-logo" onclick="goHome()">🌊 한국어 문법 학습</div>
+    <div class="nav-right">
+      <div class="nav-user" onclick="logout()">👤<span id="uname6"></span>&nbsp;·&nbsp;로그아웃</div>
+    </div>
+  </nav>
+  <div class="exam-hero" style="background:linear-gradient(135deg,#2d1b69,#1a3a5c)">
+    <div class="sub-bc" style="margin-bottom:.6rem;display:flex;align-items:center;gap:8px">
+      <button class="btn-back" onclick="goBack()">← 뒤로</button>
+      <span class="lk" onclick="goHome()">🏠 홈</span> › <span style="color:rgba(255,255,255,0.8)">선생님께 질문하기</span>
+    </div>
+    <h2>💬 선생님께 질문하기</h2>
+    <p>궁금한 문법 내용을 남기면 선생님이 확인 후 답해 드립니다. 선생님이 남긴 코칭 메모도 여기서 볼 수 있어요.</p>
+  </div>
+  <div class="exam-content">
+    <div id="qna-content"></div>
+  </div>
+</div>
+
 <!-- ═══════════════ ADMIN ═══════════════ -->
 <div id="sa" class="screen">
   <nav class="nav">
@@ -474,6 +505,7 @@ tr:hover td{background:#f8fbff}
         <button class="admin-tab" onclick="showAdminTab('questions',this)">❓ 문제 관리</button>
         <button class="admin-tab" onclick="showAdminTab('examAdmin',this)">📄 기출문제 관리</button>
         <button class="admin-tab" onclick="showAdminTab('sheetsView',this)">📈 학습 현황(Sheets)</button>
+        <button class="admin-tab" onclick="showAdminTab('qna',this)">💬 질문·코칭</button>
         <button class="admin-tab" onclick="showAdminTab('users',this)">👥 학습자 관리</button>
       </div>
     </div>
@@ -865,7 +897,7 @@ async function doLogin(){
   currentUserEmail=e;
   // Google Sheets 접속 기록 전송
   sendToSheets({type:'login', email:e, name:u.name, mode:'student'});
-  ['uname','uname2','uname3'].forEach(function(id){
+  ['uname','uname2','uname3','uname6'].forEach(function(id){
     var el=document.getElementById(id);
     if(el) el.textContent=u.name;
   });
@@ -990,23 +1022,30 @@ function doLogout(){
 // ════════════════════════════════════════
 //  HOME
 // ════════════════════════════════════════
-// ── 쏟아지는 별 애니메이션 생성 ──
+// ── 쏟아지는 별 + 자음/모음 애니메이션 생성 ──
 function renderFallingStars(){
   const wrap=document.getElementById('hero-stars');
   if(!wrap) return;
-  const starSVG='<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.5l2.6 6.6 7 .5-5.3 4.6 1.7 6.9L12 16.3 6 19.1l1.7-6.9L2.4 7.6l7-.5z"/></svg>';
-  const count=18;
+  const glyphs=['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','ㅏ','ㅑ','ㅓ','ㅕ','ㅗ','ㅛ','ㅜ','ㅠ','ㅡ','ㅣ','ㅐ','ㅔ'];
+  const count=26;
   let html='';
   for(let i=0;i<count;i++){
     const left=Math.random()*100;
     const delay=(Math.random()*6).toFixed(2);
     const duration=(3+Math.random()*3).toFixed(2);
-    const size=8+Math.round(Math.random()*10);
     const drift=(Math.random()*40-20).toFixed(0)+'px';
     const opacity=(0.5+Math.random()*0.5).toFixed(2);
-    html+='<div class="falling-star" style="left:'+left+'%;animation-delay:'+delay+'s;animation-duration:'+duration+'s;--drift:'+drift+';opacity:0">'
-      +'<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="rgba(255,255,255,'+opacity+')"><path d="M12 1.5l2.6 6.6 7 .5-5.3 4.6 1.7 6.9L12 16.3 6 19.1l1.7-6.9L2.4 7.6l7-.5z"/></svg>'
-      +'</div>';
+    const isGlyph=Math.random()<0.45; // 별과 자모를 섞어서 배치
+    if(isGlyph){
+      const ch=glyphs[Math.floor(Math.random()*glyphs.length)];
+      const size=14+Math.round(Math.random()*12);
+      html+='<div class="falling-glyph" style="left:'+left+'%;font-size:'+size+'px;animation-delay:'+delay+'s;animation-duration:'+duration+'s;--drift:'+drift+';opacity:0;color:rgba(255,255,255,'+opacity+')">'+ch+'</div>';
+    } else {
+      const size=8+Math.round(Math.random()*10);
+      html+='<div class="falling-star" style="left:'+left+'%;animation-delay:'+delay+'s;animation-duration:'+duration+'s;--drift:'+drift+';opacity:0">'
+        +'<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="rgba(255,255,255,'+opacity+')"><path d="M12 1.5l2.6 6.6 7 .5-5.3 4.6 1.7 6.9L12 16.3 6 19.1l1.7-6.9L2.4 7.6l7-.5z"/></svg>'
+        +'</div>';
+    }
   }
   wrap.innerHTML=html;
 }
@@ -1426,6 +1465,7 @@ function showAdminTab(tab,btn){
   else if(tab==='questions') renderQuestionsAdmin(c);
   else if(tab==='examAdmin') renderExamAdmin(c);
   else if(tab==='sheetsView') renderSheetsView(c);
+  else if(tab==='qna') renderQnaAdmin(c);
   else if(tab==='users') renderUsersAdmin(c);
 }
 
@@ -2271,6 +2311,300 @@ function saveExamSets(sets){
   localStorage.setItem('kgrammar_exam_sets', JSON.stringify(sets));
 }
 
+// ════════════════════════════════════════
+//  질문(학생) / 코칭(관리자) 게시판
+// ════════════════════════════════════════
+function newQnaId(){
+  return 'q'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+}
+
+function qnaWebhookUrl(){
+  var url=(WEBHOOK_URL||'').trim();
+  if(!url) return '';
+  if(!url.endsWith('/exec')) url=url.replace(/\/exec\w*$/,'/exec');
+  return url;
+}
+
+// threadId 기준으로 메시지를 묶어 최신 활동순으로 정렬
+function groupQnaThreads(list){
+  var map={};
+  list.forEach(function(m){
+    if(!m.threadId) return;
+    if(!map[m.threadId]) map[m.threadId]=[];
+    map[m.threadId].push(m);
+  });
+  var threads=Object.keys(map).map(function(tid){
+    var msgs=map[tid].slice().sort(function(a,b){ return (a.date||'').localeCompare(b.date||''); });
+    return {threadId:tid, msgs:msgs};
+  });
+  threads.sort(function(a,b){
+    var la=a.msgs[a.msgs.length-1], lb=b.msgs[b.msgs.length-1];
+    return (lb.date||'').localeCompare(la.date||'');
+  });
+  return threads;
+}
+
+// ── 학생 화면 ──
+var myQnaThreads=[];
+
+function goQna(){
+  var area=document.getElementById('qna-content');
+  area.innerHTML='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.6)">불러오는 중...</div>';
+  show('sq');
+  loadMyQna();
+}
+
+function qnaComposerHtml(){
+  return '<div class="admin-card" style="margin-bottom:1.25rem">'
+    +'<div style="font-size:13px;font-weight:600;color:var(--od);margin-bottom:.6rem">✏️ 새 질문 남기기</div>'
+    +'<textarea id="qna-new-q" rows="3" placeholder="궁금한 문법 내용을 자유롭게 적어주세요." '
+    +'style="width:100%;border:1px solid var(--op);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;outline:none;box-sizing:border-box"></textarea>'
+    +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:.6rem">'
+    +'<button class="btn-gh" style="padding:8px 16px;font-size:13px" onclick="refreshMyQna()">🔄 새로고침</button>'
+    +'<button class="btn-add" style="margin:0;padding:8px 18px;font-size:13px" onclick="submitQuestion()">보내기</button>'
+    +'</div></div>';
+}
+
+async function loadMyQna(){
+  var area=document.getElementById('qna-content');
+  var url=qnaWebhookUrl();
+  if(!url){
+    myQnaThreads=[];
+    area.innerHTML=qnaComposerHtml()+'<div class="info-box">💡 아직 등록된 질문이 없습니다. 위에서 선생님께 질문을 남겨보세요.</div>';
+    return;
+  }
+  var res=await jsonpRequest(url, 'action=read', 8000);
+  var qnas=(res.ok && res.data && res.data.qnas)?res.data.qnas:[];
+  var mine=qnas.filter(function(q){ return q.studentEmail===currentUserEmail; });
+  myQnaThreads=mergeLocalQnaThreads(mine);
+  renderQnaList();
+}
+
+async function refreshMyQna(){
+  var area=document.getElementById('qna-content');
+  area.innerHTML='<div style="text-align:center;padding:2rem;color:#94a3b8">불러오는 중...</div>';
+  await loadMyQna();
+}
+
+// 방금 보낸 메시지가 아직 시트 조회에 반영 안 됐을 수 있으므로 로컬 캐시와 병합
+function mergeLocalQnaThreads(fetchedList){
+  var fetchedKeys={};
+  fetchedList.forEach(function(m){ fetchedKeys[m.threadId+'|'+m.authorRole+'|'+m.content]=true; });
+  var localOnly=[];
+  myQnaThreads.forEach(function(t){
+    t.msgs.forEach(function(m){
+      var k=m.threadId+'|'+m.authorRole+'|'+m.content;
+      if(!fetchedKeys[k]) localOnly.push(m);
+    });
+  });
+  return groupQnaThreads(fetchedList.concat(localOnly));
+}
+
+function renderQnaList(){
+  var area=document.getElementById('qna-content');
+  var listHtml=myQnaThreads.length
+    ? myQnaThreads.map(function(t){ return qnaThreadCardHtml(t); }).join('')
+    : '<div class="info-box">💡 아직 등록된 질문이 없습니다. 위에서 선생님께 질문을 남겨보세요.</div>';
+  area.innerHTML=qnaComposerHtml()+listHtml;
+}
+
+function qnaThreadCardHtml(t){
+  var msgsHtml=t.msgs.map(function(m){
+    var isTeacher=m.authorRole==='teacher';
+    var badge=m.msgKind==='coach'?'📌 코칭':(isTeacher?'👩‍🏫 선생님':'🙋 내 질문');
+    return '<div style="display:flex;justify-content:'+(isTeacher?'flex-start':'flex-end')+';margin-bottom:8px">'
+      +'<div style="max-width:85%;background:'+(isTeacher?'#eef2ff':'#f0fdf4')+';border-radius:12px;padding:9px 13px">'
+      +'<div style="font-size:11px;font-weight:700;color:'+(isTeacher?'#4338ca':'#15803d')+';margin-bottom:3px">'+badge+' <span style="font-weight:400;color:#94a3b8">· '+(m.date||'')+'</span></div>'
+      +'<div style="font-size:13px;color:#1e293b;white-space:pre-wrap;line-height:1.55">'+escHtml(m.content||'')+'</div>'
+      +'</div></div>';
+  }).join('');
+  return '<div class="admin-card" style="margin-bottom:1rem">'
+    +msgsHtml
+    +'<div style="display:flex;gap:8px;margin-top:.75rem">'
+    +'<input id="qna-reply-'+t.threadId+'" type="text" placeholder="답장 보내기..." '
+    +'style="flex:1;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit" '
+    +'onkeydown="if(event.key===\'Enter\')sendStudentReply(\''+t.threadId+'\')"/>'
+    +'<button class="btn-gh" style="padding:8px 16px;font-size:13px" onclick="sendStudentReply(\''+t.threadId+'\')">전송</button>'
+    +'</div></div>';
+}
+
+async function submitQuestion(){
+  var ta=document.getElementById('qna-new-q');
+  var content=(ta.value||'').trim();
+  if(!content){ alert('질문 내용을 입력해 주세요.'); return; }
+  if(!WEBHOOK_URL){ alert('웹훅 URL이 설정되지 않아 전송할 수 없습니다. 선생님께 문의해 주세요.'); return; }
+  var threadId=newQnaId();
+  var msg={threadId:threadId, msgKind:'question', studentEmail:currentUserEmail,
+    studentName:getUserName(), authorRole:'student', content:content,
+    date:new Date().toISOString().slice(0,16).replace('T',' ')};
+  myQnaThreads.unshift({threadId:threadId, msgs:[msg]});
+  ta.value='';
+  renderQnaList();
+  await sendToSheets({type:'qna', threadId:threadId, msgKind:'question',
+    studentEmail:currentUserEmail, studentName:getUserName(), authorRole:'student', content:content});
+}
+
+async function sendStudentReply(threadId){
+  var input=document.getElementById('qna-reply-'+threadId);
+  var content=(input.value||'').trim();
+  if(!content) return;
+  var t=myQnaThreads.find(function(x){ return x.threadId===threadId; });
+  var msg={threadId:threadId, msgKind:'reply', studentEmail:currentUserEmail,
+    studentName:getUserName(), authorRole:'student', content:content,
+    date:new Date().toISOString().slice(0,16).replace('T',' ')};
+  if(t) t.msgs.push(msg);
+  input.value='';
+  renderQnaList();
+  await sendToSheets({type:'qna', threadId:threadId, msgKind:'reply',
+    studentEmail:currentUserEmail, studentName:getUserName(), authorRole:'student', content:content});
+}
+
+// ── 관리자 화면 ──
+var ADMIN_QNA_DATA={qnas:[], students:[]};
+var ADMIN_QNA_ACTIVE=null;
+
+async function renderQnaAdmin(c){
+  c.innerHTML='<div class="admin-card"><div style="text-align:center;padding:2rem;color:var(--ol)">⏳ 질문/코칭 데이터를 불러오는 중...</div></div>';
+  var url=qnaWebhookUrl();
+  if(!url){
+    c.innerHTML='<div class="admin-card"><div style="background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:1rem;font-size:13px;color:#92400e">⚠️ 먼저 "학습 현황(Sheets)" 탭에서 웹훅 URL을 저장해 주세요.</div></div>';
+    return;
+  }
+  var res=await jsonpRequest(url, 'action=read', 8000);
+  if(!(res.ok && res.data)){
+    c.innerHTML='<div class="admin-card"><div style="background:#fef2f2;border-radius:10px;padding:1rem;font-size:13px;color:#dc2626">❌ 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div></div>';
+    return;
+  }
+  var d=res.data;
+  ADMIN_QNA_DATA.qnas=d.qnas||[];
+  var studentMap={};
+  (d.logins||[]).forEach(function(l){ if(l.email) studentMap[l.email]=l.name; });
+  (d.qnas||[]).forEach(function(q){ if(q.studentEmail) studentMap[q.studentEmail]=q.studentName||studentMap[q.studentEmail]||''; });
+  ADMIN_QNA_DATA.students=Object.keys(studentMap).map(function(e){ return {email:e, name:studentMap[e]}; });
+  ADMIN_QNA_ACTIVE=null;
+  renderQnaAdminBody(c);
+}
+
+function refreshQnaAdmin(){
+  renderQnaAdmin(document.getElementById('admin-content'));
+}
+
+function renderQnaAdminBody(c){
+  var threads=groupQnaThreads(ADMIN_QNA_DATA.qnas);
+  var listHtml=threads.length
+    ? threads.map(function(t){
+        var last=t.msgs[t.msgs.length-1];
+        var needsReply=last.authorRole==='student';
+        return '<div onclick="openAdminThread(\''+t.threadId+'\')" style="cursor:pointer;padding:10px 12px;border-radius:10px;margin-bottom:6px;'
+          +'background:'+(ADMIN_QNA_ACTIVE===t.threadId?'#eef2ff':'#f8fafc')+';border:1px solid '+(ADMIN_QNA_ACTIVE===t.threadId?'#c7d2fe':'var(--op)')+'">'
+          +'<div style="font-weight:700;font-size:13px;color:var(--od)">'+escHtml(last.studentName||'익명')+(needsReply?' <span style="color:#dc2626">●</span>':'')+'</div>'
+          +'<div style="font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">'+escHtml(last.content||'')+'</div>'
+          +'<div style="font-size:11px;color:#94a3b8;margin-top:2px">'+(last.date||'')+'</div>'
+        +'</div>';
+      }).join('')
+    : '<div style="text-align:center;padding:1.5rem;color:#94a3b8;font-size:13px">아직 질문이 없습니다.</div>';
+
+  var convoHtml=ADMIN_QNA_ACTIVE?renderAdminThreadConvo(ADMIN_QNA_ACTIVE):'<div style="text-align:center;padding:2.5rem;color:#94a3b8;font-size:13px">왼쪽에서 대화를 선택하거나<br>새 코칭 메모를 작성해 보세요.</div>';
+
+  c.innerHTML='<div class="admin-card">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">'
+    +'<h3 style="margin:0">💬 질문 · 코칭</h3>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button class="btn-add" style="margin:0;padding:8px 16px;font-size:13px" onclick="openCoachComposer()">✏️ 새 코칭 메모</button>'
+    +'<button class="btn-gh" style="padding:8px 16px;font-size:13px" onclick="refreshQnaAdmin()">🔄 새로고침</button>'
+    +'</div></div>'
+    +'<div style="display:grid;grid-template-columns:260px 1fr;gap:1rem;min-height:360px" id="qna-admin-grid">'
+    +'<div style="max-height:520px;overflow-y:auto">'+listHtml+'</div>'
+    +'<div id="qna-convo-area">'+convoHtml+'</div>'
+    +'</div></div>';
+}
+
+function openAdminThread(threadId){
+  ADMIN_QNA_ACTIVE=threadId;
+  document.getElementById('qna-convo-area').innerHTML=renderAdminThreadConvo(threadId);
+  // 목록 강조만 다시 그림 (전체 재조회 없이)
+  renderQnaAdminBody(document.getElementById('admin-content'));
+}
+
+function renderAdminThreadConvo(threadId){
+  var t=groupQnaThreads(ADMIN_QNA_DATA.qnas).find(function(x){ return x.threadId===threadId; });
+  if(!t) return '<div style="text-align:center;padding:2rem;color:#94a3b8;font-size:13px">대화를 찾을 수 없습니다.</div>';
+  var last=t.msgs[t.msgs.length-1];
+  var msgsHtml=t.msgs.map(function(m){
+    var isTeacher=m.authorRole==='teacher';
+    var badge=m.msgKind==='coach'?'📌 코칭':(isTeacher?'👩‍🏫 선생님':'🙋 학생');
+    return '<div style="display:flex;justify-content:'+(isTeacher?'flex-end':'flex-start')+';margin-bottom:8px">'
+      +'<div style="max-width:80%;background:'+(isTeacher?'#eef2ff':'#f0fdf4')+';border-radius:12px;padding:9px 13px">'
+      +'<div style="font-size:11px;font-weight:700;color:'+(isTeacher?'#4338ca':'#15803d')+';margin-bottom:3px">'+badge+' <span style="font-weight:400;color:#94a3b8">· '+(m.date||'')+'</span></div>'
+      +'<div style="font-size:13px;color:#1e293b;white-space:pre-wrap;line-height:1.55">'+escHtml(m.content||'')+'</div>'
+      +'</div></div>';
+  }).join('');
+  return '<div>'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin-bottom:.75rem">'+escHtml(last.studentName||'')+' 학생과의 대화</div>'
+    +'<div style="max-height:380px;overflow-y:auto;padding-right:4px;margin-bottom:.75rem">'+msgsHtml+'</div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<input id="qna-admin-reply" type="text" placeholder="답장 또는 코칭 메시지 입력..." '
+    +'style="flex:1;border:1px solid var(--op);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit" '
+    +'onkeydown="if(event.key===\'Enter\')sendAdminReply(\''+threadId+'\')"/>'
+    +'<button class="btn-add" style="margin:0;padding:8px 16px;font-size:13px" onclick="sendAdminReply(\''+threadId+'\')">전송</button>'
+    +'</div></div>';
+}
+
+async function sendAdminReply(threadId){
+  var input=document.getElementById('qna-admin-reply');
+  var content=(input.value||'').trim();
+  if(!content) return;
+  var t=groupQnaThreads(ADMIN_QNA_DATA.qnas).find(function(x){ return x.threadId===threadId; });
+  var studentEmail=t?t.msgs[0].studentEmail:'';
+  var studentName=t?t.msgs[t.msgs.length-1].studentName:'';
+  var msg={threadId:threadId, msgKind:'reply', studentEmail:studentEmail, studentName:studentName,
+    authorRole:'teacher', content:content, date:new Date().toISOString().slice(0,16).replace('T',' ')};
+  ADMIN_QNA_DATA.qnas.push(msg);
+  input.value='';
+  document.getElementById('qna-convo-area').innerHTML=renderAdminThreadConvo(threadId);
+  renderQnaAdminBody(document.getElementById('admin-content'));
+  await sendToSheets({type:'qna', threadId:threadId, msgKind:'reply',
+    studentEmail:studentEmail, studentName:studentName, authorRole:'teacher', content:content});
+}
+
+function openCoachComposer(){
+  var opts=ADMIN_QNA_DATA.students.map(function(s){ return '<option value="'+s.email+'">'+escHtml(s.name||s.email)+' ('+s.email+')</option>'; }).join('');
+  var area=document.getElementById('qna-convo-area');
+  area.innerHTML='<div>'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin-bottom:.75rem">✏️ 새 코칭 메모 작성</div>'
+    +'<div style="margin-bottom:.6rem">'
+    +'<div style="font-size:12px;color:#64748b;margin-bottom:4px">학생 선택</div>'
+    +'<select id="coach-student-sel" style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit">'
+    +(opts||'<option value="">등록된 학생 정보가 없습니다</option>')
+    +'</select></div>'
+    +'<div style="margin-bottom:.6rem">'
+    +'<div style="font-size:12px;color:#64748b;margin-bottom:4px">코칭 내용</div>'
+    +'<textarea id="coach-content" rows="4" placeholder="학생의 학습 활동을 확인하고 격려·조언을 남겨주세요." '
+    +'style="width:100%;border:1px solid var(--op);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea></div>'
+    +'<div style="display:flex;justify-content:flex-end;gap:8px">'
+    +'<button class="btn-gh" style="padding:8px 16px;font-size:13px" onclick="renderQnaAdminBody(document.getElementById(\'admin-content\'))">취소</button>'
+    +'<button class="btn-add" style="margin:0;padding:8px 18px;font-size:13px" onclick="submitCoachNote()">보내기</button>'
+    +'</div></div>';
+}
+
+async function submitCoachNote(){
+  var sel=document.getElementById('coach-student-sel');
+  var ta=document.getElementById('coach-content');
+  var email=sel?sel.value:'';
+  var content=(ta&&ta.value||'').trim();
+  if(!email){ alert('학생을 선택해 주세요.'); return; }
+  if(!content){ alert('코칭 내용을 입력해 주세요.'); return; }
+  var name=(ADMIN_QNA_DATA.students.find(function(s){return s.email===email;})||{}).name||'';
+  var threadId=newQnaId();
+  var msg={threadId:threadId, msgKind:'coach', studentEmail:email, studentName:name,
+    authorRole:'teacher', content:content, date:new Date().toISOString().slice(0,16).replace('T',' ')};
+  ADMIN_QNA_DATA.qnas.push(msg);
+  ADMIN_QNA_ACTIVE=threadId;
+  renderQnaAdminBody(document.getElementById('admin-content'));
+  await sendToSheets({type:'qna', threadId:threadId, msgKind:'coach',
+    studentEmail:email, studentName:name, authorRole:'teacher', content:content});
+}
+
 // ── 샘플 기출문제 (EBS 스타일) ──
 (function initSampleExams(){
   const existing = loadExamSets();
@@ -2989,7 +3323,7 @@ document.addEventListener('DOMContentLoaded', function(){
         renderAdmin();show('sa');
       } else if(sess.mode==='student'&&sess.email){
         currentUserEmail=sess.email;
-        ['uname','uname2','uname3'].forEach(function(id){
+        ['uname','uname2','uname3','uname6'].forEach(function(id){
           var el=document.getElementById(id);
           if(el) el.textContent=sess.name||sess.email.split('@')[0];
         });
