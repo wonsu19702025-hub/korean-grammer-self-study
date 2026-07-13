@@ -295,7 +295,8 @@ tr:hover td{background:#f8fbff}
       <div id="student-fields">
         <div class="login-field"><label>이름 / 별명</label><input type="text" id="nickname" placeholder="이름 또는 별명 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
         <div class="login-field"><label>이메일 주소</label><input type="email" id="em" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-        <p class="login-hint">이름과 이메일을 입력하면 바로 학습을 시작할 수 있습니다.</p>
+        <div class="login-field"><label>PIN (숫자 4자리)</label><input type="password" id="student-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="숫자 4자리" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <p class="login-hint">처음 로그인할 때 원하는 숫자 4자리를 입력하면 그 번호로 등록됩니다.<br>다음부터는 같은 이메일·PIN으로 로그인해야 내 학습 정보를 볼 수 있어요.<br>PIN을 잊어버렸다면 선생님께 말씀해 주세요.</p>
       </div>
       <!-- 관리자 로그인 -->
       <div id="admin-fields" style="display:none">
@@ -838,6 +839,43 @@ async function sha256Hex(str){
   return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
 }
 
+// ── 학습자 PIN 검증/등록 ──
+// 같은 이메일로 다른 사람이 로그인해서 남의 학습 정보(특히 질문·코칭 대화)를
+// 보는 것을 막기 위해, 최초 로그인 시 정한 PIN을 이후 로그인에서도 확인합니다.
+// Google Sheets에 PIN의 해시만 저장하며, 원문 PIN은 어디에도 저장되지 않습니다.
+async function verifyOrRegisterStudentPin(email, name, pin){
+  var pinHash=await sha256Hex(email.toLowerCase()+':'+pin);
+  var localPins=JSON.parse(localStorage.getItem('kgrammar_local_pins')||'{}');
+  var url=qnaWebhookUrl();
+  var remoteHash=null, remoteChecked=false;
+
+  if(url){
+    var res=await jsonpRequest(url, 'action=read', 8000);
+    if(res.ok && res.data && res.data.accounts){
+      var mine=res.data.accounts.filter(function(a){ return a.email===email; });
+      if(mine.length) remoteHash=mine[mine.length-1].pinHash;
+      remoteChecked=true;
+    }
+  }
+  // 서버 확인이 안 되면(웹훅 미설정·네트워크 오류) 이 기기에 저장된 PIN으로 대체 확인
+  var existingHash=remoteChecked?remoteHash:(localPins[email]||null);
+
+  if(existingHash){
+    if(existingHash!==pinHash){
+      return {ok:false, msg:'PIN이 일치하지 않습니다. 처음 등록한 숫자 4자리를 입력해 주세요.'};
+    }
+    localPins[email]=pinHash;
+    localStorage.setItem('kgrammar_local_pins', JSON.stringify(localPins));
+    return {ok:true};
+  }
+
+  // 신규 등록 (이 이메일로 처음 로그인)
+  localPins[email]=pinHash;
+  localStorage.setItem('kgrammar_local_pins', JSON.stringify(localPins));
+  await sendToSheets({type:'account', email:email, name:name, pinHash:pinHash});
+  return {ok:true, isNew:true};
+}
+
 async function doLogin(){
   document.getElementById('err').style.display='none';
 
@@ -873,6 +911,28 @@ async function doLogin(){
   }
   if(!e||!e.includes('@')){
     document.getElementById('err').textContent='올바른 이메일 주소를 입력해 주세요.';
+    document.getElementById('err').style.display='block';
+    return;
+  }
+  const pin=document.getElementById('student-pin').value.trim();
+  if(!/^\d{4}$/.test(pin)){
+    document.getElementById('err').textContent='PIN은 숫자 4자리로 입력해 주세요.';
+    document.getElementById('err').style.display='block';
+    return;
+  }
+
+  // PIN 확인(처음이면 등록, 아니면 기존 PIN과 일치하는지 확인)
+  const loginBtn=document.getElementById('login-btn');
+  const prevBtnText=loginBtn.textContent;
+  loginBtn.textContent='확인 중...';loginBtn.disabled=true;
+  let pinResult;
+  try{
+    pinResult=await verifyOrRegisterStudentPin(e, nickname, pin);
+  } finally {
+    loginBtn.textContent=prevBtnText;loginBtn.disabled=false;
+  }
+  if(!pinResult.ok){
+    document.getElementById('err').textContent=pinResult.msg;
     document.getElementById('err').style.display='block';
     return;
   }
@@ -1016,6 +1076,8 @@ function doLogout(){
   document.getElementById('nickname').value='';
   document.getElementById('em').value='';
   document.getElementById('pw').value='';
+  var pinEl=document.getElementById('student-pin');
+  if(pinEl) pinEl.value='';
   show('sl');
 }
 
