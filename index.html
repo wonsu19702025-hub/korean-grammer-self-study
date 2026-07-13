@@ -570,8 +570,8 @@ const PARTS=[
     {type:'mc',q:'"국물→[궁물]"에서 일어난 음운 변동은?',opts:['탈락','교체','첨가','축약'],ans:1,exp:'비음화는 교체(대치)의 하위 유형으로, ㄱ이 비음 ㅁ 앞에서 ㅇ으로 바뀐 현상입니다.'},
     {type:'mc',q:'"먹히다→[머키다]"에서 일어난 음운 변동은?',opts:['비음화','경음화','축약','탈락'],ans:2,exp:'ㄱ+ㅎ→ㅋ. 두 음운이 하나의 거센소리로 합쳐지는 축약입니다.'},
     {type:'mc',q:'구개음화의 조건으로 옳은 것은?',opts:['ㄷ,ㅌ 뒤에 모음이 오면','ㄷ,ㅌ 뒤에 형식 형태소 이가 오면','ㅈ,ㅊ 뒤에 이가 오면','모든 환경에서'],ans:1,exp:'구개음화: ㄷ,ㅌ 뒤에 형식 형태소(조사·어미·접미사) "이"가 올 때만.'},
-    {type:'fill',q:'"솜이불→[솜니불]"처럼 없던 음운이 새로 생기는 현상은 음운 ___이다.',blank:'첨가',altBlanks:['음운첨가','음운 첨가','ㄴ첨가','ㄴ 첨가'],exp:'ㄴ첨가의 예입니다.'},
-    {type:'fill',q:'"쓰+어→써"처럼 있던 음운이 사라지는 현상은 음운 ___이다.',blank:'탈락',altBlanks:['음운탈락','음운 탈락','ㅡ탈락'],exp:'ㅡ탈락의 예입니다.'}
+    {type:'fill',q:'"솜이불→[솜니불]"처럼 없던 음운이 새로 생기는 현상은 음운 ___이다.',blank:'첨가',altBlanks:['음운첨가','음운첨가(ㄴ 첨가)'],exp:'ㄴ첨가의 예입니다.'},
+    {type:'fill',q:'"쓰+어→써"처럼 있던 음운이 사라지는 현상은 음운 ___이다.',blank:'탈락',altBlanks:['음운탈락','ㅡ탈락'],exp:'ㅡ탈락의 예입니다.'}
    ]}
 ]},
 {id:'word',title:'단어',desc:'품사 분류와 단어 형성',sessions:'단어 영역',subs:[
@@ -586,8 +586,8 @@ const PARTS=[
     {type:'mc',q:'품사 분류 기준이 아닌 것은?',opts:['형태','기능','의미','발음'],ans:3,exp:'발음은 품사 분류 기준이 아닙니다.'},
     {type:'mc',q:'가변어에 해당하지 않는 것은?',opts:['동사','형용사','서술격 조사 이다','부사'],ans:3,exp:'부사는 불변어입니다.'},
     {type:'mc',q:'체언에 해당하는 것끼리 묶인 것은?',opts:['명사·동사·수사','명사·대명사·수사','동사·형용사·명사','관형사·부사·수사'],ans:1,exp:'체언은 명사·대명사·수사입니다.'},
-    {type:'fill',q:'단어를 형태·기능·의미에 따라 나누어 놓은 것을 ___라 한다.',blank:'품사',altBlanks:['품사론','단어의분류'],exp:'국어의 품사는 9가지입니다.'},
-    {type:'fill',q:'형태가 변하지 않는 단어를 ___어라 한다.',blank:'불변',altBlanks:['불변어','체언','불규칙하지않는'],exp:'불변어: 명사·대명사·수사·관형사·부사·조사·감탄사'}
+    {type:'fill',q:'단어를 형태·기능·의미에 따라 나누어 놓은 것을 ___라 한다.',blank:'품사',altBlanks:['단어의분류'],exp:'국어의 품사는 9가지입니다.'},
+    {type:'fill',q:'형태가 변하지 않는 단어를 ___어라 한다.',blank:'불변',altBlanks:['불변어','체언'],exp:'불변어: 명사·대명사·수사·관형사·부사·조사·감탄사'}
    ]},
   {id:'w2',title:'단어의 형성',desc:'형태소·합성어·파생어',badge:'new',
    theory:{title:'단어 형성의 원리',sections:[
@@ -602,7 +602,7 @@ const PARTS=[
     {type:'mc',q:'"풋사랑"의 단어 형성 방법은?',opts:['단일어','합성어','파생어','복합어'],ans:2,exp:'접두사 "풋-"+어근 "사랑" → 파생어.'},
     {type:'mc',q:'합성어가 아닌 것은?',opts:['손발','봄비','뛰놀다','먹이다'],ans:3,exp:'"먹이다"는 어근+접미사의 파생어입니다.'},
     {type:'mc',q:'비통사적 합성어인 것은?',opts:['작은집','돌아가다','덮밥','어린이'],ans:2,exp:'"덮밥"은 용언 어간+명사의 비통사적 합성어입니다.'},
-    {type:'fill',q:'홀로 쓰일 수 없는 형태소를 ___ 형태소라 한다.',blank:'의존',altBlanks:['의존형태소','의존 형태소','구속','구속형태소'],exp:'의존 형태소: 조사, 어미, 접사, 용언 어간 등'},
+    {type:'fill',q:'홀로 쓰일 수 없는 형태소를 ___ 형태소라 한다.',blank:'의존',altBlanks:['의존형태소','구속','구속형태소'],exp:'의존 형태소: 조사, 어미, 접사, 용언 어간 등'},
     {type:'fill',q:'어근 앞에 붙어 새 단어를 만드는 접사를 ___사라 한다.',blank:'접두',altBlanks:['접두사','접두어'],exp:'접두사 예: 풋-(풋사과), 헛-(헛수고)'}
    ]}
 ]},
@@ -620,7 +620,7 @@ const PARTS=[
     {type:'mc',q:'세 자리 서술어가 쓰인 문장은?',opts:['꽃이 피었다','그가 책을 읽었다','나는 동생에게 선물을 주었다','하늘이 맑다'],ans:2,exp:'"주다"는 주어(나는)+목적어(선물을)+필수부사어(동생에게)를 모두 요구하는 세 자리 서술어입니다. ①꽃이 피었다: 한 자리, ②그가 책을 읽었다: 두 자리(주어+목적어), ④하늘이 맑다: 한 자리.'},
     {type:'mc',q:'부속 성분끼리 묶인 것은?',opts:['주어·서술어','목적어·보어','관형어·부사어','독립어·주어'],ans:2,exp:'부속 성분은 관형어와 부사어입니다.'},
     {type:'fill',q:'서술어가 필수적으로 요구하는 성분의 수를 서술어의 ___수라 한다.',blank:'자릿',altBlanks:['자릿수','자리'],exp:'한 자리/두 자리/세 자리 서술어로 나뉩니다.'},
-    {type:'fill',q:'"되다, 아니다" 앞에 필수적으로 요구되는 주성분을 ___라 한다.',blank:'보어',altBlanks:['보어','필수성분','보성분'],exp:'"물이 얼음이 되었다"에서 "얼음이"가 보어입니다.'}
+    {type:'fill',q:'"되다, 아니다" 앞에 필수적으로 요구되는 주성분을 ___라 한다.',blank:'보어',altBlanks:[],exp:'"물이 얼음이 되었다"에서 "얼음이"가 보어입니다.'}
    ]},
   {id:'s2',title:'높임 표현',desc:'주체·객체·상대 높임',badge:'new',
    theory:{title:'높임법의 종류',sections:[
@@ -634,7 +634,7 @@ const PARTS=[
     {type:'mc',q:'주체 높임이 잘못 사용된 문장은?',opts:['할머니께서 오셨다','선생님은 손이 크시다','아이가 잠을 자시다','교장 선생님께서 말씀하셨다'],ans:2,exp:'"아이"는 높임 대상이 아니므로 "-시-"를 쓰면 안 됩니다.'},
     {type:'mc',q:'격식체가 아닌 것은?',opts:['합쇼체','하게체','해요체','해라체'],ans:2,exp:'해요체는 비격식 높임체입니다.'},
     {type:'fill',q:'주체 높임은 주로 선어말 어미 ___로 실현된다.',blank:'-(으)시-',altBlanks:['으시','시','(으)시','으시-','-시-'],exp:'예: 선생님께서 오시다.'},
-    {type:'fill',q:'"주다"의 객체 높임 어휘는 ___이다.',blank:'드리다',altBlanks:['드리다','올리다','드리'],exp:'"드리다"는 목적어·부사어가 높임 대상일 때 씁니다.'}
+    {type:'fill',q:'"주다"의 객체 높임 어휘는 ___이다.',blank:'드리다',altBlanks:['올리다','드리'],exp:'"드리다"는 목적어·부사어가 높임 대상일 때 씁니다.'}
    ]}
 ]},
 {id:'history',title:'국어사',desc:'중세·근대 국어의 특징',sessions:'8·9회차',subs:[
@@ -683,8 +683,8 @@ const PARTS=[
     {type:'mc',q:'근대 국어의 변화로 옳지 않은 것은?',opts:['아래아 소실','방점 소실','훈민정음 창제','구개음화 확산'],ans:2,exp:'훈민정음 창제(1443년)는 중세 국어 시기의 일입니다.'},
     {type:'mc',q:'"믈→물"에 나타난 음운 변화는?',opts:['구개음화','원순 모음화','아래아 소실','방점 소실'],ans:1,exp:'원순 모음화: 양순음 뒤 ㅡ→ㅜ.'},
     {type:'mc',q:'"이어적기→끊어적기"로 바뀐 시기는?',opts:['고대','중세','근대','현대'],ans:2,exp:'근대 국어 시기에 끊어적기로 전환되었습니다.'},
-    {type:'fill',q:'"티다→치다"처럼 ㄷ,ㅌ이 이 앞에서 ㅈ,ㅊ으로 바뀌는 현상은 ___이다.',blank:'구개음화',altBlanks:['구개음화','입천장소리되기','경구개음화'],exp:'근대 국어 17~18세기에 본격 확산되었습니다.'},
-    {type:'fill',q:'이어적기에서 형태소 경계를 밝혀 적는 ___로 변화하였다.',blank:'끊어적기',altBlanks:['끊어 적기','분철','분철표기','형태소경계표기'],exp:'끊어적기(분철)는 현대 한글 맞춤법의 기초입니다.'}
+    {type:'fill',q:'"티다→치다"처럼 ㄷ,ㅌ이 이 앞에서 ㅈ,ㅊ으로 바뀌는 현상은 ___이다.',blank:'구개음화',altBlanks:['입천장소리되기','경구개음화'],exp:'근대 국어 17~18세기에 본격 확산되었습니다.'},
+    {type:'fill',q:'이어적기에서 형태소 경계를 밝혀 적는 ___로 변화하였다.',blank:'끊어적기',altBlanks:['끊어 적기','분철','분철표기'],exp:'끊어적기(분철)는 현대 한글 맞춤법의 기초입니다.'}
    ]}
 ]},
 {id:'loanword',title:'외래어·로마자',desc:'표기법 원칙과 언어 태도',sessions:'언어 태도',subs:[
@@ -701,8 +701,8 @@ const PARTS=[
     {type:'mc',q:'외래어 표기에서 받침으로 쓸 수 없는 것은?',opts:['ㄱ','ㄴ','ㄷ','ㄹ'],ans:2,exp:'받침에는 ㄱ,ㄴ,ㄹ,ㅁ,ㅂ,ㅅ,ㅇ 7개만. ㄷ은 불가합니다.'},
     {type:'mc',q:'올바른 외래어 표기는?',opts:['빠리','로보트','워크숍','케잌'],ans:2,exp:'"워크숍"이 올바릅니다.'},
     {type:'mc',q:'외래어 표기법 원칙이 아닌 것은?',opts:['24자모만 사용','된소리 원칙 금지','원어 철자 그대로 씀','관용 존중'],ans:2,exp:'원어 철자를 그대로 쓰는 것은 원칙이 아닙니다.'},
-    {type:'fill',q:'"contents"의 올바른 외래어 표기는 ___이다.',blank:'콘텐츠',altBlanks:['콘텐츠'],exp:'"컨텐츠"(×) → "콘텐츠"(○).'},
-    {type:'fill',q:'파열음에는 ___를 쓰지 않는 것을 원칙으로 한다.',blank:'된소리',altBlanks:['된소리','경음','쌍자음','ㄲㄸㅃㅆㅉ'],exp:'빠리(×)→파리(○)'}
+    {type:'fill',q:'"contents"의 올바른 외래어 표기는 ___이다.',blank:'콘텐츠',altBlanks:[],exp:'"컨텐츠"(×) → "콘텐츠"(○).'},
+    {type:'fill',q:'파열음에는 ___를 쓰지 않는 것을 원칙으로 한다.',blank:'된소리',altBlanks:['경음','쌍자음','ㄲㄸㅃㅆㅉ'],exp:'빠리(×)→파리(○)'}
    ]},
   {id:'l2',title:'로마자 표기법',desc:'국어의 로마자 표기 원칙',badge:'new',
    theory:{title:'국어의 로마자 표기법',sections:[
@@ -716,7 +716,7 @@ const PARTS=[
     {type:'mc',q:'"ㄹ"의 로마자 표기로 옳은 것은?',opts:['항상 r','항상 l','모음 앞→r, 자음 앞·어말→l','모음 앞→l, 자음 앞·어말→r'],ans:2,exp:'ㄹ: 모음 앞→r, 자음 앞·어말→l'},
     {type:'mc',q:'"한라산"의 올바른 로마자 표기는?',opts:['Hanrasan','Hallazan','Hallasan','Hanlazan'],ans:2,exp:'한라산[할라산]→Hallasan'},
     {type:'fill',q:'"ㅓ"의 로마자 표기는 ___이다.',blank:'eo',altBlanks:['EO','Eo'],exp:'ㅓ는 두 글자 eo로 표기합니다.'},
-    {type:'fill',q:'로마자 표기법은 ___ 기준의 전사법 원칙을 따른다.',blank:'발음',altBlanks:['발음기준','표준발음','현행발음','소리'],exp:'발음 기준: 독립[동닙]→Dongnip'}
+    {type:'fill',q:'로마자 표기법에서는 대부분의 음운 변동을 반영하지만, ___(된소리되기)만은 표기에 반영하지 않는다.',blank:'경음화',altBlanks:['된소리되기','경음화(된소리되기)','된소리'],exp:'예) 압구정[압꾸정]→Apgujeong, 낙동강[낙똥강]→Nakdonggang처럼 경음화는 표기에 반영하지 않습니다.'}
    ]}
 ]},
 {id:'spell',title:'맞춤법',desc:'자주 틀리는 맞춤법',sessions:'2·3회차',subs:[
@@ -1376,6 +1376,10 @@ function retryWrongQs(){
 }
 
 function renderScore(){
+  // 방금 실제로 푼 문제 세트(재도전이면 '틀린 문제만' 세트)를 먼저 확보해 둔다.
+  // → 이후 원래 퀴즈 목록으로 복원해도 점수/개수 계산은 이 세트를 기준으로 한다.
+  var playedQuizzes=CS.quizzes;
+
   // 틀린 문제 재시도 후 원래 퀴즈 복원
   if(CS._isRetry){
     CS=Object.assign({},CS,{quizzes:CS._savedQuizzes,_isRetry:false,_savedQuizzes:null});
@@ -1389,10 +1393,10 @@ function renderScore(){
   if(!u){u={email:currentUserEmail,name:currentUserEmail.split('@')[0],progress:{},scores:{},totalDone:0};localList.push(u);}
   if(!u.progress)u.progress={};
   if(!u.scores)u.scores={};
-  var scorePct=Math.round(CC_CNT/CS.quizzes.length*100);
+  var scorePct=Math.round(CC_CNT/playedQuizzes.length*100);
   u.progress[CS.id]={partTitle:CP.title,subTitle:CS.title,done:true,date:new Date().toLocaleDateString('ko-KR')};
   if(!u.scores[CS.id]||scorePct>u.scores[CS.id].pct){
-    u.scores[CS.id]={score:CC_CNT,total:CS.quizzes.length,pct:scorePct,partTitle:CP.title,subTitle:CS.title,date:new Date().toLocaleDateString('ko-KR')};
+    u.scores[CS.id]={score:CC_CNT,total:playedQuizzes.length,pct:scorePct,partTitle:CP.title,subTitle:CS.title,date:new Date().toLocaleDateString('ko-KR')};
   }
   u.totalDone=Object.keys(u.progress).length;
   var idx=localList.findIndex(function(x){return x.email===currentUserEmail;});
@@ -1401,14 +1405,14 @@ function renderScore(){
 
   // 세션 로그에 기록 (로그아웃 시 요약에 사용)
   var wrongItems=WRONG_QS.map(function(qi){
-    var q=CS.quizzes[qi];
+    var q=playedQuizzes[qi];
     return q?q.q.replace(/<[^>]+>/g,'').slice(0,40):'';
   }).filter(Boolean);
   sessionLog.push({
     partTitle:CP.title,
     subTitle:CS.title,
     score:CC_CNT,
-    total:CS.quizzes.length,
+    total:playedQuizzes.length,
     pct:scorePct,
     wrongItems:wrongItems
   });
@@ -1421,10 +1425,10 @@ function renderScore(){
     subTitle:CS.title,
     theoryDone:true,
     score:CC_CNT,
-    total:CS.quizzes.length,
+    total:playedQuizzes.length,
     pct:scorePct
   });
-  var tot=CS.quizzes.length,pct=Math.round(CC_CNT/tot*100);
+  var tot=playedQuizzes.length,pct=Math.round(CC_CNT/tot*100);
   var msg=pct===100?'완벽해요! 🎉':pct>=80?'잘했어요! 👍':pct>=60?'조금 더 연습해요 📚':'이론을 복습해 보세요 🔍';
   var bc=pct===100?'#15803d':pct>=60?'var(--ol)':'#dc2626';
 
@@ -1434,7 +1438,7 @@ function renderScore(){
     wrongList='<div style="margin-top:1rem;padding:1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;text-align:left">'
       +'<div style="font-size:13px;font-weight:600;color:#dc2626;margin-bottom:.5rem">✗ 틀린 문제 ('+WRONG_QS.length+'개)</div>'
       +WRONG_QS.map(function(qi){
-        var q=CS.quizzes[qi];
+        var q=playedQuizzes[qi];
         return '<div style="font-size:12px;color:#7f1d1d;padding:3px 0;border-bottom:1px solid #fecaca">'+(qi+1)+'번. '+q.q.replace(/<[^>]+>/g,'').slice(0,40)+'…</div>';
       }).join('')
       +'</div>';
@@ -1476,11 +1480,26 @@ function showAdminTab(tab,btn){
   else if(tab==='users') renderUsersAdmin(c);
 }
 
-function renderDashboard(c){
-  users=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+async function renderDashboard(c){
+  c.innerHTML='<div class="admin-card"><div style="text-align:center;padding:2rem;color:var(--ol)">⏳ 불러오는 중...</div></div>';
+  var localUsers=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var remoteData=null;
+  var url=qnaWebhookUrl();
+  if(url){
+    var res=await jsonpRequest(url, 'action=read', 8000);
+    if(res.ok && res.data) remoteData=res.data;
+  }
+  users=mergeUsersWithSheetData(localUsers, remoteData);
+  users=users.map(function(u){ u.totalDone=u.progress?Object.keys(u.progress).length:0; return u; });
+  users=users.sort(function(a,b){ return (a.joinDate||'').localeCompare(b.joinDate||''); });
+
   const totalSubs=PARTS.reduce((a,p)=>a+p.subs.length,0);
   const totalQ=PARTS.reduce((a,p)=>a+p.subs.reduce((b,s)=>b+s.quizzes.length,0),0);
+  var dataNote=!url
+    ?'⚠️ 웹훅 URL이 설정되지 않아 이 기기에서 로그인한 학습자만 집계됩니다.'
+    :(!remoteData?'⚠️ Google Sheets에서 데이터를 불러오지 못해 이 기기 기록만 집계됩니다.':'✅ 이 기기 기록과 Google Sheets의 다른 기기 접속 기록을 함께 집계했습니다.');
   c.innerHTML=`
+  <div style="font-size:11px;color:#64748b;margin-bottom:.75rem;background:#f8fafc;border-radius:8px;padding:7px 12px">${dataNote}</div>
   <div class="stat-grid">
     <div class="stat-card"><div class="big">${PARTS.length}</div><div class="lbl">학습 파트</div></div>
     <div class="stat-card"><div class="big">${totalSubs}</div><div class="lbl">세부 항목</div></div>
@@ -1505,7 +1524,7 @@ function renderDashboard(c){
     <div class="table-wrap"><table>
       <tr><th>이름</th><th>이메일</th><th>가입일</th><th>완료 항목</th></tr>
       ${users.length?users.slice(-10).reverse().map(u=>`<tr>
-        <td><strong>${u.name}</strong></td><td style="font-size:12px">${u.email}</td>
+        <td><strong>${u.name}</strong>${u._fromSheetOnly?' <span class="tag blue" style="font-size:10px">☁️</span>':''}</td><td style="font-size:12px">${u.email}</td>
         <td style="font-size:12px">${u.joinDate||'-'}</td>
         <td><span class="tag green">${u.totalDone||0}개</span></td>
       </tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:2rem">등록된 학습자가 없습니다.</td></tr>'}
@@ -1514,8 +1533,96 @@ function renderDashboard(c){
 }
 
 // ─── 학습자 관리: 진도 + 점수 상세 ───
-function renderUsersAdmin(c){
-  users = JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+// 파트/세부항목 제목 조합 → sid 매핑 (Sheets 텍스트 기록을 로컬 구조와 맞추기 위함)
+function buildSubTitleMap(){
+  var map={};
+  PARTS.forEach(function(p){
+    p.subs.forEach(function(s){
+      map[p.title+'||'+s.title]=s.id;
+    });
+  });
+  return map;
+}
+
+// 로컬(kgrammar_users) + Google Sheets(다른 기기 접속 기록)을 이메일 기준으로 병합
+function mergeUsersWithSheetData(localUsers, remoteData){
+  var byEmail={};
+  localUsers.forEach(function(u){
+    byEmail[u.email]=Object.assign({}, u, {
+      progress:Object.assign({}, u.progress||{}),
+      scores:Object.assign({}, u.scores||{}),
+      examScores:Object.assign({}, u.examScores||{}),
+      _fromSheetOnly:false
+    });
+  });
+
+  if(!remoteData) return Object.keys(byEmail).map(function(e){return byEmail[e];});
+
+  function ensure(email,name,date){
+    if(!byEmail[email]){
+      byEmail[email]={email:email,name:name||email.split('@')[0],joinDate:date||'',progress:{},scores:{},examScores:{},totalDone:0,_fromSheetOnly:true};
+    }
+    return byEmail[email];
+  }
+
+  // 1) 접속기록 → 이름/가입일 확보 (다른 기기에서 로그인만 한 학습자 포함)
+  (remoteData.logins||[]).forEach(function(l){
+    if(!l.email) return;
+    var u=ensure(l.email, l.name, l.date?l.date.slice(0,10):'');
+    var jd=l.date?l.date.slice(0,10):'';
+    if(jd && (!u.joinDate || jd<u.joinDate)) u.joinDate=jd;
+  });
+
+  // 2) 학습기록(이론+문제풀이) 반영
+  var subMap=buildSubTitleMap();
+  (remoteData.studies||[]).forEach(function(st){
+    if(!st.email) return;
+    var u=ensure(st.email, st.name, st.date?st.date.slice(0,10):'');
+    var sid=subMap[st.partTitle+'||'+st.subTitle];
+    if(!sid) return; // 현재 커리큘럼과 매칭되지 않는 기록은 건너뜀 (예: 삭제/변경된 항목)
+    if(!u.progress[sid]){
+      u.progress[sid]={partTitle:st.partTitle,subTitle:st.subTitle,done:true,date:st.date};
+    }
+    var pct=typeof st.pct==='number'?st.pct:(st.total?Math.round((st.score/st.total)*100):0);
+    if(!u.scores[sid]||pct>u.scores[sid].pct){
+      u.scores[sid]={score:st.score,total:st.total,pct:pct,partTitle:st.partTitle,subTitle:st.subTitle,date:st.date};
+    }
+  });
+
+  // 3) 기출문제 기록 반영
+  var examSets=loadExamSets();
+  (remoteData.exams||[]).forEach(function(ex){
+    if(!ex.email) return;
+    var u=ensure(ex.email, ex.name, ex.date?ex.date.slice(0,10):'');
+    var matched=examSets.find(function(es){ return es.title===ex.examTitle; });
+    if(!matched) return; // 현재 등록된 기출 세트와 매칭되는 것만 반영
+    var key='exam_'+matched.id;
+    var pct=typeof ex.pct==='number'?ex.pct:(ex.total?Math.round((ex.score/ex.total)*100):0);
+    if(!u.examScores[key]||pct>u.examScores[key].pct){
+      u.examScores[key]={score:ex.score,total:ex.total,pct:pct,date:ex.date};
+    }
+  });
+
+  Object.keys(byEmail).forEach(function(e){
+    byEmail[e].totalDone=Object.keys(byEmail[e].progress).length;
+  });
+  return Object.keys(byEmail).map(function(e){return byEmail[e];});
+}
+
+async function renderUsersAdmin(c){
+  c.innerHTML='<div class="admin-card"><div style="text-align:center;padding:2rem;color:var(--ol)">⏳ 학습자 명단을 불러오는 중...</div></div>';
+  var localUsers=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var remoteData=null;
+  var url=qnaWebhookUrl();
+  if(url){
+    var res=await jsonpRequest(url, 'action=read', 8000);
+    if(res.ok && res.data) remoteData=res.data;
+  }
+  users=mergeUsersWithSheetData(localUsers, remoteData);
+  renderUsersAdminBody(c, !!url, !!remoteData);
+}
+
+function renderUsersAdminBody(c, hasWebhook, remoteLoaded){
   const totalSubs=PARTS.reduce((a,p)=>a+p.subs.length,0);
 
   // totalDone을 실제 progress 기준으로 재계산
@@ -1523,13 +1630,14 @@ function renderUsersAdmin(c){
     u.totalDone=u.progress?Object.keys(u.progress).length:0;
     return u;
   });
+  // 최근 접속/이론완료 순으로 정렬 (가입일 내림차순)
+  users=users.slice().sort(function(a,b){ return (b.joinDate||'').localeCompare(a.joinDate||''); });
 
   var rows='';
   if(!users.length){
     rows='<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:2.5rem;font-size:14px">'
       +'등록된 학습자가 없습니다.<br>'
-      +'<span style="font-size:12px">학습자가 <strong>이 기기(PC/태블릿)</strong>에서 로그인하면 자동으로 등록됩니다.<br>'
-      +'⚠️ 학습자가 다른 기기에서 접속한 경우 이 목록에 표시되지 않습니다.</span>'
+      +'<span style="font-size:12px">학습자가 로그인하면 이 목록에 자동으로 표시됩니다.</span>'
       +'</td></tr>';
   } else {
     rows=users.map(function(u,i){
@@ -1538,8 +1646,9 @@ function renderUsersAdmin(c){
       var examDone=u.examScores?Object.keys(u.examScores).length:0;
       var upct=Math.round(theoryDone/totalSubs*100);
       var pctColor=upct>=80?'#15803d':upct>=50?'var(--ol)':'#94a3b8';
+      var remoteTag=u._fromSheetOnly?' <span class="tag blue" style="font-size:10px;vertical-align:middle">☁️ 다른 기기</span>':'';
       return '<tr>'
-        +'<td><strong style="cursor:pointer;color:var(--ol);font-size:14px" onclick="showUserDetail('+i+')">'+u.name+' ▸</strong></td>'
+        +'<td><strong style="cursor:pointer;color:var(--ol);font-size:14px" onclick="showUserDetail('+i+')">'+u.name+' ▸</strong>'+remoteTag+'</td>'
         +'<td style="font-size:12px;color:#64748b">'+u.email+'</td>'
         +'<td style="font-size:12px;color:#64748b">'+(u.joinDate||'-')+'</td>'
         +'<td style="text-align:center"><span class="tag green">'+theoryDone+'/'+totalSubs+'</span></td>'
@@ -1551,22 +1660,31 @@ function renderUsersAdmin(c){
           +'<span style="font-size:12px;font-weight:600;color:'+pctColor+'">'+upct+'%</span>'
           +'</div>'
         +'</td>'
-        +'<td><button class="btn-del" onclick="deleteUser('+i+')">🗑</button></td>'
+        +'<td>'+(u._fromSheetOnly?'<span style="font-size:11px;color:#cbd5e1">-</span>':'<button class="btn-del" onclick="deleteUser('+i+')">🗑</button>')+'</td>'
         +'</tr>';
     }).join('');
+  }
+
+  var banner;
+  if(!hasWebhook){
+    banner='⚠️ 웹훅 URL이 설정되지 않아 <strong>이 기기에서 로그인한 학습자만</strong> 표시됩니다. "학습 현황(Sheets)" 탭에서 웹훅 URL을 먼저 저장해 주세요.';
+  } else if(!remoteLoaded){
+    banner='⚠️ Google Sheets에서 데이터를 불러오지 못해 <strong>이 기기에서 로그인한 학습자만</strong> 표시됩니다. 새로고침을 다시 시도해 주세요.';
+  } else {
+    banner='✅ 이 기기의 학습 기록과 Google Sheets에 기록된 <strong>다른 기기 접속자</strong>를 함께 표시합니다. ☁️ 표시는 다른 기기에서만 접속한 학습자입니다.';
   }
 
   c.innerHTML=
     '<div class="admin-card">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem">'
-    +'<h3 style="margin:0">👥 학습자 관리 <span style="font-size:13px;color:var(--ol);font-weight:600">('+users.length+'명 등록)</span></h3>'
+    +'<h3 style="margin:0">👥 학습자 관리 <span style="font-size:13px;color:var(--ol);font-weight:600">('+users.length+'명)</span></h3>'
     +'<div style="display:flex;gap:8px">'
     +'<button class="btn-add" style="margin:0;padding:6px 14px;font-size:12px" onclick="renderUsersAdmin(document.getElementById(\'admin-content\'))">🔄 새로고침</button>'
-    +(users.length?'<button class="btn-del" onclick="clearAllUsers()">🗑 전체 초기화</button>':'')
+    +(users.length?'<button class="btn-del" onclick="clearAllUsers()">🗑 이 기기 데이터 초기화</button>':'')
     +'</div>'
     +'</div>'
-    +'<div style="font-size:11px;color:#94a3b8;margin-bottom:.75rem;background:#f8fafc;border-radius:8px;padding:7px 12px">'
-    +'⚠️ 학습자 데이터는 <strong>이 기기의 브라우저</strong>에 저장됩니다. 학습자가 같은 기기·브라우저에서 접속해야 이 목록에 표시됩니다.'
+    +'<div style="font-size:11px;color:#64748b;margin-bottom:.75rem;background:#f8fafc;border-radius:8px;padding:7px 12px">'
+    +banner
     +'</div>'
     +'<div class="table-wrap"><table>'
     +'<tr><th>이름</th><th>이메일</th><th>가입일</th><th>이론완료</th><th>문제완료</th><th>기출응시</th><th>진도율</th><th>삭제</th></tr>'
@@ -1577,9 +1695,9 @@ function renderUsersAdmin(c){
 }
 
 function showUserDetail(i){
-  users=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
   var examSets=loadExamSets();
   const u=users[i];
+  if(!u) return;
   const allSubs=PARTS.flatMap(function(p){return p.subs.map(function(s){return{pid:p.id,ptitle:p.title,sid:s.id,stitle:s.title,qCount:s.quizzes.length};});});
   const card=document.getElementById('user-detail-card');
   card.style.display='block';
@@ -2178,14 +2296,21 @@ function saveContent(){
 function renderPartsAdmin(c){ renderContentAdmin(c); }
 
 function deleteUser(i){
-  if(!confirm('이 학습자를 삭제하시겠습니까?'))return;
-  users.splice(i,1);
-  localStorage.setItem('kgrammar_users',JSON.stringify(users));
+  var u=users[i];
+  if(!u) return;
+  if(u._fromSheetOnly){
+    alert('다른 기기에서만 접속한 학습자는 이 화면에서 삭제할 수 없습니다.\n(이 기기에 저장된 데이터가 아니라 Google Sheets 기록이기 때문입니다.)');
+    return;
+  }
+  if(!confirm('이 학습자를 삭제하시겠습니까?\n(이 기기에 저장된 데이터만 삭제되며, Google Sheets에 남은 기록은 유지됩니다)'))return;
+  var local=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  local=local.filter(function(x){ return x.email!==u.email; });
+  localStorage.setItem('kgrammar_users',JSON.stringify(local));
   renderUsersAdmin(document.getElementById('admin-content'));
 }
 function clearAllUsers(){
-  if(!confirm('모든 학습자 데이터를 초기화하시겠습니까?'))return;
-  users=[];localStorage.setItem('kgrammar_users','[]');
+  if(!confirm('이 기기에 저장된 모든 학습자 데이터를 초기화하시겠습니까?\n(Google Sheets에 남은 기록은 삭제되지 않으며, 새로고침하면 다시 표시됩니다)'))return;
+  localStorage.setItem('kgrammar_users','[]');
   renderUsersAdmin(document.getElementById('admin-content'));
 }
 function renderAdmin(){
