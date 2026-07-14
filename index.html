@@ -338,6 +338,13 @@ tr:hover td{background:#f8fbff}
     </div>
   </div>
   <div class="content">
+    <div style="position:relative;margin-bottom:1.5rem">
+      <input id="grammar-search" type="text" placeholder="🔍 문법 개념·키워드로 검색 (예: 사동, 피동, 두음법칙)"
+        style="width:100%;box-sizing:border-box;padding:13px 16px;border:1.5px solid var(--op);border-radius:12px;font-size:14px;outline:none;font-family:inherit;background:#fff"
+        oninput="onGrammarSearch(this.value)" onfocus="onGrammarSearch(this.value)"
+        onkeydown="if(event.key==='Enter')grammarSearchGoFirst();if(event.key==='Escape'){this.value='';closeGrammarSearch();}"/>
+      <div id="grammar-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--op);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.14);max-height:380px;overflow-y:auto;z-index:80"></div>
+    </div>
     <div class="sec-title">▦ 학습 파트 선택</div>
     <div class="tiles" id="tiles"></div>
     <!-- 기출문제 풀이 배너 -->
@@ -1174,6 +1181,113 @@ function openPart(id){
   show('ss');
 }
 function goSub(){openPart(CP.id)}
+
+// ════════════════════════════════════════
+//  홈 화면 검색 (파트/세부항목/이론 내용 통합 검색)
+// ════════════════════════════════════════
+var SEARCH_INDEX=null;
+
+function stripTags(html){
+  return (html||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function buildSearchIndex(){
+  var idx=[];
+  PARTS.forEach(function(p){
+    p.subs.forEach(function(s){
+      var bodyText=(s.theory&&s.theory.sections)
+        ?s.theory.sections.map(function(sec){return sec.h+' '+stripTags(sec.body);}).join(' ')
+        :'';
+      var keysText=(s.theory&&s.theory.keys)?s.theory.keys.map(stripTags).join(' '):'';
+      idx.push({
+        partId:p.id, partTitle:p.title,
+        subId:s.id, subTitle:s.title, subDesc:s.desc||'',
+        haystack:(s.title+' '+(s.desc||'')+' '+keysText+' '+bodyText).toLowerCase(),
+        snippetSource:keysText||bodyText||s.desc||''
+      });
+    });
+  });
+  SEARCH_INDEX=idx;
+}
+
+function grammarSearchSnippet(item, qLower){
+  var src=item.snippetSource;
+  var pos=src.toLowerCase().indexOf(qLower);
+  var snippet;
+  if(pos<0){ snippet=src.slice(0,60); }
+  else {
+    var start=Math.max(0,pos-18);
+    snippet=(start>0?'…':'')+src.slice(start,pos+qLower.length+40)+(src.length>pos+qLower.length+40?'…':'');
+  }
+  var esc=escHtml(snippet);
+  if(qLower){
+    var re=new RegExp('('+qLower.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig');
+    esc=esc.replace(re,'<mark style="background:#fef08a;color:#713f12;border-radius:3px;padding:0 2px">$1</mark>');
+  }
+  return esc;
+}
+
+function onGrammarSearch(q){
+  var box=document.getElementById('grammar-search-results');
+  q=(q||'').trim();
+  if(!q){ box.style.display='none'; box.innerHTML=''; return; }
+  if(!SEARCH_INDEX) buildSearchIndex();
+  var qLower=q.toLowerCase();
+  var results=SEARCH_INDEX.filter(function(item){ return item.haystack.indexOf(qLower)>=0; });
+  // 제목 일치를 본문 일치보다 우선 정렬
+  results.sort(function(a,b){
+    var at=a.subTitle.toLowerCase().indexOf(qLower)>=0?0:1;
+    var bt=b.subTitle.toLowerCase().indexOf(qLower)>=0?0:1;
+    return at-bt;
+  });
+  results=results.slice(0,8);
+
+  if(!results.length){
+    box.innerHTML='<div style="padding:16px;text-align:center;color:#94a3b8;font-size:13px">"'+escHtml(q)+'"에 대한 검색 결과가 없습니다.</div>';
+    box.style.display='block';
+    return;
+  }
+  box.innerHTML=results.map(function(r){
+    return '<div onmousedown="goToSubFromSearch(\''+r.partId+'\',\''+r.subId+'\')" '
+      +'style="padding:11px 15px;border-bottom:1px solid #f1f5f9;cursor:pointer" '
+      +'onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'#fff\'">'
+      +'<div style="font-size:11px;color:#94a3b8;margin-bottom:2px">'+escHtml(r.partTitle)+'</div>'
+      +'<div style="font-size:13.5px;font-weight:700;color:#1e293b;margin-bottom:3px">'+escHtml(r.subTitle)+'</div>'
+      +'<div style="font-size:12px;color:#64748b;line-height:1.5">'+grammarSearchSnippet(r,qLower)+'</div>'
+      +'</div>';
+  }).join('');
+  box.style.display='block';
+}
+
+function grammarSearchGoFirst(){
+  var input=document.getElementById('grammar-search');
+  var q=(input.value||'').trim();
+  if(!q||!SEARCH_INDEX) return;
+  var qLower=q.toLowerCase();
+  var first=SEARCH_INDEX.find(function(item){ return item.haystack.indexOf(qLower)>=0; });
+  if(first) goToSubFromSearch(first.partId, first.subId);
+}
+
+function closeGrammarSearch(){
+  var box=document.getElementById('grammar-search-results');
+  if(box){ box.style.display='none'; }
+}
+
+function goToSubFromSearch(partId, subId){
+  CP=PARTS.find(function(p){ return p.id===partId; });
+  if(!CP) return;
+  var input=document.getElementById('grammar-search');
+  if(input) input.value='';
+  closeGrammarSearch();
+  openStudy(subId);
+}
+
+document.addEventListener('click', function(e){
+  var wrap=document.getElementById('grammar-search');
+  var box=document.getElementById('grammar-search-results');
+  if(!wrap||!box) return;
+  if(e.target!==wrap && !box.contains(e.target)) box.style.display='none';
+});
 
 // ════════════════════════════════════════
 //  STUDY
