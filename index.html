@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>한국어 문법 학습</title>
 
+<!-- PWA: 홈 화면 아이콘 설치를 위한 매니페스트 및 아이콘 -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#1a1a4e">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="국어문법">
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif}
 :root{
@@ -3670,6 +3681,15 @@ document.addEventListener('DOMContentLoaded', function(){
     if(remChk) remChk.checked=true;
   }
 });
+
+// PWA: 서비스 워커 등록 (홈 화면 설치 및 오프라인 지원)
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(err){
+      console.warn('서비스 워커 등록 실패:', err);
+    });
+  });
+}
 </script>
 </body>
 </html>
