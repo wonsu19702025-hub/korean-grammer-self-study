@@ -33,9 +33,6 @@ body{background:var(--od);min-height:100vh}
 .login-logo i{font-size:42px;color:var(--wv);margin-bottom:.75rem}
 .login-logo h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:.3rem}
 .login-logo p{font-size:13px;color:var(--tom);text-align:center;line-height:1.6}
-.mode-tabs{display:flex;background:rgba(255,255,255,0.08);border-radius:12px;padding:4px;margin-bottom:1.5rem;gap:4px}
-.mode-tab{flex:1;padding:8px;text-align:center;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;color:rgba(255,255,255,0.5);transition:all .2s;border:none;background:transparent}
-.mode-tab.active{background:#fff;color:var(--od)}
 .login-field{margin-bottom:1rem}
 .login-field label{font-size:12px;color:var(--tom);display:block;margin-bottom:5px}
 .login-field input{width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;outline:none;transition:border .2s}
@@ -294,31 +291,18 @@ tr:hover td{background:#f8fbff}
         <h1>한국어 문법 학습</h1>
         <p>고등학생을 위한 문법 학습</p>
       </div>
-      <div class="mode-tabs">
-        <button class="mode-tab active" id="mt-student">
-          🎓 학습자 모드
-        </button>
-        <button class="mode-tab" id="mt-admin">
-          🔒 관리자 모드
-        </button>
-      </div>
-      <!-- 학습자 로그인 -->
+      <!-- 로그인 (학생/교사 공통 — 관리자 권한은 로그인 후 홈 화면에서 신청/진입) -->
       <div id="student-fields">
         <div class="login-field"><label>이름 / 별명</label><input type="text" id="nickname" placeholder="이름 또는 별명 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
         <div class="login-field"><label>이메일 주소</label><input type="email" id="em" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <div style="display:flex;align-items:center;gap:6px;margin:.4rem 0 .6rem">
+          <input type="checkbox" id="remember-student" checked style="width:15px;height:15px;cursor:pointer;accent-color:var(--ol)"/>
+          <label for="remember-student" style="font-size:12px;color:#64748b;cursor:pointer">이 기기에 이름·이메일 기억하기 (다음부턴 PIN만 입력)</label>
+        </div>
         <div class="login-field"><label>PIN (숫자 4자리)</label><input type="password" id="student-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="숫자 4자리" onkeydown="if(event.key==='Enter')doLogin()"/></div>
         <p class="login-hint"><span style="color:#fde047;font-weight:600">처음 로그인할 때 원하는 숫자 4자리를 입력하면 그 번호로 등록됩니다.</span><br>다음부터는 같은 이메일·PIN으로 로그인해야 내 학습 정보를 볼 수 있어요.<br>PIN을 잊어버렸다면 선생님께 말씀해 주세요.</p>
       </div>
-      <!-- 관리자 로그인 -->
-      <div id="admin-fields" style="display:none">
-        <div class="login-field"><label>관리자 아이디</label><input type="text" id="admin-id" placeholder="아이디 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-        <div class="login-field"><label>비밀번호</label><input type="password" id="pw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:.25rem">
-          <input type="checkbox" id="remember-admin" style="width:15px;height:15px;cursor:pointer;accent-color:var(--ol)"/>
-          <label for="remember-admin" style="font-size:12px;color:#64748b;cursor:pointer">아이디 기억하기</label>
-        </div>
-      </div>
-      <div class="login-err" id="err">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+      <div class="login-err" id="err">이메일 또는 PIN이 올바르지 않습니다.</div>
       <button class="login-btn" id="login-btn">로그인</button>
     </div>
   </div>
@@ -331,7 +315,7 @@ tr:hover td{background:#f8fbff}
       🌊 한국어 문법 학습
     </div>
     <div class="nav-right">
-      <div id="admin-nav-badge" class="admin-nav-badge" style="display:none">🔒 관리자</div>
+      <div id="admin-entry-badge"></div>
       <div class="nav-user" onclick="logout()">
         👤
         <span id="uname"></span>&nbsp;·&nbsp;로그아웃
@@ -378,6 +362,7 @@ tr:hover td{background:#f8fbff}
     </div>
     <div class="sec-title">ℹ 학습 안내</div>
     <div class="info-box">💡<span>파트 → 세부 항목을 클릭하면 이론 학습과 문제 풀기가 순서대로 진행됩니다. 기출문제 풀이에서는 EBS 모의고사 문제를 학년·연도별로 선택해 풀 수 있습니다.</span></div>
+    <div id="admin-request-banner" style="display:none;margin-top:1.25rem"></div>
   </div>
 </div>
 
@@ -526,6 +511,7 @@ tr:hover td{background:#f8fbff}
         <button class="admin-tab" onclick="showAdminTab('sheetsView',this)">📈 학습 현황(Sheets)</button>
         <button class="admin-tab" onclick="showAdminTab('qna',this)">💬 질문·코칭</button>
         <button class="admin-tab" onclick="showAdminTab('users',this)">👥 학습자 관리</button>
+        <button class="admin-tab" onclick="showAdminTab('adminAccounts',this)">🔑 관리자 권한</button>
       </div>
     </div>
     <div id="admin-content"></div>
@@ -776,7 +762,6 @@ const PARTS=[
 let CP=null,CS=null,CQ=0,ANS=false,CC_CNT=0,WRONG_QS=[];
 // 오늘 세션 학습 기록
 var sessionLog=[];
-let currentMode='student';
 let currentUserEmail='';
 const PROG={};
 let users = [];
@@ -823,34 +808,10 @@ function goBack(){
   }
 }
 
-function setMode(m){
-  currentMode=m;
-  document.getElementById('mt-student').classList.toggle('active',m==='student');
-  document.getElementById('mt-admin').classList.toggle('active',m==='admin');
-  document.getElementById('student-fields').style.display=m==='student'?'':'none';
-  document.getElementById('admin-fields').style.display=m==='admin'?'':'none';
-  document.getElementById('err').style.display='none';
-  document.getElementById('em').value='';
-  document.getElementById('pw').value='';
-  if(m==='admin'){
-    // 저장된 아이디 복원
-    var savedId=localStorage.getItem('kgrammar_admin_id');
-    var aidEl=document.getElementById('admin-id');
-    var remEl=document.getElementById('remember-admin');
-    if(savedId&&aidEl){
-      aidEl.value=savedId;
-      if(remEl) remEl.checked=true;
-      // 비밀번호 란으로 바로 포커스
-      setTimeout(function(){document.getElementById('pw').focus();},50);
-    } else {
-      if(aidEl) aidEl.value='';
-    }
-  }
-}
+// 마스터 관리자 이메일: 항상 관리자 권한이 인정되는 계정(다른 관리자를 승인할 최초 권한자)
+// ⚠️ 실제 사용 중인 이메일과 다르면 알려주세요.
+var MASTER_ADMIN_EMAIL = 'wonsu19702025@gmail.com';
 
-// 관리자 계정 해시 (아이디:비밀번호 문자열의 SHA-256)
-// 소스보기로 비밀번호가 그대로 노출되지 않도록 평문 대신 해시값만 저장합니다.
-var ADMIN_HASH = 'cf1961e149ee953925b401525595e42e97b9c06ddd24444ec4b4c033a732fca2';
 async function sha256Hex(str){
   var enc = new TextEncoder().encode(str);
   var buf = await crypto.subtle.digest('SHA-256', enc);
@@ -897,29 +858,7 @@ async function verifyOrRegisterStudentPin(email, name, pin){
 async function doLogin(){
   document.getElementById('err').style.display='none';
 
-  // ── 관리자 모드 ──
-  if(currentMode==='admin'){
-    const aid=document.getElementById('admin-id').value.trim();
-    const apw=document.getElementById('pw').value.trim();
-    const rememberChk=document.getElementById('remember-admin');
-    const hash = await sha256Hex(aid+':'+apw);
-    if(hash===ADMIN_HASH){
-      // 아이디 기억하기 처리
-      if(rememberChk&&rememberChk.checked){
-        localStorage.setItem('kgrammar_admin_id', aid);
-      } else {
-        localStorage.removeItem('kgrammar_admin_id');
-      }
-      sessionStorage.setItem('kgrammar_session', JSON.stringify({mode:'admin'}));
-      document.getElementById('admin-nav-badge').style.display='block';
-      renderAdmin();show('sa');
-    } else {
-      document.getElementById('err').style.display='block';
-    }
-    return;
-  }
-
-  // ── 학습자 모드 — 이름 + 이메일 입력 ──
+  // ── 로그인 (학생/교사 공통) — 이름 + 이메일 + PIN ──
   const nickname=document.getElementById('nickname').value.trim();
   const e=document.getElementById('em').value.trim();
   if(!nickname){
@@ -955,6 +894,14 @@ async function doLogin(){
     return;
   }
 
+  // 이름·이메일 기억하기 처리
+  const rememberStudentChk=document.getElementById('remember-student');
+  if(rememberStudentChk&&rememberStudentChk.checked){
+    localStorage.setItem('kgrammar_saved_student', JSON.stringify({name:nickname,email:e}));
+  } else {
+    localStorage.removeItem('kgrammar_saved_student');
+  }
+
   // localStorage에서 사용자 찾기 또는 신규 생성
   let list=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
   let u=list.find(function(x){return x.email===e;});
@@ -979,7 +926,6 @@ async function doLogin(){
     var el=document.getElementById(id);
     if(el) el.textContent=u.name;
   });
-  document.getElementById('admin-nav-badge').style.display='none';
   renderHome();
   show('sh');
 }
@@ -1090,12 +1036,22 @@ function showLogoutSummary(){
 function doLogout(){
   sessionStorage.removeItem('kgrammar_session');
   sessionLog=[];
-  setMode('student');
-  document.getElementById('nickname').value='';
-  document.getElementById('em').value='';
-  document.getElementById('pw').value='';
+  document.getElementById('err').style.display='none';
   var pinEl=document.getElementById('student-pin');
   if(pinEl) pinEl.value='';
+
+  // 기억하기가 저장되어 있으면 이름·이메일은 그대로 두고 PIN 입력에 포커스,
+  // 아니면 이름·이메일도 함께 비움
+  var savedStudent=null;
+  try{ savedStudent=JSON.parse(localStorage.getItem('kgrammar_saved_student')||'null'); }catch(e){}
+  if(savedStudent&&savedStudent.email){
+    document.getElementById('nickname').value=savedStudent.name||'';
+    document.getElementById('em').value=savedStudent.email||'';
+    if(pinEl) setTimeout(function(){ pinEl.focus(); }, 100);
+  } else {
+    document.getElementById('nickname').value='';
+    document.getElementById('em').value='';
+  }
   show('sl');
 }
 
@@ -1139,6 +1095,7 @@ function renderFallingStars(){
 
 function renderHome(){
   renderFallingStars();
+  refreshHomeAdminEntry();
   // localStorage에서 실제 완료 기록 읽기
   var localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
   var u=localList.find(function(x){return x.email===currentUserEmail;});
@@ -1166,6 +1123,69 @@ function renderHome(){
   }).join('');
 }
 function goHome(){renderHome();show('sh')}
+
+// ════════════════════════════════════════
+//  관리자 권한 신청/진입 (홈 화면)
+// ════════════════════════════════════════
+var ADMIN_STATUS_CACHE=null; // {status:'none'|'pending'|'approved'|'rejected', isMaster:bool}
+
+async function checkAdminStatus(){
+  if(currentUserEmail && MASTER_ADMIN_EMAIL && currentUserEmail.toLowerCase()===MASTER_ADMIN_EMAIL.toLowerCase()){
+    return {status:'approved', isMaster:true};
+  }
+  var url=qnaWebhookUrl();
+  if(!url) return {status:'none', isMaster:false};
+  var res=await jsonpRequest(url, 'action=read', 8000);
+  if(!(res.ok && res.data && res.data.adminRequests)) return {status:'none', isMaster:false};
+  var mine=res.data.adminRequests.filter(function(r){ return r.email===currentUserEmail; });
+  if(!mine.length) return {status:'none', isMaster:false};
+  var latest=mine[mine.length-1];
+  return {status:latest.status||'none', isMaster:false};
+}
+
+async function refreshHomeAdminEntry(){
+  var badge=document.getElementById('admin-entry-badge');
+  var banner=document.getElementById('admin-request-banner');
+  if(!badge && !banner) return;
+  var result=await checkAdminStatus();
+  ADMIN_STATUS_CACHE=result;
+
+  if(badge){
+    if(result.status==='approved'){
+      badge.innerHTML='<div class="admin-nav-badge" style="cursor:pointer" onclick="goAdmin()">🔑 관리자 모드</div>';
+    } else if(result.status==='pending'){
+      badge.innerHTML='<div class="admin-nav-badge" style="opacity:.75">⏳ 승인 대기중</div>';
+    } else {
+      badge.innerHTML='';
+    }
+  }
+
+  if(banner){
+    if(result.status==='none'){
+      banner.style.display='block';
+      banner.innerHTML='<div style="text-align:center;padding:.85rem;font-size:12px;color:#94a3b8">'
+        +'선생님이신가요? <span style="color:var(--ol);font-weight:600;cursor:pointer;text-decoration:underline" onclick="requestAdminAccess()">관리자 권한 신청하기</span>'
+        +'</div>';
+    } else if(result.status==='rejected'){
+      banner.style.display='block';
+      banner.innerHTML='<div style="text-align:center;padding:.85rem;font-size:12px;color:#94a3b8">'
+        +'관리자 권한 신청이 반려되었습니다. <span style="color:var(--ol);font-weight:600;cursor:pointer;text-decoration:underline" onclick="requestAdminAccess()">다시 신청하기</span>'
+        +'</div>';
+    } else {
+      banner.style.display='none';
+    }
+  }
+}
+
+async function requestAdminAccess(){
+  if(!confirm('관리자 권한을 신청하시겠습니까?\n담당 선생님이 승인하면 관리자 모드를 사용할 수 있습니다.')) return;
+  var url=qnaWebhookUrl();
+  if(!url){ alert('웹훅 URL이 설정되지 않아 신청할 수 없습니다. 담당 선생님께 문의해 주세요.'); return; }
+  await sendToSheets({type:'admin_request', email:currentUserEmail, name:getUserName(), status:'pending'});
+  showSyncToast('✅ 관리자 권한을 신청했습니다. 승인을 기다려 주세요.', false);
+  refreshHomeAdminEntry();
+}
+
 
 // ════════════════════════════════════════
 //  SUB
@@ -1652,7 +1672,19 @@ function renderScore(){
 // ════════════════════════════════════════
 //  ADMIN
 // ════════════════════════════════════════
-function goAdmin(){showAdminTab('dashboard',document.querySelector('.admin-tab'));show('sa');}
+async function goAdmin(){
+  // 관리자 화면 진입 전 권한 재확인 (홈 화면 배지가 오래된 상태일 수 있으므로)
+  var status=ADMIN_STATUS_CACHE;
+  if(!status || status.status!=='approved'){
+    status=await checkAdminStatus();
+    ADMIN_STATUS_CACHE=status;
+  }
+  if(status.status!=='approved'){
+    alert('관리자 권한이 없습니다. 홈 화면에서 관리자 권한을 먼저 신청해 주세요.');
+    return;
+  }
+  showAdminTab('dashboard',document.querySelector('.admin-tab'));show('sa');
+}
 
 function showAdminTab(tab,btn){
   document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
@@ -1665,6 +1697,7 @@ function showAdminTab(tab,btn){
   else if(tab==='sheetsView') renderSheetsView(c);
   else if(tab==='qna') renderQnaAdmin(c);
   else if(tab==='users') renderUsersAdmin(c);
+  else if(tab==='adminAccounts') renderAdminAccounts(c);
 }
 
 async function renderDashboard(c){
@@ -2500,6 +2533,124 @@ function clearAllUsers(){
   localStorage.setItem('kgrammar_users','[]');
   renderUsersAdmin(document.getElementById('admin-content'));
 }
+
+// ════════════════════════════════════════
+//  관리자 권한 관리 (신청 → 승인/거절/회수)
+// ════════════════════════════════════════
+var ADMIN_REQUESTS_CACHE=[];
+
+async function renderAdminAccounts(c){
+  c.innerHTML='<div class="admin-card"><div style="text-align:center;padding:2rem;color:var(--ol)">⏳ 관리자 권한 목록을 불러오는 중...</div></div>';
+  var url=qnaWebhookUrl();
+  if(!url){
+    c.innerHTML='<div class="admin-card"><div style="background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:1rem;font-size:13px;color:#92400e">⚠️ 먼저 "학습 현황(Sheets)" 탭에서 웹훅 URL을 저장해 주세요. 웹훅 없이는 관리자 권한 신청/승인을 처리할 수 없습니다.</div></div>';
+    return;
+  }
+  var res=await jsonpRequest(url, 'action=read', 8000);
+  if(!(res.ok && res.data)){
+    c.innerHTML='<div class="admin-card"><div style="background:#fef2f2;border-radius:10px;padding:1rem;font-size:13px;color:#dc2626">❌ 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div></div>';
+    return;
+  }
+  var reqs=res.data.adminRequests||[];
+  // 이메일별 가장 최근 상태만 남김
+  var byEmail={};
+  reqs.forEach(function(r){ byEmail[r.email]=r; });
+  ADMIN_REQUESTS_CACHE=Object.keys(byEmail).map(function(e){ return byEmail[e]; })
+    .sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  renderAdminAccountsBody(c);
+}
+
+function renderAdminAccountsBody(c){
+  var pending=ADMIN_REQUESTS_CACHE.filter(function(r){ return r.status==='pending'; });
+  var approved=ADMIN_REQUESTS_CACHE.filter(function(r){ return r.status==='approved'; });
+
+  var pendingRows=pending.length
+    ? pending.map(function(r){
+        return '<tr>'
+          +'<td style="font-size:13px">'+escHtml(r.name||'-')+'</td>'
+          +'<td style="font-size:12px;color:#64748b">'+escHtml(r.email)+'</td>'
+          +'<td style="font-size:12px;color:#64748b">'+(r.date||'-')+'</td>'
+          +'<td style="display:flex;gap:6px">'
+          +'<button class="btn-add" style="margin:0;padding:6px 12px;font-size:12px" onclick="decideAdminRequest(\''+r.email+'\',\'approved\')">승인</button>'
+          +'<button class="btn-gh" style="padding:6px 12px;font-size:12px" onclick="decideAdminRequest(\''+r.email+'\',\'rejected\')">거절</button>'
+          +'</td></tr>';
+      }).join('')
+    : '<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:1.5rem;font-size:13px">대기 중인 신청이 없습니다.</td></tr>';
+
+  var approvedRows=approved.length
+    ? approved.map(function(r){
+        return '<tr>'
+          +'<td style="font-size:13px">'+escHtml(r.name||'-')+'</td>'
+          +'<td style="font-size:12px;color:#64748b">'+escHtml(r.email)+'</td>'
+          +'<td style="font-size:12px;color:#64748b">'+(r.date||'-')+'</td>'
+          +'<td><button class="btn-gh" style="padding:6px 12px;font-size:12px" onclick="decideAdminRequest(\''+r.email+'\',\'revoked\')">권한 회수</button></td>'
+          +'</tr>';
+      }).join('')
+    : '<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:1.5rem;font-size:13px">마스터 계정 외에 승인된 관리자가 없습니다.</td></tr>';
+
+  c.innerHTML='<div class="admin-card">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem">'
+    +'<h3 style="margin:0">🔑 관리자 권한 관리</h3>'
+    +'<button class="btn-add" style="margin:0;padding:8px 16px;font-size:13px" onclick="openGrantAdminForm()">+ 직접 권한 부여</button>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#64748b;margin-bottom:1rem;background:#f8fafc;border-radius:8px;padding:7px 12px">'
+    +'ℹ️ 마스터 계정('+escHtml(MASTER_ADMIN_EMAIL)+')은 이 목록에 표시되지 않으며 항상 관리자 모드 진입이 가능합니다. 다른 선생님이 홈 화면에서 "관리자 권한 신청"을 누르면 여기에 나타납니다.'
+    +'</div>'
+    +'<div id="grant-admin-form-wrap"></div>'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin:1rem 0 .5rem">⏳ 승인 대기 중</div>'
+    +'<div class="table-wrap"><table>'
+    +'<tr><th>이름</th><th>이메일</th><th>신청일시</th><th>처리</th></tr>'
+    +pendingRows
+    +'</table></div>'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin:1.5rem 0 .5rem">✅ 현재 관리자 (마스터 제외)</div>'
+    +'<div class="table-wrap"><table>'
+    +'<tr><th>이름</th><th>이메일</th><th>승인일시</th><th>관리</th></tr>'
+    +approvedRows
+    +'</table></div>'
+    +'</div>';
+}
+
+function openGrantAdminForm(){
+  var wrap=document.getElementById('grant-admin-form-wrap');
+  wrap.innerHTML='<div style="background:#f8fafc;border:1px solid var(--op);border-radius:10px;padding:1rem;margin-bottom:1rem">'
+    +'<div style="font-size:13px;font-weight:700;color:var(--od);margin-bottom:.6rem">✏️ 신청 없이 바로 관리자 권한 부여</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem">'
+    +'<div><div style="font-size:12px;color:#64748b;margin-bottom:4px">이름</div>'
+    +'<input id="grant-admin-name" type="text" placeholder="이름" style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;box-sizing:border-box"/></div>'
+    +'<div><div style="font-size:12px;color:#64748b;margin-bottom:4px">이메일 (학습자 로그인과 동일한 이메일)</div>'
+    +'<input id="grant-admin-email" type="email" placeholder="teacher2@school.hs.kr" style="width:100%;border:1px solid var(--op);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;box-sizing:border-box"/></div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#94a3b8;margin-bottom:.75rem">💡 상대방이 신청하기 전에 먼저 권한을 부여하고 싶을 때 사용하세요. 상대방은 그 이메일로 로그인(이름·이메일·PIN)만 하면 바로 관리자 모드에 진입할 수 있습니다.</div>'
+    +'<div style="display:flex;justify-content:flex-end;gap:8px">'
+    +'<button class="btn-gh" style="padding:8px 16px;font-size:13px" onclick="document.getElementById(\'grant-admin-form-wrap\').innerHTML=\'\'">취소</button>'
+    +'<button class="btn-add" style="margin:0;padding:8px 18px;font-size:13px" onclick="submitGrantAdmin()">권한 부여</button>'
+    +'</div></div>';
+}
+
+async function submitGrantAdmin(){
+  var nameEl=document.getElementById('grant-admin-name');
+  var emailEl=document.getElementById('grant-admin-email');
+  var name=(nameEl.value||'').trim();
+  var email=(emailEl.value||'').trim();
+  if(!email||!email.includes('@')){ alert('올바른 이메일을 입력해 주세요.'); return; }
+  await sendToSheets({type:'admin_request', email:email, name:name, status:'approved', actedBy:currentUserEmail});
+  document.getElementById('grant-admin-form-wrap').innerHTML='<div style="padding:.75rem;background:#dcfce7;color:#166534;border-radius:8px;font-size:13px;margin-bottom:1rem">✅ 권한이 부여되었습니다.</div>';
+  renderAdminAccounts(document.getElementById('admin-content'));
+}
+
+async function decideAdminRequest(email, newStatus){
+  var msgMap={
+    approved:'이 신청을 승인하시겠습니까? 승인하면 바로 관리자 모드를 사용할 수 있습니다.',
+    rejected:'이 신청을 거절하시겠습니까?',
+    revoked:'이 계정의 관리자 권한을 회수하시겠습니까?'
+  };
+  if(!confirm(msgMap[newStatus]||'상태를 변경하시겠습니까?')) return;
+  var existing=ADMIN_REQUESTS_CACHE.find(function(r){ return r.email===email; });
+  var name=existing?existing.name:'';
+  await sendToSheets({type:'admin_request', email:email, name:name, status:newStatus, actedBy:currentUserEmail});
+  renderAdminAccounts(document.getElementById('admin-content'));
+}
+
 function renderAdmin(){
   showAdminTab('dashboard',null);
   document.querySelector('.admin-tab').classList.add('active');
@@ -3637,34 +3788,21 @@ document.addEventListener('DOMContentLoaded', function(){
   if(saved){
     try{
       var sess=JSON.parse(saved);
-      if(sess.mode==='admin'){
-        document.getElementById('admin-nav-badge').style.display='block';
-        renderAdmin();show('sa');
-      } else if(sess.mode==='student'&&sess.email){
+      if(sess.email){
         currentUserEmail=sess.email;
         ['uname','uname2','uname3','uname6'].forEach(function(id){
           var el=document.getElementById(id);
           if(el) el.textContent=sess.name||sess.email.split('@')[0];
         });
-        document.getElementById('admin-nav-badge').style.display='none';
         renderHome();show('sh');
       }
     }catch(e){ sessionStorage.removeItem('kgrammar_session'); }
   }
-  // 모드 탭 버튼
-  var btnStudent = document.getElementById('mt-student');
-  var btnAdmin   = document.getElementById('mt-admin');
   var btnLogin   = document.getElementById('login-btn');
-  if(btnStudent) btnStudent.addEventListener('click', function(){ setMode('student'); });
-  if(btnAdmin)   btnAdmin.addEventListener('click',   function(){ setMode('admin'); });
   if(btnLogin)   btnLogin.addEventListener('click',   function(){ doLogin(); });
   // Enter 키로 로그인
   var emInput = document.getElementById('em');
-  var pwInput = document.getElementById('pw');
-  var aidInput = document.getElementById('admin-id');
   if(emInput)  emInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
-  if(pwInput)  pwInput.addEventListener('keydown',  function(e){ if(e.key==='Enter') doLogin(); });
-  if(aidInput) aidInput.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
   // 저장된 웹훅 URL 복원
   var savedWebhook=localStorage.getItem('kgrammar_webhook_url');
@@ -3673,12 +3811,17 @@ document.addEventListener('DOMContentLoaded', function(){
   // 이전 접속에서 저장 확인이 안 됐던 기록이 있으면 자동 재동기화 시도
   setTimeout(function(){ retryPendingSync(); }, 800);
 
-  // 저장된 관리자 아이디 자동 채우기
-  var savedAdminId=localStorage.getItem('kgrammar_admin_id');
-  if(savedAdminId&&aidInput){
-    aidInput.value=savedAdminId;
-    var remChk=document.getElementById('remember-admin');
-    if(remChk) remChk.checked=true;
+  // 저장된 학생 이름·이메일 자동 채우기 (다음부턴 PIN만 입력하면 되도록)
+  var savedStudent=null;
+  try{ savedStudent=JSON.parse(localStorage.getItem('kgrammar_saved_student')||'null'); }catch(e){}
+  if(savedStudent&&savedStudent.email){
+    var nickInput=document.getElementById('nickname');
+    var pinInput=document.getElementById('student-pin');
+    if(nickInput) nickInput.value=savedStudent.name||'';
+    if(emInput)   emInput.value=savedStudent.email||'';
+    var remStuChk=document.getElementById('remember-student');
+    if(remStuChk) remStuChk.checked=true;
+    if(pinInput) setTimeout(function(){ pinInput.focus(); }, 100);
   }
 });
 
