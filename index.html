@@ -3300,6 +3300,7 @@ async function submitCoachNote(){
 // ════════════════════════════════════════
 let examFilterGrade='all', examFilterYear='all';
 let currentExamSet=null, examQIdx=0, examCorrect=0, examAnswered=[];
+let examIsRetry=false, examSavedQuestions=null; // 틀린 문제만 다시 풀기 상태
 
 async function goExam(){
   ['uname4','uname5'].forEach(id=>{
@@ -3366,6 +3367,7 @@ function startExamSet(id){
   if(!currentExamSet||!currentExamSet.questions||!currentExamSet.questions.length){
     alert('문제가 없습니다.');return;
   }
+  examIsRetry=false; examSavedQuestions=null;
   examQIdx=0; examCorrect=0;
   examAnswered=new Array(currentExamSet.questions.length).fill(null);
   document.getElementById('ep-title').textContent=currentExamSet.title;
@@ -3438,7 +3440,14 @@ function selectExamOpt(i){
 }
 
 function renderExamScore(){
+  // 방금 실제로 푼 문제 세트(재도전이면 '틀린 문제만' 세트)를 먼저 확보
   const qs=currentExamSet.questions;
+  // 틀린 문제 재도전 중이었다면 원래 전체 세트로 복원 (다음 "전체 다시 풀기"를 위해)
+  if(examIsRetry){
+    currentExamSet=Object.assign({}, currentExamSet, {questions:examSavedQuestions});
+    examIsRetry=false;
+    examSavedQuestions=null;
+  }
   const tot=qs.length;
   const pct=Math.round(examCorrect/tot*100);
   const msg=pct===100?'만점! 완벽합니다 🎉':pct>=80?'우수합니다! 👍':pct>=60?'조금 더 노력해요 📚':'이론을 복습하세요 🔍';
@@ -3490,11 +3499,26 @@ function renderExamScore(){
         </div>`).join('')}
       </div>`:''}
       <div class="score-btns" style="margin-top:1.25rem">
+        ${wrongItems.length?`<button class="btn-oc" onclick="retryExamWrongQs()">✗ 틀린 문제만 다시 풀기</button>`:''}
         <button class="btn-oc" onclick="goExam()">문제 목록으로</button>
-        <button class="btn-gh" onclick="examQIdx=0;examCorrect=0;examAnswered=new Array(currentExamSet.questions.length).fill(null);renderExamPlay();show('sep')">다시 풀기</button>
+        <button class="btn-gh" onclick="examQIdx=0;examCorrect=0;examAnswered=new Array(currentExamSet.questions.length).fill(null);renderExamPlay();show('sep')">전체 다시 풀기</button>
         <button class="btn-gh" onclick="goHome()">홈으로</button>
       </div>
     </div>`;
+}
+
+function retryExamWrongQs(){
+  const qs=currentExamSet.questions;
+  const wrongQs=qs.map((q,i)=>({q,i})).filter(x=>examAnswered[x.i]!==x.q.ans).map(x=>x.q);
+  if(!wrongQs.length) return;
+  // 재도전 진입 전 원래 전체 세트를 저장해 두었다가 채점 후 복원함
+  if(!examIsRetry) examSavedQuestions=currentExamSet.questions;
+  currentExamSet=Object.assign({}, currentExamSet, {questions:wrongQs});
+  examIsRetry=true;
+  examQIdx=0; examCorrect=0;
+  examAnswered=new Array(wrongQs.length).fill(null);
+  renderExamPlay();
+  show('sep');
 }
 
 // ── Google Sheets 학습 현황 조회 ──
