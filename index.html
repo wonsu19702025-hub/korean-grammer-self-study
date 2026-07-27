@@ -2884,8 +2884,43 @@ function loadExamSets(){
   try{ return JSON.parse(localStorage.getItem('kgrammar_exam_sets')||'[]'); }
   catch(e){ return []; }
 }
+// 로컬 캐시만 갱신 (Sheets 재전송 없이) — 원격에서 받아온 데이터를 캐시할 때 사용
+function cacheExamSetsLocally(sets){
+  localStorage.setItem('kgrammar_exam_sets', JSON.stringify(sets));
+}
+// 사용자가 세트를 추가/수정했을 때: 로컬 저장 + 다른 기기에서도 보이도록 Sheets에도 동기화
 function saveExamSets(sets){
   localStorage.setItem('kgrammar_exam_sets', JSON.stringify(sets));
+  sets.forEach(function(s){
+    sendToSheets({type:'examset', setId:s.id, title:s.title||'', status:'active', json:JSON.stringify(s)});
+  });
+}
+// Google Sheets에서 기출문제 세트를 받아와 로컬 캐시에 병합 (다른 기기에서 올린 세트도 보이도록)
+async function syncExamSetsFromCloud(){
+  var url=qnaWebhookUrl();
+  if(!url) return;
+  try{
+    var res=await jsonpRequest(url, 'action=read', 8000);
+    if(!(res.ok && res.data && res.data.examSets)) return;
+    var byId={};
+    // 배열은 기록 순서대로 오므로, 같은 setId는 나중 것(최신 상태)이 덮어씀
+    res.data.examSets.forEach(function(r){ byId[r.setId]=r; });
+    var merged=[];
+    Object.keys(byId).forEach(function(id){
+      var r=byId[id];
+      if(r.status==='deleted') return;
+      try{ merged.push(JSON.parse(r.json)); }catch(e){}
+    });
+    // 아직 Sheets에 동기화되지 못한 로컬 전용 세트는 보존 + 자동으로 백필 동기화
+    var remoteIds={};
+    merged.forEach(function(s){ remoteIds[s.id]=true; });
+    var localOnly=loadExamSets().filter(function(s){ return !remoteIds[s.id]; });
+    localOnly.forEach(function(s){
+      merged.push(s);
+      sendToSheets({type:'examset', setId:s.id, title:s.title||'', status:'active', json:JSON.stringify(s)});
+    });
+    cacheExamSetsLocally(merged);
+  }catch(e){}
 }
 
 // ════════════════════════════════════════
@@ -3266,7 +3301,7 @@ async function submitCoachNote(){
 let examFilterGrade='all', examFilterYear='all';
 let currentExamSet=null, examQIdx=0, examCorrect=0, examAnswered=[];
 
-function goExam(){
+async function goExam(){
   ['uname4','uname5'].forEach(id=>{
     const el=document.getElementById(id);
     if(el){
@@ -3278,8 +3313,10 @@ function goExam(){
   examFilterGrade='all'; examFilterYear='all';
   // 학년 버튼 초기화
   document.querySelectorAll('#exam-grade-filter .ef-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
-  renderExamSets();
   show('se');
+  document.getElementById('exam-set-list').innerHTML='<div class="exam-empty">⏳ 불러오는 중...</div>';
+  await syncExamSetsFromCloud();
+  renderExamSets();
 }
 
 function setExamFilter(type,val,btn){
@@ -3663,7 +3700,9 @@ function renderSheetsData(d){
   area.innerHTML='<div style="font-size:12px;color:#94a3b8;margin-bottom:.75rem;text-align:right">마지막 업데이트: '+new Date().toLocaleString('ko-KR')+'</div>'
     +summary+loginTable+studySummary+studyTable+examTable;
 }
-function renderExamAdmin(c){
+async function renderExamAdmin(c){
+  c.innerHTML='<div class="admin-card"><div style="text-align:center;padding:2rem;color:var(--ol)">⏳ 다른 기기에 등록된 기출문제를 확인하는 중...</div></div>';
+  await syncExamSetsFromCloud();
   const sets=loadExamSets();
   c.innerHTML=`
   <!-- ① JSON 업로드 카드 -->
@@ -3884,7 +3923,8 @@ function saveExamSetModal(){
 }
 
 function deleteExamSet(id){
-  if(!confirm('이 기출문제 세트를 삭제하시겠습니까?'))return;
+  if(!confirm('이 기출문제 세트를 삭제하시겠습니까? (다른 기기에서도 함께 삭제됩니다)'))return;
+  sendToSheets({type:'examset', setId:id, title:'', status:'deleted', json:''});
   saveExamSets(loadExamSets().filter(s=>s.id!==id));
   renderExamAdmin(document.getElementById('admin-content'));
 }
