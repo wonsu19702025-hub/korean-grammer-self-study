@@ -3518,10 +3518,55 @@ function renderSheetsData(d){
   area.innerHTML='<div style="font-size:12px;color:#94a3b8;margin-bottom:.75rem;text-align:right">마지막 업데이트: '+new Date().toLocaleString('ko-KR')+'</div>'
     +summary+loginTable+studySummary+studyTable+examTable;
 }
+// ── 기출문제 관리 목록 정렬 ──
+var EXAM_ADMIN_SETS_CACHE=[];
+var EXAM_ADMIN_SORT={key:'year', dir:'desc'};
+
+function sortExamSetsForAdmin(sets){
+  var key=EXAM_ADMIN_SORT.key, dir=EXAM_ADMIN_SORT.dir;
+  function val(s){
+    switch(key){
+      case 'grade': return Number(s.grade)||0;
+      case 'year': return Number(s.year)||0;
+      case 'title': return s.title||'';
+      case 'qcnt': return (s.questions||[]).length;
+      default: return '';
+    }
+  }
+  return sets.slice().sort(function(a,b){
+    var va=val(a), vb=val(b), cmp;
+    if(typeof va==='number'&&typeof vb==='number') cmp=va-vb;
+    else cmp=String(va).localeCompare(String(vb),'ko');
+    // 연도로 정렬할 때는 같은 연도 안에서 월도 함께 정렬(보조 정렬 기준)
+    if(key==='year' && cmp===0) cmp=(Number(a.month)||0)-(Number(b.month)||0);
+    return dir==='asc'?cmp:-cmp;
+  });
+}
+
+function setExamAdminSort(key){
+  if(EXAM_ADMIN_SORT.key===key){
+    EXAM_ADMIN_SORT.dir=EXAM_ADMIN_SORT.dir==='asc'?'desc':'asc';
+  } else {
+    EXAM_ADMIN_SORT.key=key;
+    EXAM_ADMIN_SORT.dir=key==='title'?'asc':'desc';
+  }
+  renderExamAdminBody(document.getElementById('admin-content'));
+}
+
+function examSortArrow(key){
+  if(EXAM_ADMIN_SORT.key!==key) return '';
+  return EXAM_ADMIN_SORT.dir==='asc' ? ' ▲' : ' ▼';
+}
+
 async function renderExamAdmin(c){
   c.innerHTML='<div class="admin-card"><div style="text-align:center;padding:2rem;color:var(--ol)">⏳ 다른 기기에 등록된 기출문제를 확인하는 중...</div></div>';
   await syncExamSetsFromCloud();
-  const sets=loadExamSets();
+  EXAM_ADMIN_SETS_CACHE=loadExamSets();
+  renderExamAdminBody(c);
+}
+
+function renderExamAdminBody(c){
+  const sets=sortExamSetsForAdmin(EXAM_ADMIN_SETS_CACHE);
   c.innerHTML=`
   <!-- ① JSON 업로드 카드 -->
   <div class="admin-card">
@@ -3574,7 +3619,13 @@ async function renderExamAdmin(c){
       <button class="btn-add" style="margin-top:0;font-size:12px;padding:6px 14px" onclick="openExamSetModal()">+ 새 세트 직접 만들기</button>
     </div>
     <div class="table-wrap"><table>
-      <tr><th>학년</th><th>연도·월</th><th>제목</th><th>문제 수</th><th>관리</th></tr>
+      <tr>
+        <th style="cursor:pointer" onclick="setExamAdminSort('grade')">학년${examSortArrow('grade')}</th>
+        <th style="cursor:pointer" onclick="setExamAdminSort('year')">연도·월${examSortArrow('year')}</th>
+        <th style="cursor:pointer" onclick="setExamAdminSort('title')">제목${examSortArrow('title')}</th>
+        <th style="cursor:pointer" onclick="setExamAdminSort('qcnt')">문제 수${examSortArrow('qcnt')}</th>
+        <th>관리</th>
+      </tr>
       ${sets.length?sets.map(s=>`<tr>
         <td><span class="tag ${s.grade==='1'?'blue':s.grade==='2'?'green':'yellow'}">고${s.grade}</span></td>
         <td style="font-size:12px">${s.year}년 ${s.month}월</td>
