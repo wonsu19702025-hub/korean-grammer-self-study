@@ -561,6 +561,12 @@ let MASTER_AUTH={id:'',pwHash:''};
 const PROG={};
 let users = [];
 
+// ── 이론(개념) 실제 학습 여부 추적 ──
+// "이론완료"는 예전엔 퀴즈를 다 풀면 무조건 true로 찍혔지만(실제 열람 여부와 무관),
+// 이제는 이론 탭에 일정 시간 이상 머물렀거나 끝까지 스크롤했을 때만 기록됩니다.
+var THEORY_MIN_MS=25000; // 이론 탭에 이 시간(25초) 이상 머물면 "학습함"으로 인정
+var theoryTrackState={subId:null, activeSince:null, elapsedMs:0, recorded:false, timerId:null};
+
 
 
 // ════════════════════════════════════════
@@ -571,6 +577,10 @@ var screenHistory=[];
 var isPopState=false;
 
 function show(id){
+  // 이론 학습 화면(sst)이 아닌 다른 화면으로 이동하면, 그동안 재고 있던 이론 체류 시간을
+  // 일시정지합니다. (그대로 두면 화면을 떠난 뒤에도 시간이 계속 흘러 잘못 "학습함"으로
+  // 기록될 수 있어서, 화면 전환은 항상 이 한 곳(show)을 거치는 점을 이용해 여기서 막습니다.)
+  if(id!=='sst' && typeof pauseTheoryTracking==='function') pauseTheoryTracking();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
@@ -1261,6 +1271,110 @@ function startQuizWithDifficulty(level){
   renderQuiz();
 }
 
+// ── 이론 학습 추적 함수들 ──
+// 로컬에 이미 "학습함"으로 기록되어 있는지 확인
+function theoryAlreadyRecorded(subId){
+  var localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var u=localList.find(function(x){return x.email===currentUserEmail;});
+  return !!(u && u.progress && u.progress[subId]);
+}
+
+// 새 세부 항목으로 들어왔을 때 추적 상태 초기화
+function resetTheoryTracking(subId){
+  clearTimeout(theoryTrackState.timerId);
+  theoryTrackState={subId:subId, activeSince:null, elapsedMs:0, recorded:theoryAlreadyRecorded(subId), timerId:null};
+}
+
+// 이론 탭이 화면에 보이기 시작할 때(진입/탭 전환/포커스 복귀) 호출 — 시간 측정 재개
+function startTheoryTracking(){
+  if(!CS || !CS.id) return;
+  if(theoryTrackState.subId!==CS.id) resetTheoryTracking(CS.id);
+  if(theoryTrackState.recorded) return; // 이미 학습함으로 기록된 항목이면 잴 필요 없음
+  if(theoryTrackState.activeSince) return; // 이미 측정 중
+  theoryTrackState.activeSince=Date.now();
+  scheduleTheoryCheck();
+}
+
+// 이론 탭에서 벗어날 때(퀴즈 탭 전환, 화면 이탈, 브라우저 탭 비활성 등) 호출 — 시간 측정 일시정지
+function pauseTheoryTracking(){
+  if(theoryTrackState.activeSince){
+    theoryTrackState.elapsedMs+=Date.now()-theoryTrackState.activeSince;
+    theoryTrackState.activeSince=null;
+  }
+  clearTimeout(theoryTrackState.timerId);
+}
+
+function scheduleTheoryCheck(){
+  clearTimeout(theoryTrackState.timerId);
+  var elapsedNow=theoryTrackState.elapsedMs+(theoryTrackState.activeSince?(Date.now()-theoryTrackState.activeSince):0);
+  var remain=THEORY_MIN_MS-elapsedNow;
+  if(remain<=0){ maybeRecordTheoryStudied('time'); return; }
+  theoryTrackState.timerId=setTimeout(function(){
+    if(theoryTrackState.activeSince) maybeRecordTheoryStudied('time');
+  }, remain+200);
+}
+
+// 스크롤이 이론 카드 하단 근처까지 도달했는지 확인 (window 스크롤 이벤트에서 호출)
+function onTheoryScroll(){
+  if(!theoryTrackState.activeSince) return; // 이론 탭이 실제로 보이는 상태일 때만 체크
+  var thc=document.getElementById('thc');
+  if(!thc || thc.style.display==='none') return;
+  var cards=thc.querySelectorAll('.theory-card');
+  if(!cards.length) return;
+  var lastCard=cards[cards.length-1];
+  var rect=lastCard.getBoundingClientRect();
+  if(rect.bottom - window.innerHeight < 120){
+    maybeRecordTheoryStudied('scroll');
+  }
+}
+
+function maybeRecordTheoryStudied(method){
+  if(theoryTrackState.recorded) return;
+  if(!CS || !CS.id || theoryTrackState.subId!==CS.id) return;
+  theoryTrackState.recorded=true;
+  clearTimeout(theoryTrackState.timerId);
+  recordTheoryStudied(CP, CS, method);
+}
+
+// 실제로 "이론 학습함"을 로컬 + 구글 시트에 기록 (이미 기록되어 있으면 중복 저장하지 않음)
+function recordTheoryStudied(part, sub, method){
+  var localList=JSON.parse(localStorage.getItem('kgrammar_users')||'[]');
+  var u=localList.find(function(x){return x.email===currentUserEmail;});
+  if(!u){u={email:currentUserEmail,name:getUserName()||currentUserEmail.split('@')[0],progress:{},scores:{},totalDone:0};localList.push(u);}
+  if(!u.progress)u.progress={};
+  if(u.progress[sub.id]) return; // 이미 기록되어 있으면 중복 저장 방지
+  u.progress[sub.id]={partTitle:part.title,subTitle:sub.title,done:true,method:method,date:new Date().toLocaleDateString('ko-KR')};
+  u.totalDone=Object.keys(u.progress).length;
+  var idx=localList.findIndex(function(x){return x.email===currentUserEmail;});
+  if(idx>=0)localList[idx]=u; else localList.push(u);
+  localStorage.setItem('kgrammar_users',JSON.stringify(localList));
+
+  sendToSheets({
+    type:'study',
+    email:currentUserEmail,
+    name:getUserName(),
+    partTitle:part.title,
+    subTitle:sub.title,
+    theoryDone:true,
+    theoryMethod:method // 'time'(일정 시간 이상 머묾) 또는 'scroll'(끝까지 스크롤)
+  });
+
+  showSyncToast('📖 이론 학습 완료로 기록되었습니다', false);
+}
+
+// 이론 탭 스크롤 감지는 페이지당 한 번만 등록
+window.addEventListener('scroll', onTheoryScroll, {passive:true});
+// 브라우저 탭을 다른 곳으로 전환하거나 최소화하면 그 시간은 학습 시간으로 세지 않음
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden){
+    pauseTheoryTracking();
+  } else {
+    var thTabActive=document.getElementById('tth')&&document.getElementById('tth').classList.contains('active');
+    var onStudyScreen=document.getElementById('sst')&&document.getElementById('sst').classList.contains('active');
+    if(thTabActive && onStudyScreen) startTheoryTracking();
+  }
+});
+
 function openStudy(subId){
   var s=CP.subs.find(function(x){ return x.id===subId; });
   // 원본 문제 은행은 CS.fullBank로 보관하고, 난이도를 선택하면 그때 무작위로 뽑음
@@ -1272,7 +1386,9 @@ function openStudy(subId){
   document.getElementById('tqz').classList.remove('active');
   document.getElementById('thc').style.display='';
   document.getElementById('qzc').style.display='none';
+  resetTheoryTracking(subId);
   renderTheory();show('sst');
+  startTheoryTracking();
 }
 
 function swTab(tab){
@@ -1280,8 +1396,13 @@ function swTab(tab){
   document.getElementById('tqz').classList.toggle('active',tab==='quiz');
   document.getElementById('thc').style.display=tab==='theory'?'':'none';
   document.getElementById('qzc').style.display=tab==='quiz'?'':'none';
-  if(tab==='quiz'){renderDifficultySelect();}
-  else renderTheory();
+  if(tab==='quiz'){
+    pauseTheoryTracking();
+    renderDifficultySelect();
+  } else {
+    renderTheory();
+    startTheoryTracking();
+  }
 }
 
 function renderTheory(){
@@ -1427,6 +1548,7 @@ function goToQuiz(){
   document.getElementById('tqz').classList.add('active');
   document.getElementById('thc').style.display='none';
   document.getElementById('qzc').style.display='';
+  pauseTheoryTracking();
   renderDifficultySelect();
 }
 
@@ -1541,7 +1663,10 @@ function renderScore(){
   if(!u.progress)u.progress={};
   if(!u.scores)u.scores={};
   var scorePct=Math.round(CC_CNT/playedQuizzes.length*100);
-  u.progress[CS.id]={partTitle:CP.title,subTitle:CS.title,done:true,date:new Date().toLocaleDateString('ko-KR')};
+  // ⚠️ 예전에는 여기서 퀴즈를 다 풀면 무조건 u.progress[CS.id]에 "이론 완료"를 같이
+  // 기록했지만, 그러면 이론을 아예 안 읽고 퀴즈만 풀어도 "이론완료"로 표시되는
+  // 문제가 있었습니다. 이제 이론 완료 여부는 이론 탭에 실제로 머문 시간/스크롤을
+  // 기준으로 recordTheoryStudied()가 따로 기록하므로, 여기서는 건드리지 않습니다.
   if(!u.scores[CS.id]||scorePct>u.scores[CS.id].pct){
     u.scores[CS.id]={score:CC_CNT,total:playedQuizzes.length,pct:scorePct,partTitle:CP.title,subTitle:CS.title,date:new Date().toLocaleDateString('ko-KR')};
   }
@@ -1563,14 +1688,14 @@ function renderScore(){
     pct:scorePct,
     wrongItems:wrongItems
   });
-  // Google Sheets 학습 기록 전송
+  // Google Sheets 학습 기록 전송 — theoryDone은 실제로 이론을 학습한 적이 있을 때만 true
   sendToSheets({
     type:'study',
     email:currentUserEmail,
     name:getUserName(),
     partTitle:CP.title,
     subTitle:CS.title,
-    theoryDone:true,
+    theoryDone:theoryAlreadyRecorded(CS.id),
     score:CC_CNT,
     total:playedQuizzes.length,
     pct:scorePct
@@ -1743,12 +1868,17 @@ function mergeUsersWithSheetData(localUsers, remoteData){
     var u=ensure(st.email, st.name, st.date?st.date.slice(0,10):'');
     var sid=subMap[st.partTitle+'||'+st.subTitle];
     if(!sid) return; // 현재 커리큘럼과 매칭되지 않는 기록은 건너뜀 (예: 삭제/변경된 항목)
-    if(!u.progress[sid]){
+    // ⚠️ theoryDone이 실제로 'Y'인 기록만 "이론 완료"로 반영합니다. 예전에는 학습기록
+    // 행이 있기만 하면(=퀴즈만 풀어도) 무조건 이론 완료로 쳤는데, 그러면 이론을 안 읽고
+    // 퀴즈만 푼 경우도 "이론완료"로 잘못 표시됐습니다.
+    if(st.theoryDone==='Y' && !u.progress[sid]){
       u.progress[sid]={partTitle:st.partTitle,subTitle:st.subTitle,done:true,date:st.date};
     }
-    var pct=typeof st.pct==='number'?st.pct:(st.total?Math.round((st.score/st.total)*100):0);
-    if(!u.scores[sid]||pct>u.scores[sid].pct){
-      u.scores[sid]={score:st.score,total:st.total,pct:pct,partTitle:st.partTitle,subTitle:st.subTitle,date:st.date};
+    if(st.total!==undefined && st.total!==''){
+      var pct=typeof st.pct==='number'?st.pct:(st.total?Math.round((st.score/st.total)*100):0);
+      if(!u.scores[sid]||pct>u.scores[sid].pct){
+        u.scores[sid]={score:st.score,total:st.total,pct:pct,partTitle:st.partTitle,subTitle:st.subTitle,date:st.date};
+      }
     }
   });
 
@@ -3530,6 +3660,7 @@ function renderSheetsData(d){
     +'<div class="table-wrap"><table>'
     +'<tr><th>일시</th><th>이름</th><th>파트</th><th>세부항목</th><th>이론</th><th>점수</th><th>정답률</th></tr>'
     +[...studies].reverse().slice(0,50).map(function(r){
+      var hasQuiz=r.total!==undefined && r.total!==null && r.total!=='';
       var pct=Number(r.pct)||0;
       var c=pct>=80?'#15803d':pct>=60?'var(--ol)':'#dc2626';
       return '<tr>'
@@ -3538,8 +3669,8 @@ function renderSheetsData(d){
         +'<td style="font-size:12px"><span class="tag blue">'+r.partTitle+'</span></td>'
         +'<td style="font-size:12px">'+r.subTitle+'</td>'
         +'<td style="text-align:center">'+(r.theoryDone==='Y'?'✅':'○')+'</td>'
-        +'<td style="text-align:center;font-size:12px">'+r.score+'/'+r.total+'</td>'
-        +'<td style="font-weight:600;color:'+c+'">'+r.pct+'%</td>'
+        +'<td style="text-align:center;font-size:12px">'+(hasQuiz?(r.score+'/'+r.total):'-')+'</td>'
+        +'<td style="font-weight:600;color:'+(hasQuiz?c:'#94a3b8')+'">'+(hasQuiz?(r.pct+'%'):'-')+'</td>'
         +'</tr>';
     }).join('')
     +'</table></div></div>';
