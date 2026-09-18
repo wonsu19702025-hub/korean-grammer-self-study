@@ -2495,10 +2495,10 @@ function escHtml(str){
   return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 }
 
-// HTML → 일반 텍스트 변환 (편집창에 보여줄 때)
-function htmlToText(html){
-  if(!html)return'';
-  return html
+// HTML → 일반 텍스트 변환 (기본 규칙: 굵게·목록·문단·줄바꿈)
+function htmlToTextBasic(str){
+  if(!str)return'';
+  return str
     .replace(/<strong>(.*?)<\/strong>/g,'**$1**')
     .replace(/<li>(.*?)<\/li>/g,'• $1\n')
     .replace(/<ul>(.*?)<\/ul>/gs,'$1')
@@ -2510,16 +2510,30 @@ function htmlToText(html){
     .replace(/&lt;/g,'<')
     .replace(/&gt;/g,'>')
     .replace(/&quot;/g,'"')
-    .replace(/\n{3,}/g,'\n\n')
     .trim();
 }
 
-// 일반 텍스트 → HTML 변환 (저장할 때)
-function textToHtml(text){
+// HTML → 일반 텍스트 변환 (편집창에 보여줄 때)
+// 참고자료 토글 박스(.ref-box)는 태그를 그냥 벗겨내면 제목과 본문이 줄바꿈 없이
+// 그대로 붙어버려("...이유조사는..."처럼) 편집창에서 제목·내용 정렬이 깨져 보이는
+// 원인이 되므로, 별도 구간으로 인식해 [참고자료: 제목]...[참고자료 끝] 블록으로 변환한다.
+function htmlToText(html){
+  if(!html)return'';
+  var s = html.replace(/<p class="ref-toggle-anchor"><\/p>/g,'');
+  s = s.replace(/<details class="ref-box"><summary>([\s\S]*?)<\/summary><div class="ref-body">([\s\S]*?)<\/div><\/details>/g,
+    function(m, summary, body){
+      var summaryText = htmlToTextBasic(summary).replace(/^📎\s*참고자료\s*보기\s*(—|-)?\s*/,'').trim();
+      var bodyText = htmlToTextBasic(body);
+      return '\n\n[참고자료: '+summaryText+']\n'+bodyText+'\n[참고자료 끝]\n\n';
+    });
+  var out = htmlToTextBasic(s);
+  return out.replace(/\n{3,}/g,'\n\n').trim();
+}
+
+// 일반 텍스트 → HTML 변환 (기본 규칙: **굵게**, • 목록, 문단)
+function textToHtmlBasic(text){
   if(!text)return'';
-  // **굵게** → <strong>
   text = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-  // • 로 시작하는 줄 → <li>
   var lines = text.split('\n');
   var result = [];
   var inList = false;
@@ -2535,6 +2549,27 @@ function textToHtml(text){
   });
   if(inList) result.push('</ul>');
   return result.join('');
+}
+
+// 일반 텍스트 → HTML 변환 (저장할 때)
+// [참고자료: 제목] ... [참고자료 끝] 블록은 접기/펼치기 참고자료 박스(.ref-box)로 복원한다.
+function textToHtml(text){
+  if(!text)return'';
+  var refBoxes=[];
+  text = text.replace(/\[참고자료:\s*([^\]]*)\]\n?([\s\S]*?)\n?\[참고자료\s*끝\]/g,function(m,title,body){
+    var idx = refBoxes.length;
+    var titleTrim = title.trim();
+    var summaryLabel = titleTrim ? ('📎 참고자료 보기 — '+titleTrim) : '📎 참고자료 보기';
+    var bodyHtml = textToHtmlBasic(body.trim());
+    refBoxes.push('<p class="ref-toggle-anchor"></p><details class="ref-box"><summary>'+summaryLabel+'</summary><div class="ref-body">'+bodyHtml+'</div></details>');
+    return ' REFBOX'+idx+' ';
+  });
+  var mainHtml = textToHtmlBasic(text);
+  refBoxes.forEach(function(html,idx){
+    var marker = ' REFBOX'+idx+' ';
+    mainHtml = mainHtml.replace('<p>'+marker+'</p>',html).replace(marker,html);
+  });
+  return mainHtml;
 }
 
 function getCurrentSectionCount(){
